@@ -1,0 +1,136 @@
+<pre class='metadata'>
+Title: Aggregator Specification
+Shortname: aggregator-spec
+Level: none
+Status: LD
+Editor: Maarten Vandenbrande, Ghent University - imec http://idlab.ugent.be/, maarten.vandenbrande@ugent.be
+Abstract: This document has the specification of the aggregator.
+Markup Shorthands: markdown yes, css no
+Canonical URL: _ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_
+Previous Version: _ORCHESTRATOR_PREVIOUS_BUILD_FULL_LINK_
+</pre>
+
+## Introduction
+
+
+## Definitions
+- Aggregator
+- Aggregator Service
+- Client
+- OIDC token
+- Authoriztaion server
+- Resource server
+
+
+## Public metadata
+- creation endpoint
+- client.json endpoint => client id for Authorization
+- well-known endpoint
+
+## Authentication and Authorization
+For Authentication the Aggregator uses the Authorization for Data Spaces (A4DS) specification.
+the 
+
+### Client flow
+The Aggregator Service uses OIDC to authenticate the Client and get an access token for a Resource Server.
+The Aggregator Service uses an OIDC access token liked to the client id of the Aggregator.
+The Aggregator SHOULD add an additional scope (`urn:knows:uma:scopes:derivation-creation`) to the Authorization Server of a Resource Server to indicate that it wants to use the Aggregator functionality.
+The Authorization Server MUST return a `derivation_resource_id` along side the access token.
+The Aggregator CAN delete this derivation_resource_id if it want's to.
+The Aggregator Service MUST update the resource registration of its service to its Authorization Server that it has used this resource id to create derived resources.
+Example request:
+```
+{
+	"resource_scopes": [...],
+	"resource_relations": {
+	  "prov:wasDerivedFrom": {
+		  "issuer": "https://as.example.org",
+		  "derivation_resource_id": "handle-id-1"
+	  }
+	}
+}
+```
+The AAS MUST invalidate previous access tokens (set active to false) linked to that derived resource.
+
+TODO: When polling a creation of a new `derivation_resource_id` should not be nessecary. 
+Either we ask the AS with permissions for a normal scope with that id or we give the id as a hint when requesting with a ticket.
+
+### Resource Server flow
+If A Client requests access to a derived resource from the Aggregator Service a normal UMA flow follows.
+During ticket creation the Aggregator should validate that the `derivation_resource_id used to create the derived resource is valid.
+If not the Aggregator MUST recreate the Aggregator Service.
+The Aggregator Authorization Server COULD return a `need_info` error where it asks for access tokens to the updtream resource.
+If this is the case the AAS MUST add the `issuer`, `derivation_resource_id` and `resource_scopes` to the required_claims array.
+The `issuer` is the Authorization Server of the Resource Server where the derived resource was created from.
+The `derivation_resource_id` is the id (or an array of ids) that was returned when the Aggregator Service requested the access token for the upstream resource.
+The `resource_scopes` are the scopes that are required to access the upstream resource, this MUST include a derivation scope.
+Example response:
+
+```
+{
+  "error": "need_info",
+  "ticket": "tkt-A2",
+  "required_claims": [
+    {
+      "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
+      "details": {
+		"issuer": "https://a.example.org",
+		"derivation_resource_id": "handle-id-1",
+		"resource_scopes": ["urn:knows:uma:scopes:derivation-read"]
+	  }
+    },
+    ...
+  ]
+}
+```
+
+The Client SHOULD then requests access tokens from the Authorization Server of the upstream Resource Server with the required scopes.
+{
+	"grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
+	permissions: [
+		{
+			"resource_id": "handle-id-1",
+			scopes: [ "urn:knows:uma:scopes:derivation-read" ]
+		}
+	]
+	claim_token: "OIDC_token",
+	claim_token_format: 'http://openid.net/specs/openid-connect-core-1_0.html#IDToken',
+}
+
+Finally the Client can retry the request to the Aggregator Service with the access token's it received from the upstream Resource Server(s).
+```
+{
+  "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
+  "ticket": "tkt-A2",
+  "claim_tokens": [
+    {  
+		"claim_token": "OIDC_token",  
+		"claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken",
+    },
+    {
+		"claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
+		"claim_token": "as-at-2",
+    }
+  ]
+}
+```
+The AS MUST verify the access token's with the respective Authorization Servers and check if the Client has access to the upstream resources.
+
+## Managing an Aggregator
+### creation with OIDC token
+The user COULD provide an OIDC token conected to the client id of the Aggregator when creating an Aggregator Service.
+The Aggregator SHOULD create an OIDC access token for the Aggregator Service linked to the client id of the Aggregator to do requests to Resource Servers.
+
+### creation without OIDC token
+If no OIDC token is provided the Aggregator Service MUST create a new user at a trusted IDP.
+The Aggregator Service MUST create an OIDC access token for the Aggregator Service linked to the client id of the Aggregator to do requests to Resource Servers.
+
+### deletion
+
+
+## Creating an Aggregator Service
+
+
+## Using an Aggregator Service
+
+
