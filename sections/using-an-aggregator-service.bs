@@ -1,0 +1,4 @@
+Using an Aggregator Service {#using-an-aggregator-service}
+=========================================================
+
+Guidance for using an Aggregator Service will follow as the specification matures.

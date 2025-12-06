@@ -1,0 +1,74 @@
+Aggregator Maintenance {#aggregator-creation}
+=====================
+This section describes how aggregators are managed on the Aggregator Server level.
+
+Aggregator Creation {#aggregator-creation}
+---------------------
+This section describes how clients can create an Aggregator.
+
+ISSUE: TODO where to add versioning info?
+
+ISSUE: TODO where to use DPOP tokens?
+
+ISSUE: TODO Authorization on the aggregator creation endpoint is defined by the implementation.
+
+<pre class="plantuml">
+
+</pre>
+
+1. client needs to login into an application (IPD_client_token)
+2. client goes to aggregator creation endpoint (with IPD_client_token)
+    - registration_type="PKCE" (Determines the flow e.g. "create", "PKCE", "device", "client_credentials")
+    - action="create" (Deterrmines the action e.g. "create", "login", "delete")
+
+        NOTE: do we want to support update (maybe to update the IDP or the AS_URL)?
+    - authorization_server= <AS_URL> (the UMA authorization server of the aggregator should use)
+    - account_id=<account_id> (OPTIONAL: in case of login or delete)
+3. The aggregator returns:
+    - client_id=<client_id> (to be used in step 3 as client_id)
+    - code_challenge=<code_challenge> (to be used in step 3)
+    - code_challenge_method=S256 (to denote that SHA256 is used as the code challenge method)
+    - OPTIONAL: state=<state> (to be used in step 3 if the IDP requires state)
+
+        ISSUE: TODO How do we know if the IDP requires state?
+
+        ISSUE: TODO How does the aggregator register with the AS?
+4. client goes to the authorization endpoint with:
+    - response_type = "code" (Others MAY NOT be supported by the IDP Server)
+    - client_id =<client-id> (from from step 2, in case of SOLID this is a resource hosted by the aggregator)
+    - redirect_uri=<redirect_uri> (returns to the client)
+    - scope=openid webid offline_access (As per [SOLID OIDC] openid is a scope that is needed to verify Alice’s identity, webid is required by the Solid OIDC specification to denote a WebID login, offline_access: Is required to get a refresh token.)
+    - code_challenge=<code_challenge> (from step 2)
+    - code_challenge_method=S256 (to denote that SHA256 is used as the code challenge method)
+    - OPTIONAL: state=<state> (from step 2, if provided)
+5. IDP Server authenticates the user (e.g. via username/password)
+6. IDP Server gets user consent for the requested scopes and client_id
+7. IDP Server redirects to redirect_uri with authorization code
+8. client sends the authorization code to the aggregator creation endpoint with:
+    - registration_type="PKCE" (Determines the flow e.g. "create", "PKCE", "device", "client_credentials")
+    - action="create" (Deterrmines the action e.g. "create", "login", "delete")
+    - code=<authorization_code> (from step 6)
+    - redirect_uri=<redirect_uri> (same as step 3)
+    - OPTIONAL: state=<state> (from step 3, if provided)
+9. Aggregator checks if the redirect_uri is the same as client_id of client application (from client authorization token in step 2)
+10. aggregator creation endpoint redeems the authorization code (IDP_aggregator_token) at the token endpoint with:
+    - grant_type=authorization_code
+    - code=<authorization_code> (from step 6) (the IDP checks if the code was already used and unexpired)
+    - redirect_uri=<redirect_uri> (same as step 3) (the IDP checks if this matches the original redirect_uri)
+    - client_id=<client_id> (from step 2) (the IDP checks if this matches the original client_id)
+    - code_verifier=<code_verifier> (from step 2) (the IDP checks if this matches the original code_challenge)
+    - state=<state> (from step 3, if provided) (the IDP checks if this matches the original state)
+11. IDP Server returns:
+    - IDP_aggregator_token (access token to access resources on behalf of the user)
+    - refresh_token (to get a new IDP_aggregator_token when the current one expires)
+12. aggregator creation endpoint creates an aggregator account for the user with the IDP_aggregator_token and returns the aggregator account details
+
+Relogin flow (for when the the aggregator needs a new token):
+Same flow but in step 2 action="login"
+
+NOTE: This does mean that the user can only have one aggregator account per aggregator server.
+
+
+ISSUE: TODO How to refresh the IDP_client_token? refresh tokens are not valid forever.
+
+ISSUE: TODO How to delete an aggregator => delete endpoint with authentication

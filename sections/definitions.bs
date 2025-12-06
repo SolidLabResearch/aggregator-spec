@@ -1,0 +1,19 @@
+Definitions {#definitions}
+==========================
+
+- IDP Server (IDPS): An Identity Provider server that supports OIDC and issues OIDC tokens.
+
+NOTE: that this is different from the Authorization Server (AS) that issues UMA RPT tokens.
+The IDP Servers are used to provide identity to users.
+The Authorization Servers checks this identity and issues RPT tokens for resource servers.
+
+- Authorization Server (AS): An OAuth2 Authorization Server that supports UMA and issues RPT tokens.
+
+- Resource Server (RS): An OAuth2 Resource Server that protects resources and accepts RPT tokens issued from a Authorization Server.
+- Aggregator Server
+- Aggregator
+- Aggregator Service
+- Client
+- OIDC token
+- Authorization server
+- Resource server
