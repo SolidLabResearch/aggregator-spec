@@ -1,2 +1,3 @@
+set -euo pipefail
 ./pre.sh
-bikeshed watch spec.bs dist/index.html
+bikeshed watch dist/spec.bs dist/index.html
