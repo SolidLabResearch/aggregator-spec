@@ -1,6 +1,8 @@
 Definitions {#definitions}
 ==========================
 
+# add a link to other specs used: WebID, OIDC, UMA
+
 - IDP Server (IDPS): An Identity Provider server that supports OIDC and issues OIDC tokens.
 
 NOTE: that this is different from the Authorization Server (AS) that issues UMA RPT tokens.
@@ -14,6 +16,7 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
 - Aggregator
 - Aggregator Service
 - Client
+- ClientID
 - OIDC token
 - Authorization server
 - Resource server

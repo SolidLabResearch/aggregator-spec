@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="_ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_" rel="canonical">
-  <meta content="fba1646f6495ca3f16410e522feebb1ca6865ed5" name="revision">
+  <meta content="99dcc26926f004c63d454c841ae7177054fb8279" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -1890,12 +1890,133 @@ a.self-link::before            { content: "¶"; }
 .heading > a.self-link::before { content: "§"; }
 dfn > a.self-link::before      { content: "#"; }
 </style>
+<style>/* Boilerplate: style-syntax-highlighting */
+code.highlight { padding: .1em; border-radius: .3em; }
+pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+
+.highlight:not(.idl) { background: rgba(0, 0, 0, .03); }
+c-[a] { color: #990055 } /* Keyword.Declaration */
+c-[b] { color: #990055 } /* Keyword.Type */
+c-[c] { color: #708090 } /* Comment */
+c-[d] { color: #708090 } /* Comment.Multiline */
+c-[e] { color: #0077aa } /* Name.Attribute */
+c-[f] { color: #669900 } /* Name.Tag */
+c-[g] { color: #222222 } /* Name.Variable */
+c-[k] { color: #990055 } /* Keyword */
+c-[l] { color: #000000 } /* Literal */
+c-[m] { color: #000000 } /* Literal.Number */
+c-[n] { color: #0077aa } /* Name */
+c-[o] { color: #999999 } /* Operator */
+c-[p] { color: #999999 } /* Punctuation */
+c-[s] { color: #a67f59 } /* Literal.String */
+c-[t] { color: #a67f59 } /* Literal.String.Single */
+c-[u] { color: #a67f59 } /* Literal.String.Double */
+c-[cp] { color: #708090 } /* Comment.Preproc */
+c-[c1] { color: #708090 } /* Comment.Single */
+c-[cs] { color: #708090 } /* Comment.Special */
+c-[kc] { color: #990055 } /* Keyword.Constant */
+c-[kn] { color: #990055 } /* Keyword.Namespace */
+c-[kp] { color: #990055 } /* Keyword.Pseudo */
+c-[kr] { color: #990055 } /* Keyword.Reserved */
+c-[ld] { color: #000000 } /* Literal.Date */
+c-[nc] { color: #0077aa } /* Name.Class */
+c-[no] { color: #0077aa } /* Name.Constant */
+c-[nd] { color: #0077aa } /* Name.Decorator */
+c-[ni] { color: #0077aa } /* Name.Entity */
+c-[ne] { color: #0077aa } /* Name.Exception */
+c-[nf] { color: #0077aa } /* Name.Function */
+c-[nl] { color: #0077aa } /* Name.Label */
+c-[nn] { color: #0077aa } /* Name.Namespace */
+c-[py] { color: #0077aa } /* Name.Property */
+c-[ow] { color: #999999 } /* Operator.Word */
+c-[mb] { color: #000000 } /* Literal.Number.Bin */
+c-[mf] { color: #000000 } /* Literal.Number.Float */
+c-[mh] { color: #000000 } /* Literal.Number.Hex */
+c-[mi] { color: #000000 } /* Literal.Number.Integer */
+c-[mo] { color: #000000 } /* Literal.Number.Oct */
+c-[sb] { color: #a67f59 } /* Literal.String.Backtick */
+c-[sc] { color: #a67f59 } /* Literal.String.Char */
+c-[sd] { color: #a67f59 } /* Literal.String.Doc */
+c-[se] { color: #a67f59 } /* Literal.String.Escape */
+c-[sh] { color: #a67f59 } /* Literal.String.Heredoc */
+c-[si] { color: #a67f59 } /* Literal.String.Interpol */
+c-[sx] { color: #a67f59 } /* Literal.String.Other */
+c-[sr] { color: #a67f59 } /* Literal.String.Regex */
+c-[ss] { color: #a67f59 } /* Literal.String.Symbol */
+c-[vc] { color: #0077aa } /* Name.Variable.Class */
+c-[vg] { color: #0077aa } /* Name.Variable.Global */
+c-[vi] { color: #0077aa } /* Name.Variable.Instance */
+c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
+
+@media (prefers-color-scheme: dark) {
+    .highlight:not(.idl) { background: rgba(255, 255, 255, .05); }
+
+    c-[a] { color: #d33682 } /* Keyword.Declaration */
+    c-[b] { color: #d33682 } /* Keyword.Type */
+    c-[c] { color: #2aa198 } /* Comment */
+    c-[d] { color: #2aa198 } /* Comment.Multiline */
+    c-[e] { color: #268bd2 } /* Name.Attribute */
+    c-[f] { color: #b58900 } /* Name.Tag */
+    c-[g] { color: #cb4b16 } /* Name.Variable */
+    c-[k] { color: #d33682 } /* Keyword */
+    c-[l] { color: #657b83 } /* Literal */
+    c-[m] { color: #657b83 } /* Literal.Number */
+    c-[n] { color: #268bd2 } /* Name */
+    c-[o] { color: #657b83 } /* Operator */
+    c-[p] { color: #657b83 } /* Punctuation */
+    c-[s] { color: #6c71c4 } /* Literal.String */
+    c-[t] { color: #6c71c4 } /* Literal.String.Single */
+    c-[u] { color: #6c71c4 } /* Literal.String.Double */
+    c-[ch] { color: #2aa198 } /* Comment.Hashbang */
+    c-[cp] { color: #2aa198 } /* Comment.Preproc */
+    c-[cpf] { color: #2aa198 } /* Comment.PreprocFile */
+    c-[c1] { color: #2aa198 } /* Comment.Single */
+    c-[cs] { color: #2aa198 } /* Comment.Special */
+    c-[kc] { color: #d33682 } /* Keyword.Constant */
+    c-[kn] { color: #d33682 } /* Keyword.Namespace */
+    c-[kp] { color: #d33682 } /* Keyword.Pseudo */
+    c-[kr] { color: #d33682 } /* Keyword.Reserved */
+    c-[ld] { color: #657b83 } /* Literal.Date */
+    c-[nc] { color: #268bd2 } /* Name.Class */
+    c-[no] { color: #268bd2 } /* Name.Constant */
+    c-[nd] { color: #268bd2 } /* Name.Decorator */
+    c-[ni] { color: #268bd2 } /* Name.Entity */
+    c-[ne] { color: #268bd2 } /* Name.Exception */
+    c-[nf] { color: #268bd2 } /* Name.Function */
+    c-[nl] { color: #268bd2 } /* Name.Label */
+    c-[nn] { color: #268bd2 } /* Name.Namespace */
+    c-[py] { color: #268bd2 } /* Name.Property */
+    c-[ow] { color: #657b83 } /* Operator.Word */
+    c-[mb] { color: #657b83 } /* Literal.Number.Bin */
+    c-[mf] { color: #657b83 } /* Literal.Number.Float */
+    c-[mh] { color: #657b83 } /* Literal.Number.Hex */
+    c-[mi] { color: #657b83 } /* Literal.Number.Integer */
+    c-[mo] { color: #657b83 } /* Literal.Number.Oct */
+    c-[sa] { color: #6c71c4 } /* Literal.String.Affix */
+    c-[sb] { color: #6c71c4 } /* Literal.String.Backtick */
+    c-[sc] { color: #6c71c4 } /* Literal.String.Char */
+    c-[dl] { color: #6c71c4 } /* Literal.String.Delimiter */
+    c-[sd] { color: #6c71c4 } /* Literal.String.Doc */
+    c-[se] { color: #6c71c4 } /* Literal.String.Escape */
+    c-[sh] { color: #6c71c4 } /* Literal.String.Heredoc */
+    c-[si] { color: #6c71c4 } /* Literal.String.Interpol */
+    c-[sx] { color: #6c71c4 } /* Literal.String.Other */
+    c-[sr] { color: #6c71c4 } /* Literal.String.Regex */
+    c-[ss] { color: #6c71c4 } /* Literal.String.Symbol */
+    c-[fm] { color: #268bd2 } /* Name.Function.Magic */
+    c-[vc] { color: #cb4b16 } /* Name.Variable.Class */
+    c-[vg] { color: #cb4b16 } /* Name.Variable.Global */
+    c-[vi] { color: #cb4b16 } /* Name.Variable.Instance */
+    c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
+    c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
+}
+</style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Aggregator Specification</h1>
    <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2025-12-06">6 December 2025</time></span></h2>
+    <time class="dt-updated" datetime="2025-12-08">8 December 2025</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -1911,7 +2032,7 @@ dfn > a.self-link::before      { content: "#"; }
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 6 December 2025,
+In addition, as of 8 December 2025,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -1929,20 +2050,30 @@ Parts of this work may be from another specification document.  If so, those par
    <ol class="toc" role="directory">
     <li><a href="#introduction"><span class="secno">1</span> <span class="content">Introduction</span></a>
     <li><a href="#definitions"><span class="secno">2</span> <span class="content">Definitions</span></a>
-    <li><a href="#public-metadata"><span class="secno">3</span> <span class="content">Public Metadata</span></a>
+    <li><a href="#add-a-link-to-other-specs-used-webid-oidc-uma"><span class="secno">3</span> <span class="content">add a link to other specs used: WebID, OIDC, UMA</span></a>
+    <li><a href="#public-metadata"><span class="secno">4</span> <span class="content">Public Metadata</span></a>
     <li>
-     <a href="#aggregator-creation"><span class="secno">4</span> <span class="content">Aggregator Maintenance</span></a>
+     <a href="#aggregator-creation"><span class="secno">5</span> <span class="content">Aggregator Maintenance</span></a>
      <ol class="toc">
-      <li><a href="#aggregator-creation①"><span class="secno">4.1</span> <span class="content">Aggregator Creation</span></a>
+      <li>
+       <a href="#aggregator-creation①"><span class="secno">5.1</span> <span class="content">Aggregator Creation</span></a>
+       <ol class="toc">
+        <li><a href="#creation-provision"><span class="secno">5.1.1</span> <span class="content"><code>provision</code> Flow</span></a>
+        <li><a href="#creation-authorization"><span class="secno">5.1.2</span> <span class="content"><code>authorization_code</code> Flow</span></a>
+        <li><a href="#creation-client-credentials"><span class="secno">5.1.3</span> <span class="content"><code>client_credentials</code> Flow</span></a>
+        <li><a href="#creation-device-code"><span class="secno">5.1.4</span> <span class="content"><code>device_code</code> Flow</span></a>
+       </ol>
+      <li><a href="#login-flow"><span class="secno">5.2</span> <span class="content">Login Flow</span></a>
+      <li><a href="#delete-flow"><span class="secno">5.3</span> <span class="content">Delete Flow</span></a>
      </ol>
     <li>
-     <a href="#authentication-and-authorization"><span class="secno">5</span> <span class="content">Authentication and Authorization</span></a>
+     <a href="#authentication-and-authorization"><span class="secno">6</span> <span class="content">Authentication and Authorization</span></a>
      <ol class="toc">
-      <li><a href="#client-flow"><span class="secno">5.1</span> <span class="content">Client Flow</span></a>
-      <li><a href="#resource-server-flow"><span class="secno">5.2</span> <span class="content">Resource Server Flow</span></a>
+      <li><a href="#client-flow"><span class="secno">6.1</span> <span class="content">Client Flow</span></a>
+      <li><a href="#resource-server-flow"><span class="secno">6.2</span> <span class="content">Resource Server Flow</span></a>
      </ol>
-    <li><a href="#creating-an-aggregator-service"><span class="secno">6</span> <span class="content">Creating an Aggregator Service</span></a>
-    <li><a href="#using-an-aggregator-service"><span class="secno">7</span> <span class="content">Using an Aggregator Service</span></a>
+    <li><a href="#creating-an-aggregator-service"><span class="secno">7</span> <span class="content">Creating an Aggregator Service</span></a>
+    <li><a href="#using-an-aggregator-service"><span class="secno">8</span> <span class="content">Using an Aggregator Service</span></a>
     <li><a href="#conformance"><span class="secno"></span> <span class="content">
     Conformance</span></a>
     <li>
@@ -1957,6 +2088,7 @@ Parts of this work may be from another specification document.  If so, those par
    <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
    <p>The introduction for the Aggregator specification will be expanded in future revisions.</p>
    <h2 class="heading settled" data-level="2" id="definitions"><span class="secno">2. </span><span class="content">Definitions</span><a class="self-link" href="#definitions"></a></h2>
+   <h2 class="heading settled" data-level="3" id="add-a-link-to-other-specs-used-webid-oidc-uma"><span class="secno">3. </span><span class="content">add a link to other specs used: WebID, OIDC, UMA</span><a class="self-link" href="#add-a-link-to-other-specs-used-webid-oidc-uma"></a></h2>
    <ul>
     <li data-md>
      <p>IDP Server (IDPS): An Identity Provider server that supports OIDC and issues OIDC tokens.</p>
@@ -1978,13 +2110,15 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
     <li data-md>
      <p>Client</p>
     <li data-md>
+     <p>ClientID</p>
+    <li data-md>
      <p>OIDC token</p>
     <li data-md>
      <p>Authorization server</p>
     <li data-md>
      <p>Resource server</p>
    </ul>
-   <h2 class="heading settled" data-level="3" id="public-metadata"><span class="secno">3. </span><span class="content">Public Metadata</span><a class="self-link" href="#public-metadata"></a></h2>
+   <h2 class="heading settled" data-level="4" id="public-metadata"><span class="secno">4. </span><span class="content">Public Metadata</span><a class="self-link" href="#public-metadata"></a></h2>
    <ul>
     <li data-md>
      <p>Well-known endpoint</p>
@@ -1996,173 +2130,204 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
       <li data-md>
      </ul>
    </ul>
-   <h2 class="heading settled" data-level="4" id="aggregator-creation"><span class="secno">4. </span><span class="content">Aggregator Maintenance</span><a class="self-link" href="#aggregator-creation"></a></h2>
+   <h2 class="heading settled" data-level="5" id="aggregator-creation"><span class="secno">5. </span><span class="content">Aggregator Maintenance</span><a class="self-link" href="#aggregator-creation"></a></h2>
    
 This section describes how aggregators are managed on the Aggregator Server level.
+The authorization for these endpoints is defined by the implementation and up to the Aggregator provider to decide.
+The user requires authenticated requests to manage their aggregator accounts on wich the Aggregator provider can base their authorization decisions.
+The tokens used in these requests (IPD_client_token) prove the identity of the user and the client (ClientID) used to access the aggregator.
 
 
-   <h3 class="heading settled" data-level="4.1" id="aggregator-creation①"><span class="secno">4.1. </span><span class="content">Aggregator Creation</span><a class="self-link" href="#aggregator-creation①"></a></h3>
+   <h3 class="heading settled" data-level="5.1" id="aggregator-creation①"><span class="secno">5.1. </span><span class="content">Aggregator Creation</span><a class="self-link" href="#aggregator-creation①"></a></h3>
    
 This section describes how clients can create an Aggregator.
+There exists different flows to create an aggregator depending on the registration type.
 
 
    <p class="issue" id="issue-337a7eca"><a class="self-link" href="#issue-337a7eca"></a> TODO where to add versioning info?</p>
    <p class="issue" id="issue-6ffefece"><a class="self-link" href="#issue-6ffefece"></a> TODO where to use DPOP tokens?</p>
-   <p class="issue" id="issue-10becf76"><a class="self-link" href="#issue-10becf76"></a> TODO Authorization on the aggregator creation endpoint is defined by the implementation.</p>
-<pre class="plantuml"></pre>
-   <ol>
+   <h4 class="heading settled" data-level="5.1.1" id="creation-provision"><span class="secno">5.1.1. </span><span class="content"><code>provision</code> Flow</span><a class="self-link" href="#creation-provision"></a></h4>
+   <p>The <code>provision</code> flow allows clients to ask the Aggregator Server to create its own identity.
+This lets resource owners target access-control policies at the aggregator’s dedicated WebID instead of having the aggregator impersonate another user’s WebID.</p>
+   <p><strong>1. Client starts flow with Aggregator Server</strong></p>
+   <p>The client calls the maintenance endpoint authenticated with its <code>IPD_client_token</code>.</p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"provision"</c-><c- p>,</c->
+  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c->
+<c- p>}</c->
+</pre>
+   <p><strong>2. Aggregator Server provisions a WebID and registers it at the IDP</strong></p>
+   <p>The Aggregator Server creates a WebID document and registers a new account with an IDP for that WebID.
+It also registers (or reuses) a confidential client that represents the aggregator itself and stores the associated client_id/client_secret.
+Using those credentials the Aggregator Server performs a client credentials grant to obtain the <code>IDP_aggregator_token</code> (and accompanying refresh token) that authorize the aggregator acting under its own WebID.</p>
+   <p><strong>3. Aggregator Server creates an aggregator account for the user</strong></p>
+   <p>Using the obtained tokens, the Aggregator Server persists an aggregator account linked to the user, returns the aggregator identifier, newly created WebID, Solid pod location, and any bootstrap credentials the client needs to interact with the managed identity.</p>
+   <h4 class="heading settled" data-level="5.1.2" id="creation-authorization"><span class="secno">5.1.2. </span><span class="content"><code>authorization_code</code> Flow</span><a class="self-link" href="#creation-authorization"></a></h4>
+   <p>The <code>authorization_code</code> flow allows clients to create an aggregator that acts on behalf of the end-user, but with a token that is scoped specifically for the aggregator.</p>
+   <p><img alt="PlantUML Diagram" src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4ZyTAaGeg8B6w92Z96nhwbLrwuSfuYDWGqXyISafYv8F0HlmnFq4JWxeNL034diy_VTVVUTSrHwxdmrqwoSAZFdZi-0tbu9DUV6Z_orHd0eF3U5HiQICpZM2kd3I-WqozNou_7hvdwrVFhijA3d9Re8Z8lLykskVTuP58N3WdlhO8Hk4K7lhvt0sHorAJ7L1LwU30dxV1knSTk6DT9Ir60-hwD3AzhWa-4fmLuU8emsZ3NqxSD4HnzsCXW5uu1lT0k7t2jhMDBB0V6Yfa3PWI4w7DDZ13PI4-msOUjg0RmBP-WhPq34KAva5uILc8i9rnfDWLsWsNbC9PBYFkncH9Kg30sy3J7Gjb26XLKG58phmru6WyfFYAa4fG5k91Km9GKYCb6pdsIyKduIXS3Mt_gfHRritK6DTasAl79gJVxbLJgPaA9jsMQKqefg5fGQIz9jk2zfxGNNIeQcqffPo-p6h5uqMYBEeiowyr-TK2pVp3dtTeeczZDsM4xgFVjlahrixyU7vAvm8Mn5hKZqNEcI7Q6Hz1D-0m??"></p>
+   <p><strong>1. Client starts flow with Aggregator Server</strong></p>
+   <p>The client begins by asking the Aggregator to bootstrap an authorization_code registration and indicate which authorization server should be used. The Aggregator responds with the public parameters required for the OIDC authorization request.</p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
+  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c-><c- p>,</c->
+  <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c->
+<c- p>}</c->
+</pre>
+   <p><strong>1.1 Aggregator dereferences the WebID to discover the IDP</strong></p>
+   <p>Using the UMA authorization context, the Aggregator dereferences the user’s WebID profile document to locate the Solid/OIDC issuer metadata and determine which IDP endpoints must be used for the next steps.</p>
+   <p><strong>1.2 Aggregator responds with public parameters</strong></p>
+   <p>After finishing WebID discovery and storing the PKCE verifier/state, the Aggregator returns the public parameters required for the IDP authorization request.</p>
+<pre class="language-http highlight"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>201</c-> <c- ne>Created</c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"client_id"</c-><c- p>:</c-> <c- u>"https://aggregator.example/client.jsonld"</c-><c- p>,</c->
+  <c- f>"code_challenge"</c-><c- p>:</c-> <c- u>"1uLSZp2..."</c-><c- p>,</c->
+  <c- f>"code_challenge_method"</c-><c- p>:</c-> <c- u>"S256"</c-><c- p>,</c->
+  <c- f>"state"</c-><c- p>:</c-> <c- u>"1eb7c8f5..."</c->
+<c- p>}</c->
+</pre>
+   <p>The Aggregator generates the PKCE verifier/challenge pair plus a random <code>state</code>, persists them together with the pending registration, and returns only the public portions (<code>client_id</code>, <code>code_challenge</code>, <code>state</code>) to the client application.
+The <code>authorization_server</code> value identifies the UMA Authorization Server (AS) that governs resource policies; once the Aggregator evaluates the user’s authorization token it can dereference its WebID and determine which Identity Provider (IDP) must be used for the subsequent OIDC exchange.</p>
+   <p class="issue" id="issue-9e1fa78e"><a class="self-link" href="#issue-9e1fa78e"></a> TODO How does the aggregator register with the AS?</p>
+   <p><strong>2. Client sends the end-user through the IDP authorization endpoint</strong></p>
+   <p>Using the information supplied by the Aggregator, the client constructs an authorization request against the Identity Provider.
+The redirect_uri is under control of the client application and MUST already be registered in the JSON-LD client metadata document hosted at the dereferenceable <code>client_id</code>.</p>
+<pre class="language-http highlight">GET https://idp.example/authorize?
+    response_type=code&amp;
+    client_id=https%3A%2F%2Faggregator.example%2Fclient.jsonld&amp;
+    redirect_uri=https%3A%2F%2Fapp.example%2Fcallback&amp;
+    scope=openid%20webid%20offline_access&amp;
+    code_challenge=1uLSZp2...&amp;
+    code_challenge_method=S256&amp;
+    state=1eb7c8f5...
+</pre>
+   <p><strong>3. User authenticates and consents at the IDP</strong></p>
+   <p>The IDP performs its usual login and consent screens, after which it issues an authorization_code tied to the Aggregator’s confidential client.</p>
+   <p><strong>4. IDP redirects the user agent back to the client’s redirect_uri</strong></p>
+<pre class="language-http highlight"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>302</c-> <c- ne>Found</c->
+<c- e>Location</c-><c- o>:</c-> <c- l>https://app.example/callback?code=SplxlOBeZQQYbYS6WxSbIA&amp;state=1eb7c8f5...</c->
+</pre>
+   <p><strong>5. Client posts the authorization code back to the Aggregator</strong></p>
+   <p>The client sends the code, redirect URI, and echoed state to the maintenance endpoint so the Aggregator can finish the flow.</p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
+  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c-><c- p>,</c->
+  <c- f>"code"</c-><c- p>:</c-> <c- u>"SplxlOBeZQQYbYS6WxSbIA"</c-><c- p>,</c->
+  <c- f>"redirect_uri"</c-><c- p>:</c-> <c- u>"https://app.example/callback"</c-><c- p>,</c->
+  <c- f>"state"</c-><c- p>:</c-> <c- u>"1eb7c8f5..."</c->
+<c- p>}</c->
+</pre>
+   <p class="issue" id="issue-0ee530b4"><a class="self-link" href="#issue-0ee530b4"></a> TODO should this be a login action instead of create?</p>
+   <p><strong>5.1 Aggregator dereferences the client metadata</strong></p>
+   <p>The Aggregator dereferences the <code>client_id</code> JSON-LD document to confirm the registered redirect URIs, contact metadata, and other security requirements, then verifies that the supplied redirect_uri belongs to that set and that the returned <code>state</code> matches the stored nonce.</p>
+   <p><strong>5.2 Aggregator redeems the authorization code at the IDP token endpoint</strong></p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/token</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Host</c-><c- o>:</c-> <c- l>idp.example</c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/x-www-form-urlencoded</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Basic &lt;aggregator-client-auth></c->
+
+<c- f>grant_type</c-><c- o>=</c-><c- s>authorization_code</c-><c- p>&amp;</c->
+<c- f>code</c-><c- o>=</c-><c- s>SplxlOBeZQQYbYS6WxSbIA</c-><c- p>&amp;</c->
+<c- f>redirect_uri</c-><c- o>=</c-><c- s>https%3A%2F%2Fapp.example%2Fcallback</c-><c- p>&amp;</c->
+<c- f>client_id</c-><c- o>=</c-><c- s>https%3A%2F%2Faggregator.example%2Fclient.jsonld</c-><c- p>&amp;</c->
+<c- f>code_verifier</c-><c- o>=</c-><c- s>Hjs8...stored...</c->
+</pre>
+   <p>The IDP verifies the authorization_code, ensures the redirect_uri matches the original authorization request, and recomputes the PKCE challenge from the supplied <code>code_verifier</code>. If everything matches, it returns:</p>
+<pre class="language-http highlight"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>200</c-> <c- ne>OK</c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"access_token"</c-><c- p>:</c-> <c- u>"&lt;IDP_aggregator_token>"</c-><c- p>,</c->
+  <c- f>"refresh_token"</c-><c- p>:</c-> <c- u>"&lt;refresh_token>"</c-><c- p>,</c->
+  <c- f>"token_type"</c-><c- p>:</c-> <c- u>"Bearer"</c-><c- p>,</c->
+  <c- f>"expires_in"</c-><c- p>:</c-> <c- mi>3600</c->
+<c- p>}</c->
+</pre>
+   <p><strong>5.3 Aggregator finalizes the account and responds</strong></p>
+   <p>Using the issued tokens, the Aggregator creates the aggregator account linked to the user and returns the aggregator account details to the client.</p>
+<pre class="language-http highlight"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>201</c-> <c- ne>Created</c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"aggregator_id"</c-><c- p>:</c-> <c- u>"agg-7890"</c-><c- p>,</c->
+  <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c-><c- p>,</c->
+  <c- f>"webid"</c-><c- p>:</c-> <c- u>"https://aggregator.example/webids/agg-7890#id"</c-><c- p>,</c->
+  <c- f>"token_expires_in"</c-><c- p>:</c-> <c- mi>3600</c->
+<c- p>}</c->
+</pre>
+   <h4 class="heading settled" data-level="5.1.3" id="creation-client-credentials"><span class="secno">5.1.3. </span><span class="content"><code>client_credentials</code> Flow</span><a class="self-link" href="#creation-client-credentials"></a></h4>
+   <p>The <code>client_credentials</code> flow allows clients to create an aggregator by using the OAuth2 Client Credentials Flow to obtain an OIDC token from an Identity Provider (IDP) server.</p>
+   <p class="note" role="note"><span class="marker">NOTE:</span> This flow gives the aggregator complete access to the user’s resources and policies without user consent.
+This flow should only be used in trusted environments, or when a user creates an account for the aggregator.</p>
+   <p><strong>1. Client starts flow with Aggregator Server</strong></p>
+   <p>The client explicitly asks the Aggregator to act with full credentials for the provided WebID, indicating which UMA Authorization Server manages the protected resources.
+Because this flow hands the Aggregator long-lived credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.</p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"client_credentials"</c-><c- p>,</c->
+  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c-><c- p>,</c->
+  <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c-><c- p>,</c->
+  <c- f>"webid"</c-><c- p>:</c-> <c- u>"https://user.example/webid#me"</c-><c- p>,</c->
+  <c- f>"username"</c-><c- p>:</c-> <c- u>"alice@example.org"</c-><c- p>,</c->
+  <c- f>"password"</c-><c- p>:</c-> <c- u>"s3cr3t-password"</c->
+<c- p>}</c->
+</pre>
+   <p><strong>2. Aggregator Server performs credential bootstrap with the IDP</strong></p>
+   <p>The Aggregator uses the supplied username/password (plus the WebID context) to authenticate against the Identity Provider’s management or token endpoint, registering (or reusing) a confidential client that represents the Aggregator’s service account for that user. It then runs an OAuth 2.0 client_credentials grant using the obtained client_id/client_secret to mint an <code>IDP_aggregator_token</code> scoped to the user’s WebID.</p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/token</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Host</c-><c- o>:</c-> <c- l>idp.example</c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/x-www-form-urlencoded</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Basic &lt;aggregator-client-auth></c->
+
+<c- f>grant_type</c-><c- o>=</c-><c- s>client_credentials</c-><c- p>&amp;</c->
+<c- f>webid</c-><c- o>=</c-><c- s>https%3A%2F%2Fuser.example%2Fwebid%23me</c-><c- p>&amp;</c->
+<c- f>scope</c-><c- o>=</c-><c- s>openid%20webid%20offline_access</c->
+</pre>
+   <p>The IDP issues access and refresh tokens that grant the Aggregator the same capabilities as the user’s own credentials.</p>
+<pre class="language-http highlight"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>200</c-> <c- ne>OK</c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+
+<c- p>{</c->
+  <c- f>"access_token"</c-><c- p>:</c-> <c- u>"&lt;IDP_aggregator_token>"</c-><c- p>,</c->
+  <c- f>"refresh_token"</c-><c- p>:</c-> <c- u>"&lt;refresh_token>"</c-><c- p>,</c->
+  <c- f>"token_type"</c-><c- p>:</c-> <c- u>"Bearer"</c-><c- p>,</c->
+  <c- f>"expires_in"</c-><c- p>:</c-> <c- mi>7200</c->
+<c- p>}</c->
+</pre>
+   <p><strong>3. Aggregator Server creates (or updates) the aggregator account</strong></p>
+   <p>Armed with the <code>IDP_aggregator_token</code>, the Aggregator persists the account for the specified WebID, associates it with the requesting user, and returns the aggregator account metadata (aggregator identifier, token expiry, UMA AS linkage, etc.) to the client.</p>
+   <h4 class="heading settled" data-level="5.1.4" id="creation-device-code"><span class="secno">5.1.4. </span><span class="content"><code>device_code</code> Flow</span><a class="self-link" href="#creation-device-code"></a></h4>
+   <p class="note" role="note"><span class="marker">NOTE:</span> TODO This flow is not yet specified.</p>
+   <h3 class="heading settled" data-level="5.2" id="login-flow"><span class="secno">5.2. </span><span class="content">Login Flow</span><a class="self-link" href="#login-flow"></a></h3>
+   
+The login flow allows users to login to their existing aggregator account.
+This flow can be used in different scenarios:
+
+   <ul>
     <li data-md>
-     <p>client needs to login into an application (IPD_client_token)</p>
-    <li data-md>
-     <p>client goes to aggregator creation endpoint (with IPD_client_token)</p>
-     <ul>
-      <li data-md>
-       <p>registration_type="PKCE" (Determines the flow e.g. "create", "PKCE", "device", "client_credentials")</p>
-      <li data-md>
-       <p>action="create" (Deterrmines the action e.g. "create", "login", "delete")</p>
-       <p class="note" role="note"><span class="marker">NOTE:</span> do we want to support update (maybe to update the IDP or the AS_URL)?</p>
-      <li data-md>
-       <p>
-        authorization_server= 
-        <as_url> (the UMA authorization server of the aggregator should use)</as_url>
-       </p>
-      <li data-md>
-       <p>
-        account_id=
-        <account_id> (OPTIONAL: in case of login or delete)</account_id>
-       </p>
-     </ul>
-    <li data-md>
-     <p>The aggregator returns:</p>
-     <ul>
-      <li data-md>
-       <p>
-        client_id=
-        <client_id> (to be used in step 3 as client_id)</client_id>
-       </p>
-      <li data-md>
-       <p>
-        code_challenge=
-        <code_challenge> (to be used in step 3)</code_challenge>
-       </p>
-      <li data-md>
-       <p>code_challenge_method=S256 (to denote that SHA256 is used as the code challenge method)</p>
-      <li data-md>
-       <p>
-        OPTIONAL: state=
-        <state> (to be used in step 3 if the IDP requires state)</state>
-       </p>
-       <p class="issue" id="issue-495570d6"><a class="self-link" href="#issue-495570d6"></a> TODO How do we know if the IDP requires state?</p>
-       <p class="issue" id="issue-9e1fa78e"><a class="self-link" href="#issue-9e1fa78e"></a> TODO How does the aggregator register with the AS?</p>
-     </ul>
-    <li data-md>
-     <p>client goes to the authorization endpoint with:</p>
-     <ul>
-      <li data-md>
-       <p>response_type = "code" (Others MAY NOT be supported by the IDP Server)</p>
-      <li data-md>
-       <p>client_id =<client-id> (from from step 2, in case of SOLID this is a resource hosted by the aggregator)</client-id></p>
-      <li data-md>
-       <p>
-        redirect_uri=
-        <redirect_uri> (returns to the client)</redirect_uri>
-       </p>
-      <li data-md>
-       <p>scope=openid webid offline_access (As per [SOLID OIDC] openid is a scope that is needed to verify Alice’s identity, webid is required by the Solid OIDC specification to denote a WebID login, offline_access: Is required to get a refresh token.)</p>
-      <li data-md>
-       <p>
-        code_challenge=
-        <code_challenge> (from step 2)</code_challenge>
-       </p>
-      <li data-md>
-       <p>code_challenge_method=S256 (to denote that SHA256 is used as the code challenge method)</p>
-      <li data-md>
-       <p>
-        OPTIONAL: state=
-        <state> (from step 2, if provided)</state>
-       </p>
-     </ul>
-    <li data-md>
-     <p>IDP Server authenticates the user (e.g. via username/password)</p>
-    <li data-md>
-     <p>IDP Server gets user consent for the requested scopes and client_id</p>
-    <li data-md>
-     <p>IDP Server redirects to redirect_uri with authorization code</p>
-    <li data-md>
-     <p>client sends the authorization code to the aggregator creation endpoint with:</p>
-     <ul>
-      <li data-md>
-       <p>registration_type="PKCE" (Determines the flow e.g. "create", "PKCE", "device", "client_credentials")</p>
-      <li data-md>
-       <p>action="create" (Deterrmines the action e.g. "create", "login", "delete")</p>
-      <li data-md>
-       <p>
-        code=
-        <authorization_code> (from step 6)</authorization_code>
-       </p>
-      <li data-md>
-       <p>
-        redirect_uri=
-        <redirect_uri> (same as step 3)</redirect_uri>
-       </p>
-      <li data-md>
-       <p>
-        OPTIONAL: state=
-        <state> (from step 3, if provided)</state>
-       </p>
-     </ul>
-    <li data-md>
-     <p>Aggregator checks if the redirect_uri is the same as client_id of client application (from client authorization token in step 2)</p>
-    <li data-md>
-     <p>aggregator creation endpoint redeems the authorization code (IDP_aggregator_token) at the token endpoint with:</p>
-     <ul>
-      <li data-md>
-       <p>grant_type=authorization_code</p>
-      <li data-md>
-       <p>
-        code=
-        <authorization_code> (from step 6) (the IDP checks if the code was already used and unexpired)</authorization_code>
-       </p>
-      <li data-md>
-       <p>
-        redirect_uri=
-        <redirect_uri> (same as step 3) (the IDP checks if this matches the original redirect_uri)</redirect_uri>
-       </p>
-      <li data-md>
-       <p>
-        client_id=
-        <client_id> (from step 2) (the IDP checks if this matches the original client_id)</client_id>
-       </p>
-      <li data-md>
-       <p>
-        code_verifier=
-        <code_verifier> (from step 2) (the IDP checks if this matches the original code_challenge)</code_verifier>
-       </p>
-      <li data-md>
-       <p>
-        state=
-        <state> (from step 3, if provided) (the IDP checks if this matches the original state)</state>
-       </p>
-     </ul>
-    <li data-md>
-     <p>IDP Server returns:</p>
-     <ul>
-      <li data-md>
-       <p>IDP_aggregator_token (access token to access resources on behalf of the user)</p>
-      <li data-md>
-       <p>refresh_token (to get a new IDP_aggregator_token when the current one expires)</p>
-     </ul>
-    <li data-md>
-     <p>aggregator creation endpoint creates an aggregator account for the user with the IDP_aggregator_token and returns the aggregator account details</p>
-   </ol>
-   <p>Relogin flow (for when the the aggregator needs a new token):
-Same flow but in step 2 action="login"</p>
-   <p class="note" role="note"><span class="marker">NOTE:</span> This does mean that the user can only have one aggregator account per aggregator server.</p>
-   <p class="issue" id="issue-1d30de33"><a class="self-link" href="#issue-1d30de33"></a> TODO How to refresh the IDP_client_token? refresh tokens are not valid forever.</p>
-   <p class="issue" id="issue-2d274de9"><a class="self-link" href="#issue-2d274de9"></a> TODO How to delete an aggregator => delete endpoint with authentication</p>
-   <h2 class="heading settled" data-level="5" id="authentication-and-authorization"><span class="secno">5. </span><span class="content">Authentication and Authorization</span><a class="self-link" href="#authentication-and-authorization"></a></h2>
+     <p>Relogin flow (for when the the aggregator needs a new token)</p>
+   </ul>
+   <p>Same flow but in step 2 action="login"</p>
+   <h3 class="heading settled" data-level="5.3" id="delete-flow"><span class="secno">5.3. </span><span class="content">Delete Flow</span><a class="self-link" href="#delete-flow"></a></h3>
+   <h2 class="heading settled" data-level="6" id="authentication-and-authorization"><span class="secno">6. </span><span class="content">Authentication and Authorization</span><a class="self-link" href="#authentication-and-authorization"></a></h2>
    <p>The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate clients and authorize access to resources. The Aggregator Service authenticates the Client using OIDC and obtains access tokens for upstream Resource Servers.</p>
-   <h3 class="heading settled" data-level="5.1" id="client-flow"><span class="secno">5.1. </span><span class="content">Client Flow</span><a class="self-link" href="#client-flow"></a></h3>
+   <h3 class="heading settled" data-level="6.1" id="client-flow"><span class="secno">6.1. </span><span class="content">Client Flow</span><a class="self-link" href="#client-flow"></a></h3>
    <p>The Aggregator Service authenticates the Client with OIDC to obtain an access token for a Resource Server. The Aggregator Service relies on an OIDC access token linked to the Aggregator’s client identifier. The Aggregator SHOULD request the additional scope <code>urn:knows:uma:scopes:derivation-creation</code> from the Authorization Server of a Resource Server to enable the Aggregator functionality. The Authorization Server MUST return a <code>derivation_resource_id</code> together with the access token. The Aggregator MAY delete the <code>derivation_resource_id</code> when it is no longer needed. The Aggregator Service MUST update the resource registration at its Authorization Server to signal that it used this resource identifier to create derived resources.</p>
 <pre class="highlight" data-lang="json">{
   "resource_scopes": [ ... ],
@@ -2176,7 +2341,7 @@ Same flow but in step 2 action="login"</p>
 </pre>
    <p>The Authorization Server MUST invalidate previous access tokens (for example by marking them inactive) if they are linked to a derived resource whose identifier has been consumed.</p>
    <p class="note" role="note">TODO: clarify whether polling for a new <code>derivation_resource_id</code> is necessary, or whether the Aggregator can request the Authorization Server for a normal scope referencing the identifier or supply the identifier as a hint when requesting with a ticket.</p>
-   <h3 class="heading settled" data-level="5.2" id="resource-server-flow"><span class="secno">5.2. </span><span class="content">Resource Server Flow</span><a class="self-link" href="#resource-server-flow"></a></h3>
+   <h3 class="heading settled" data-level="6.2" id="resource-server-flow"><span class="secno">6.2. </span><span class="content">Resource Server Flow</span><a class="self-link" href="#resource-server-flow"></a></h3>
    <p>When a Client requests access to a derived resource from the Aggregator Service, a normal UMA flow follows. During ticket creation, the Aggregator validates that the <code>derivation_resource_id</code> used to create the derived resource is still valid. If it is invalid, the Aggregator MUST recreate the Aggregator Service. The Aggregator Authorization Server MAY respond with a <code>need_info</code> error requesting access tokens for upstream resources. In that case, the Authorization Server MUST add the <code>issuer</code>, <code>derivation_resource_id</code>, and <code>resource_scopes</code> entries to the <code>required_claims</code> array. The <code>issuer</code> identifies the upstream Authorization Server. The <code>derivation_resource_id</code> contains the identifier (or identifiers) provided when the Aggregator Service requested an upstream access token. The <code>resource_scopes</code> list enumerates the scopes required to access the upstream resource and MUST include a derivation scope.</p>
 <pre class="highlight" data-lang="json">{
   "error": "need_info",
@@ -2223,9 +2388,9 @@ Same flow but in step 2 action="login"</p>
 }
 </pre>
    <p>The Aggregator Authorization Server MUST verify the provided access tokens with the upstream Authorization Servers to confirm that the Client is authorized to access the upstream resources.</p>
-   <h2 class="heading settled" data-level="6" id="creating-an-aggregator-service"><span class="secno">6. </span><span class="content">Creating an Aggregator Service</span><a class="self-link" href="#creating-an-aggregator-service"></a></h2>
+   <h2 class="heading settled" data-level="7" id="creating-an-aggregator-service"><span class="secno">7. </span><span class="content">Creating an Aggregator Service</span><a class="self-link" href="#creating-an-aggregator-service"></a></h2>
    <p>This section will describe how to create an Aggregator Service in more detail.</p>
-   <h2 class="heading settled" data-level="7" id="using-an-aggregator-service"><span class="secno">7. </span><span class="content">Using an Aggregator Service</span><a class="self-link" href="#using-an-aggregator-service"></a></h2>
+   <h2 class="heading settled" data-level="8" id="using-an-aggregator-service"><span class="secno">8. </span><span class="content">Using an Aggregator Service</span><a class="self-link" href="#using-an-aggregator-service"></a></h2>
    <p>Guidance for using an Aggregator Service will follow as the specification matures.</p>
   </main>
   <div data-fill-with="conformance">
@@ -2400,9 +2565,6 @@ Same flow but in step 2 action="login"</p>
   <div style="counter-reset:issue">
    <div class="issue"> TODO where to add versioning info? <a class="issue-return" href="#issue-337a7eca" title="Jump to section">↵</a></div>
    <div class="issue"> TODO where to use DPOP tokens? <a class="issue-return" href="#issue-6ffefece" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO Authorization on the aggregator creation endpoint is defined by the implementation. <a class="issue-return" href="#issue-10becf76" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO How do we know if the IDP requires state? <a class="issue-return" href="#issue-495570d6" title="Jump to section">↵</a></div>
    <div class="issue"> TODO How does the aggregator register with the AS? <a class="issue-return" href="#issue-9e1fa78e" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO How to refresh the IDP_client_token? refresh tokens are not valid forever. <a class="issue-return" href="#issue-1d30de33" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO How to delete an aggregator => delete endpoint with authentication <a class="issue-return" href="#issue-2d274de9" title="Jump to section">↵</a></div>
+   <div class="issue"> TODO should this be a login action instead of create? <a class="issue-return" href="#issue-0ee530b4" title="Jump to section">↵</a></div>
   </div>
