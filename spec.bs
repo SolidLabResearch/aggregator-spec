@@ -23,7 +23,7 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 
 <pre class="include" path="sections/public-metadata.bs"></pre>
 
-<pre class="include" path="sections/aggregator-creation.bs"></pre>
+<pre class="include" path="sections/aggregator-registration.bs"></pre>
 
 <pre class="include" path="sections/authentication-and-authorization.bs"></pre>
 

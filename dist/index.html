@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="_ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_" rel="canonical">
-  <meta content="99dcc26926f004c63d454c841ae7177054fb8279" name="revision">
+  <meta content="babe52d5fd03dc0a5814b356b719950671a84a2d" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2016,7 +2016,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Aggregator Specification</h1>
    <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2025-12-08">8 December 2025</time></span></h2>
+    <time class="dt-updated" datetime="2025-12-09">9 December 2025</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2032,7 +2032,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 8 December 2025,
+In addition, as of 9 December 2025,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2053,18 +2053,18 @@ Parts of this work may be from another specification document.  If so, those par
     <li><a href="#add-a-link-to-other-specs-used-webid-oidc-uma"><span class="secno">3</span> <span class="content">add a link to other specs used: WebID, OIDC, UMA</span></a>
     <li><a href="#public-metadata"><span class="secno">4</span> <span class="content">Public Metadata</span></a>
     <li>
-     <a href="#aggregator-creation"><span class="secno">5</span> <span class="content">Aggregator Maintenance</span></a>
+     <a href="#aggregator-registration"><span class="secno">5</span> <span class="content">Aggregator Registration</span></a>
      <ol class="toc">
       <li>
-       <a href="#aggregator-creation①"><span class="secno">5.1</span> <span class="content">Aggregator Creation</span></a>
+       <a href="#aggregator-creation"><span class="secno">5.1</span> <span class="content">Aggregator Creation</span></a>
        <ol class="toc">
         <li><a href="#creation-provision"><span class="secno">5.1.1</span> <span class="content"><code>provision</code> Flow</span></a>
         <li><a href="#creation-authorization"><span class="secno">5.1.2</span> <span class="content"><code>authorization_code</code> Flow</span></a>
         <li><a href="#creation-client-credentials"><span class="secno">5.1.3</span> <span class="content"><code>client_credentials</code> Flow</span></a>
         <li><a href="#creation-device-code"><span class="secno">5.1.4</span> <span class="content"><code>device_code</code> Flow</span></a>
        </ol>
-      <li><a href="#login-flow"><span class="secno">5.2</span> <span class="content">Login Flow</span></a>
-      <li><a href="#delete-flow"><span class="secno">5.3</span> <span class="content">Delete Flow</span></a>
+      <li><a href="#aggregator-login"><span class="secno">5.2</span> <span class="content">Aggregator Login</span></a>
+      <li><a href="#aggregator-deletion"><span class="secno">5.3</span> <span class="content">Aggregator Deletion</span></a>
      </ol>
     <li>
      <a href="#authentication-and-authorization"><span class="secno">6</span> <span class="content">Authentication and Authorization</span></a>
@@ -2130,7 +2130,7 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
       <li data-md>
      </ul>
    </ul>
-   <h2 class="heading settled" data-level="5" id="aggregator-creation"><span class="secno">5. </span><span class="content">Aggregator Maintenance</span><a class="self-link" href="#aggregator-creation"></a></h2>
+   <h2 class="heading settled" data-level="5" id="aggregator-registration"><span class="secno">5. </span><span class="content">Aggregator Registration</span><a class="self-link" href="#aggregator-registration"></a></h2>
    
 This section describes how aggregators are managed on the Aggregator Server level.
 The authorization for these endpoints is defined by the implementation and up to the Aggregator provider to decide.
@@ -2138,7 +2138,7 @@ The user requires authenticated requests to manage their aggregator accounts on 
 The tokens used in these requests (IPD_client_token) prove the identity of the user and the client (ClientID) used to access the aggregator.
 
 
-   <h3 class="heading settled" data-level="5.1" id="aggregator-creation①"><span class="secno">5.1. </span><span class="content">Aggregator Creation</span><a class="self-link" href="#aggregator-creation①"></a></h3>
+   <h3 class="heading settled" data-level="5.1" id="aggregator-creation"><span class="secno">5.1. </span><span class="content">Aggregator Creation</span><a class="self-link" href="#aggregator-creation"></a></h3>
    
 This section describes how clients can create an Aggregator.
 There exists different flows to create an aggregator depending on the registration type.
@@ -2146,38 +2146,37 @@ There exists different flows to create an aggregator depending on the registrati
 
    <p class="issue" id="issue-337a7eca"><a class="self-link" href="#issue-337a7eca"></a> TODO where to add versioning info?</p>
    <p class="issue" id="issue-6ffefece"><a class="self-link" href="#issue-6ffefece"></a> TODO where to use DPOP tokens?</p>
+   <p class="issue" id="issue-514cfc61"><a class="self-link" href="#issue-514cfc61"></a> TODO what about HTTP error handling?</p>
    <h4 class="heading settled" data-level="5.1.1" id="creation-provision"><span class="secno">5.1.1. </span><span class="content"><code>provision</code> Flow</span><a class="self-link" href="#creation-provision"></a></h4>
-   <p>The <code>provision</code> flow allows clients to ask the Aggregator Server to create its own identity.
+   <p>The <code>provision</code> flow allows clients to create an Aggregator with its own identity.
 This lets resource owners target access-control policies at the aggregator’s dedicated WebID instead of having the aggregator impersonate another user’s WebID.</p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
-   <p>The client calls the maintenance endpoint authenticated with its <code>IPD_client_token</code>.</p>
-<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+   <p>The client calls the registration endpoint authenticated with its <code>IPD_client_token</code>.</p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
   <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"provision"</c-><c- p>,</c->
-  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c->
 <c- p>}</c->
 </pre>
    <p><strong>2. Aggregator Server provisions a WebID and registers it at the IDP</strong></p>
    <p>The Aggregator Server creates a WebID document and registers a new account with an IDP for that WebID.
 It also registers (or reuses) a confidential client that represents the aggregator itself and stores the associated client_id/client_secret.
 Using those credentials the Aggregator Server performs a client credentials grant to obtain the <code>IDP_aggregator_token</code> (and accompanying refresh token) that authorize the aggregator acting under its own WebID.</p>
-   <p><strong>3. Aggregator Server creates an aggregator account for the user</strong></p>
-   <p>Using the obtained tokens, the Aggregator Server persists an aggregator account linked to the user, returns the aggregator identifier, newly created WebID, Solid pod location, and any bootstrap credentials the client needs to interact with the managed identity.</p>
+   <p><strong>3. Aggregator Server creates an aggregator</strong></p>
+   <p>Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator metadata and newly created WebID.</p>
    <h4 class="heading settled" data-level="5.1.2" id="creation-authorization"><span class="secno">5.1.2. </span><span class="content"><code>authorization_code</code> Flow</span><a class="self-link" href="#creation-authorization"></a></h4>
    <p>The <code>authorization_code</code> flow allows clients to create an aggregator that acts on behalf of the end-user, but with a token that is scoped specifically for the aggregator.</p>
-   <p><img alt="PlantUML Diagram" src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4ZyTAaGeg8B6w92Z96nhwbLrwuSfuYDWGqXyISafYv8F0HlmnFq4JWxeNL034diy_VTVVUTSrHwxdmrqwoSAZFdZi-0tbu9DUV6Z_orHd0eF3U5HiQICpZM2kd3I-WqozNou_7hvdwrVFhijA3d9Re8Z8lLykskVTuP58N3WdlhO8Hk4K7lhvt0sHorAJ7L1LwU30dxV1knSTk6DT9Ir60-hwD3AzhWa-4fmLuU8emsZ3NqxSD4HnzsCXW5uu1lT0k7t2jhMDBB0V6Yfa3PWI4w7DDZ13PI4-msOUjg0RmBP-WhPq34KAva5uILc8i9rnfDWLsWsNbC9PBYFkncH9Kg30sy3J7Gjb26XLKG58phmru6WyfFYAa4fG5k91Km9GKYCb6pdsIyKduIXS3Mt_gfHRritK6DTasAl79gJVxbLJgPaA9jsMQKqefg5fGQIz9jk2zfxGNNIeQcqffPo-p6h5uqMYBEeiowyr-TK2pVp3dtTeeczZDsM4xgFVjlahrixyU7vAvm8Mn5hKZqNEcI7Q6Hz1D-0m??"></p>
+   <p><img alt="PlantUML Diagram" src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4YbTAaGeg9BDqI562DZNrCBrwuSfuYDWGqXyISafYv8F0HlmnFq4JYxeNL034diy_VTVVUTSrHwxdmrqwoyL6RE7Py1lRqIQiwD7_jhZU1GU6uAZOmbPt2i5TA7bz2gbwlbn-FNpVrg-VJPQa3FIdGH61UhvTjTyxmrA0g71VVMmHZT8eBUNrk1iprgKcAgSxmO3GdxV1knSTk4rT9Ir60-NqU7LZJ1e-49mLuU8emsZDNqtSD4Hnyw6Oo3SS2tkeL3xfKrBEdbW7XHKw1qO8WE9_GOWRNK1BjBs7Mr0Dw3K_ILCo1YA5Uo3S9ApCMKQuscm3RGx3oc4abn7_OoeaeLXWRUXXXeMoZ3mYe82iRrePl1eF9JOYf1QO0RIGLCIO68JENi9oclb9z69R3pLq3gKI_RjB16kpf5NZcr8VyoAnrDID7qR3jBQKKr2rAD9UqsN9Yqze9h9KDNQSsiuNRjLYywBH5dKUQczJGRnVBje7DlBz74VYOEo-bwp_uRPI_h_lYGN1OkXAse5OcUArso8pII_i9l"></p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
    <p>The client begins by asking the Aggregator to bootstrap an authorization_code registration and indicate which authorization server should be used. The Aggregator responds with the public parameters required for the OIDC authorization request.</p>
-<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
   <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
-  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c-><c- p>,</c->
   <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c->
 <c- p>}</c->
 </pre>
@@ -2217,20 +2216,18 @@ The redirect_uri is under control of the client application and MUST already be 
 <c- e>Location</c-><c- o>:</c-> <c- l>https://app.example/callback?code=SplxlOBeZQQYbYS6WxSbIA&amp;state=1eb7c8f5...</c->
 </pre>
    <p><strong>5. Client posts the authorization code back to the Aggregator</strong></p>
-   <p>The client sends the code, redirect URI, and echoed state to the maintenance endpoint so the Aggregator can finish the flow.</p>
-<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+   <p>The client sends the code, redirect URI, and echoed state to the registration endpoint so the Aggregator can finish the flow.</p>
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
   <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
-  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c-><c- p>,</c->
   <c- f>"code"</c-><c- p>:</c-> <c- u>"SplxlOBeZQQYbYS6WxSbIA"</c-><c- p>,</c->
   <c- f>"redirect_uri"</c-><c- p>:</c-> <c- u>"https://app.example/callback"</c-><c- p>,</c->
   <c- f>"state"</c-><c- p>:</c-> <c- u>"1eb7c8f5..."</c->
 <c- p>}</c->
 </pre>
-   <p class="issue" id="issue-0ee530b4"><a class="self-link" href="#issue-0ee530b4"></a> TODO should this be a login action instead of create?</p>
    <p><strong>5.1 Aggregator dereferences the client metadata</strong></p>
    <p>The Aggregator dereferences the <code>client_id</code> JSON-LD document to confirm the registered redirect URIs, contact metadata, and other security requirements, then verifies that the supplied redirect_uri belongs to that set and that the returned <code>state</code> matches the stored nonce.</p>
    <p><strong>5.2 Aggregator redeems the authorization code at the IDP token endpoint</strong></p>
@@ -2275,13 +2272,12 @@ This flow should only be used in trusted environments, or when a user creates an
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
    <p>The client explicitly asks the Aggregator to act with full credentials for the provided WebID, indicating which UMA Authorization Server manages the protected resources.
 Because this flow hands the Aggregator long-lived credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.</p>
-<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/maintenance</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
   <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"client_credentials"</c-><c- p>,</c->
-  <c- f>"action"</c-><c- p>:</c-> <c- u>"create"</c-><c- p>,</c->
   <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c-><c- p>,</c->
   <c- f>"webid"</c-><c- p>:</c-> <c- u>"https://user.example/webid#me"</c-><c- p>,</c->
   <c- f>"username"</c-><c- p>:</c-> <c- u>"alice@example.org"</c-><c- p>,</c->
@@ -2314,17 +2310,36 @@ Because this flow hands the Aggregator long-lived credentials, it should only be
    <p>Armed with the <code>IDP_aggregator_token</code>, the Aggregator persists the account for the specified WebID, associates it with the requesting user, and returns the aggregator account metadata (aggregator identifier, token expiry, UMA AS linkage, etc.) to the client.</p>
    <h4 class="heading settled" data-level="5.1.4" id="creation-device-code"><span class="secno">5.1.4. </span><span class="content"><code>device_code</code> Flow</span><a class="self-link" href="#creation-device-code"></a></h4>
    <p class="note" role="note"><span class="marker">NOTE:</span> TODO This flow is not yet specified.</p>
-   <h3 class="heading settled" data-level="5.2" id="login-flow"><span class="secno">5.2. </span><span class="content">Login Flow</span><a class="self-link" href="#login-flow"></a></h3>
+   <h3 class="heading settled" data-level="5.2" id="aggregator-login"><span class="secno">5.2. </span><span class="content">Aggregator Login</span><a class="self-link" href="#aggregator-login"></a></h3>
    
-The login flow allows users to login to their existing aggregator account.
-This flow can be used in different scenarios:
+The login flow allows users to update the tokens of their existing aggregator.
+This flow can be used to refresh the tokens in case they have expired.
+The flow is the same as with creating an aggregator but a aggregator_id parameter is provided in step 1.
+The exact steps depend on the registration_type used when creating the aggregator.
+For example for the <code>authorization_code</code> flow:
 
-   <ul>
-    <li data-md>
-     <p>Relogin flow (for when the the aggregator needs a new token)</p>
-   </ul>
-   <p>Same flow but in step 2 action="login"</p>
-   <h3 class="heading settled" data-level="5.3" id="delete-flow"><span class="secno">5.3. </span><span class="content">Delete Flow</span><a class="self-link" href="#delete-flow"></a></h3>
+
+<pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+{
+    <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
+    <c- f>"aggregator_id"</c-><c- p>:</c-> <c- u>"agg-7890"</c->
+<c- p>}</c->
+</pre>
+   <h3 class="heading settled" data-level="5.3" id="aggregator-deletion"><span class="secno">5.3. </span><span class="content">Aggregator Deletion</span><a class="self-link" href="#aggregator-deletion"></a></h3>
+   
+The delete flow allows users to delete their existing aggregator.
+This flow is done by doing a DELETE request to the registration endpoint with the aggregator_id parameter.
+
+
+<pre class="language-http highlight"><c- nf>DELETE</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IPD_client_token></c->
+<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
+{
+    <c- f>"aggregator_id"</c-><c- p>:</c-> <c- u>"agg-7890"</c->
+<c- p>}</c->
+</pre>
    <h2 class="heading settled" data-level="6" id="authentication-and-authorization"><span class="secno">6. </span><span class="content">Authentication and Authorization</span><a class="self-link" href="#authentication-and-authorization"></a></h2>
    <p>The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate clients and authorize access to resources. The Aggregator Service authenticates the Client using OIDC and obtains access tokens for upstream Resource Servers.</p>
    <h3 class="heading settled" data-level="6.1" id="client-flow"><span class="secno">6.1. </span><span class="content">Client Flow</span><a class="self-link" href="#client-flow"></a></h3>
@@ -2565,6 +2580,6 @@ This flow can be used in different scenarios:
   <div style="counter-reset:issue">
    <div class="issue"> TODO where to add versioning info? <a class="issue-return" href="#issue-337a7eca" title="Jump to section">↵</a></div>
    <div class="issue"> TODO where to use DPOP tokens? <a class="issue-return" href="#issue-6ffefece" title="Jump to section">↵</a></div>
+   <div class="issue"> TODO what about HTTP error handling? <a class="issue-return" href="#issue-514cfc61" title="Jump to section">↵</a></div>
    <div class="issue"> TODO How does the aggregator register with the AS? <a class="issue-return" href="#issue-9e1fa78e" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO should this be a login action instead of create? <a class="issue-return" href="#issue-0ee530b4" title="Jump to section">↵</a></div>
   </div>

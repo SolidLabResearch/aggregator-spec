@@ -18,7 +18,7 @@ ISSUE: TODO what about HTTP error handling?
 
 ### `provision` Flow ### {#creation-provision}
 
-The `provision` flow allows clients to ask the Aggregator Server to create its own identity.
+The `provision` flow allows clients to create an Aggregator with its own identity.
 This lets resource owners target access-control policies at the aggregator’s dedicated WebID instead of having the aggregator impersonate another user’s WebID.
 
 **1. Client starts flow with Aggregator Server**
@@ -38,12 +38,14 @@ Content-Type: application/json
 **2. Aggregator Server provisions a WebID and registers it at the IDP**
 
 The Aggregator Server creates a WebID document and registers a new account with an IDP for that WebID.
-It also registers (or reuses) a confidential client that represents the aggregator itself and stores the associated client_id/client_secret.
-Using those credentials the Aggregator Server performs a client credentials grant to obtain the `IDP_aggregator_token` (and accompanying refresh token) that authorize the aggregator acting under its own WebID.
+Using the credentials of this new account the Aggregator Server CAN perform a client credentials flow to obtain the `IDP_aggregator_token` (and accompanying refresh token) to authorize the aggregator acting under its own WebID.
 
-**3. Aggregator Server creates an aggregator account for the user**
+ISSUE: TODO should this WebID specify that it is an aggregator/agent?
 
-Using the obtained tokens, the Aggregator Server persists an aggregator account linked to the user, returns the aggregator identifier, newly created WebID, Solid pod location, and any bootstrap credentials the client needs to interact with the managed identity.
+**3. Aggregator Server creates an aggregator**
+
+Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator metadata and newly created WebID.
+The aggregator CAN NOT give these tokens or client credentials to the client.
 
 
 ### `authorization_code` Flow ### {#creation-authorization}
@@ -67,7 +69,7 @@ Aggregator --> Client: 1.2 Return client_id, code_challenge, state
 
 Client -> IDP: 2. Redirect to IDP login
 IDP <-> User: 3. Authenticate and consent
-IDP -> Client: 4. Redirect with code + state
+IDP --> Client: 4. Redirect with code + state
 
 Client -> Aggregator: 5. Return code + redirect_uri + state
 Aggregator <-> AppClientDoc: 5.1 Dereference Client ID document

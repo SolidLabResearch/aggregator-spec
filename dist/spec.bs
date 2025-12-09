@@ -60,7 +60,7 @@ Public Metadata {#public-metadata}
 
 
 
-Aggregator Maintenance {#aggregator-creation}
+Aggregator Registration {#aggregator-registration}
 =====================
 This section describes how aggregators are managed on the Aggregator Server level.
 The authorization for these endpoints is defined by the implementation and up to the Aggregator provider to decide.
@@ -76,24 +76,24 @@ ISSUE: TODO where to add versioning info?
 
 ISSUE: TODO where to use DPOP tokens?
 
+ISSUE: TODO what about HTTP error handling?
 
 ### `provision` Flow ### {#creation-provision}
 
-The `provision` flow allows clients to ask the Aggregator Server to create its own identity.
+The `provision` flow allows clients to create an Aggregator with its own identity.
 This lets resource owners target access-control policies at the aggregator’s dedicated WebID instead of having the aggregator impersonate another user’s WebID.
 
 **1. Client starts flow with Aggregator Server**
 
-The client calls the maintenance endpoint authenticated with its `IPD_client_token`.
+The client calls the registration endpoint authenticated with its `IPD_client_token`.
 
 ```http
-POST /maintenance HTTP/1.1
+POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
 Content-Type: application/json
 
 {
   "registration_type": "provision",
-  "action": "create"
 }
 ```
 
@@ -103,29 +103,28 @@ The Aggregator Server creates a WebID document and registers a new account with 
 It also registers (or reuses) a confidential client that represents the aggregator itself and stores the associated client_id/client_secret.
 Using those credentials the Aggregator Server performs a client credentials grant to obtain the `IDP_aggregator_token` (and accompanying refresh token) that authorize the aggregator acting under its own WebID.
 
-**3. Aggregator Server creates an aggregator account for the user**
+**3. Aggregator Server creates an aggregator**
 
-Using the obtained tokens, the Aggregator Server persists an aggregator account linked to the user, returns the aggregator identifier, newly created WebID, Solid pod location, and any bootstrap credentials the client needs to interact with the managed identity.
+Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator metadata and newly created WebID.
 
 
 ### `authorization_code` Flow ### {#creation-authorization}
 
 The `authorization_code` flow allows clients to create an aggregator that acts on behalf of the end-user, but with a token that is scoped specifically for the aggregator.
 
-<img src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4ZyTAaGeg8B6w92Z96nhwbLrwuSfuYDWGqXyISafYv8F0HlmnFq4JWxeNL034diy_VTVVUTSrHwxdmrqwoSAZFdZi-0tbu9DUV6Z_orHd0eF3U5HiQICpZM2kd3I-WqozNou_7hvdwrVFhijA3d9Re8Z8lLykskVTuP58N3WdlhO8Hk4K7lhvt0sHorAJ7L1LwU30dxV1knSTk6DT9Ir60-hwD3AzhWa-4fmLuU8emsZ3NqxSD4HnzsCXW5uu1lT0k7t2jhMDBB0V6Yfa3PWI4w7DDZ13PI4-msOUjg0RmBP-WhPq34KAva5uILc8i9rnfDWLsWsNbC9PBYFkncH9Kg30sy3J7Gjb26XLKG58phmru6WyfFYAa4fG5k91Km9GKYCb6pdsIyKduIXS3Mt_gfHRritK6DTasAl79gJVxbLJgPaA9jsMQKqefg5fGQIz9jk2zfxGNNIeQcqffPo-p6h5uqMYBEeiowyr-TK2pVp3dtTeeczZDsM4xgFVjlahrixyU7vAvm8Mn5hKZqNEcI7Q6Hz1D-0m??" alt="PlantUML Diagram" no-autosize>
+<img src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4YbTAaGeg9BDqI562DZNrCBrwuSfuYDWGqXyISafYv8F0HlmnFq4JYxeNL034diy_VTVVUTSrHwxdmrqwoyL6RE7Py1lRqIQiwD7_jhZU1GU6uAZOmbPt2i5TA7bz2gbwlbn-FNpVrg-VJPQa3FIdGH61UhvTjTyxmrA0g71VVMmHZT8eBUNrk1iprgKcAgSxmO3GdxV1knSTk4rT9Ir60-NqU7LZJ1e-49mLuU8emsZDNqtSD4Hnyw6Oo3SS2tkeL3xfKrBEdbW7XHKw1qO8WE9_GOWRNK1BjBs7Mr0Dw3K_ILCo1YA5Uo3S9ApCMKQuscm3RGx3oc4abn7_OoeaeLXWRUXXXeMoZ3mYe82iRrePl1eF9JOYf1QO0RIGLCIO68JENi9oclb9z69R3pLq3gKI_RjB16kpf5NZcr8VyoAnrDID7qR3jBQKKr2rAD9UqsN9Yqze9h9KDNQSsiuNRjLYywBH5dKUQczJGRnVBje7DlBz74VYOEo-bwp_uRPI_h_lYGN1OkXAse5OcUArso8pII_i9l" alt="PlantUML Diagram" no-autosize>
 
 **1. Client starts flow with Aggregator Server**
 
 The client begins by asking the Aggregator to bootstrap an authorization_code registration and indicate which authorization server should be used. The Aggregator responds with the public parameters required for the OIDC authorization request.
 
 ```http
-POST /maintenance HTTP/1.1
+POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
 Content-Type: application/json
 
 {
   "registration_type": "authorization_code",
-  "action": "create",
   "authorization_server": "https://as.example"
 }
 ```
@@ -184,23 +183,20 @@ Location: https://app.example/callback?code=SplxlOBeZQQYbYS6WxSbIA&state=1eb7c8f
 
 **5. Client posts the authorization code back to the Aggregator**
 
-The client sends the code, redirect URI, and echoed state to the maintenance endpoint so the Aggregator can finish the flow.
+The client sends the code, redirect URI, and echoed state to the registration endpoint so the Aggregator can finish the flow.
 
 ```http
-POST /maintenance HTTP/1.1
+POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
 Content-Type: application/json
 
 {
   "registration_type": "authorization_code",
-  "action": "create",
   "code": "SplxlOBeZQQYbYS6WxSbIA",
   "redirect_uri": "https://app.example/callback",
   "state": "1eb7c8f5..."
 }
 ```
-
-ISSUE: TODO should this be a login action instead of create?
 
 **5.1 Aggregator dereferences the client metadata**
 
@@ -265,13 +261,12 @@ The client explicitly asks the Aggregator to act with full credentials for the p
 Because this flow hands the Aggregator long-lived credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.
 
 ```http
-POST /maintenance HTTP/1.1
+POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
 Content-Type: application/json
 
 {
   "registration_type": "client_credentials",
-  "action": "create",
   "authorization_server": "https://as.example",
   "webid": "https://user.example/webid#me",
   "username": "alice@example.org",
@@ -317,17 +312,37 @@ Armed with the `IDP_aggregator_token`, the Aggregator persists the account for t
 
 NOTE: TODO This flow is not yet specified.
 
-Login Flow {#login-flow}
+Aggregator Login {#aggregator-login}
 -------------------
-The login flow allows users to login to their existing aggregator account.
-This flow can be used in different scenarios:
-- Relogin flow (for when the the aggregator needs a new token)
+The login flow allows users to update the tokens of their existing aggregator.
+This flow can be used to refresh the tokens in case they have expired.
+The flow is the same as with creating an aggregator but a aggregator_id parameter is provided in step 1.
+The exact steps depend on the registration_type used when creating the aggregator.
+For example for the `authorization_code` flow:
 
-Same flow but in step 2 action="login"
+```http
+POST /registration HTTP/1.1
+Authorization: Bearer <IPD_client_token>
+Content-Type: application/json
+{
+    "registration_type": "authorization_code",
+    "aggregator_id": "agg-7890"
+}
+```
 
-
-Delete Flow {#delete-flow}
+Aggregator Deletion {#aggregator-deletion}
 -------------------
+The delete flow allows users to delete their existing aggregator.
+This flow is done by doing a DELETE request to the registration endpoint with the aggregator_id parameter.
+
+```http
+DELETE /registration HTTP/1.1
+Authorization: Bearer <IPD_client_token>
+Content-Type: application/json
+{
+    "aggregator_id": "agg-7890"
+}
+```
 
 
 
