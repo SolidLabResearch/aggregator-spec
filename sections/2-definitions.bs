@@ -1,7 +1,7 @@
 Definitions {#definitions}
 ==========================
 
-# add a link to other specs used: WebID, OIDC, UMA
+add a link to other specs used: WebID, OIDC, UMA
 
 - IDP Server (IDPS): An Identity Provider server that supports OIDC and issues OIDC tokens.
 
@@ -12,11 +12,12 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
 - Authorization Server (AS): An OAuth2 Authorization Server that supports UMA and issues RPT tokens.
 
 - Resource Server (RS): An OAuth2 Resource Server that protects resources and accepts RPT tokens issued from a Authorization Server.
-- Aggregator Server
-- Aggregator
-- Aggregator Service
-- Client
-- ClientID
+- Aggregator Server: A server that hosts multiple Aggregators.
+- Aggregator: A service that manages multiple Aggregator Services and allows user to create and use them.
+- Aggregator Service: A service that aggregates data from multiple Resource Servers on behalf of a user.
+- Client: An application that interacts with the Aggregator Service.
+- ClientID: A JSON-LD document that describes a Client. It is dereferenceable via a URL.
+- User: A person who owns resources on Resource Servers and uses the Client and Aggregator.
 - OIDC token
 - Authorization server
 - Resource server

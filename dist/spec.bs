@@ -28,7 +28,7 @@ The introduction for the Aggregator specification will be expanded in future rev
 Definitions {#definitions}
 ==========================
 
-# add a link to other specs used: WebID, OIDC, UMA
+add a link to other specs used: WebID, OIDC, UMA
 
 - IDP Server (IDPS): An Identity Provider server that supports OIDC and issues OIDC tokens.
 
@@ -39,11 +39,12 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
 - Authorization Server (AS): An OAuth2 Authorization Server that supports UMA and issues RPT tokens.
 
 - Resource Server (RS): An OAuth2 Resource Server that protects resources and accepts RPT tokens issued from a Authorization Server.
-- Aggregator Server
-- Aggregator
-- Aggregator Service
-- Client
-- ClientID
+- Aggregator Server: A server that hosts multiple Aggregators.
+- Aggregator: A service that manages multiple Aggregator Services and allows user to create and use them.
+- Aggregator Service: A service that aggregates data from multiple Resource Servers on behalf of a user.
+- Client: An application that interacts with the Aggregator Service.
+- ClientID: A JSON-LD document that describes a Client. It is dereferenceable via a URL.
+- User: A person who owns resources on Resource Servers and uses the Client and Aggregator.
 - OIDC token
 - Authorization server
 - Resource server
@@ -56,11 +57,10 @@ Public Metadata {#public-metadata}
 - Well-known endpoint
 - Creation endpoint
 - `client.json` endpoint that exposes the client identifier used for authorization
-    -
 
 
 
-Aggregator Registration {#aggregator-registration}
+Registration Endpoint {#registration-endpoint}
 =====================
 This section describes how aggregators are managed on the Aggregator Server level.
 The authorization for these endpoints is defined by the implementation and up to the Aggregator provider to decide.
@@ -100,12 +100,14 @@ Content-Type: application/json
 **2. Aggregator Server provisions a WebID and registers it at the IDP**
 
 The Aggregator Server creates a WebID document and registers a new account with an IDP for that WebID.
-It also registers (or reuses) a confidential client that represents the aggregator itself and stores the associated client_id/client_secret.
-Using those credentials the Aggregator Server performs a client credentials grant to obtain the `IDP_aggregator_token` (and accompanying refresh token) that authorize the aggregator acting under its own WebID.
+Using the credentials of this new account the Aggregator Server CAN perform a client credentials flow to obtain the `IDP_aggregator_token` (and accompanying refresh token) to authorize the aggregator acting under its own WebID.
+
+ISSUE: TODO should this WebID specify that it is an aggregator/agent?
 
 **3. Aggregator Server creates an aggregator**
 
 Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator metadata and newly created WebID.
+The aggregator CAN NOT give these tokens or client credentials to the client.
 
 
 ### `authorization_code` Flow ### {#creation-authorization}
@@ -349,14 +351,20 @@ Content-Type: application/json
 Authentication and Authorization {#authentication-and-authorization}
 ====================================================================
 
-The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate clients and authorize access to resources. The Aggregator Service authenticates the Client using OIDC and obtains access tokens for upstream Resource Servers.
+The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate clients and authorize access to resources.
+The Aggregator Service authenticates the Client using OIDC and obtains access tokens for upstream Resource Servers.
 
 Client Flow {#client-flow}
 --------------------------
 
-The Aggregator Service authenticates the Client with OIDC to obtain an access token for a Resource Server. The Aggregator Service relies on an OIDC access token linked to the Aggregator's client identifier. The Aggregator SHOULD request the additional scope `urn:knows:uma:scopes:derivation-creation` from the Authorization Server of a Resource Server to enable the Aggregator functionality. The Authorization Server MUST return a `derivation_resource_id` together with the access token. The Aggregator MAY delete the `derivation_resource_id` when it is no longer needed. The Aggregator Service MUST update the resource registration at its Authorization Server to signal that it used this resource identifier to create derived resources.
+The Aggregator Service authenticates the Client with OIDC to obtain an access token for a Resource Server.
+The Aggregator Service relies on an OIDC access token linked to the Aggregator's client identifier.
+The Aggregator SHOULD request the additional scope `urn:knows:uma:scopes:derivation-creation` from the Authorization Server of a Resource Server to enable the Aggregator functionality.
+The Authorization Server MUST return a `derivation_resource_id` together with the access token.
+The Aggregator MAY delete the `derivation_resource_id` when it is no longer needed.
+The Aggregator Service MUST update the resource registration at its Authorization Server to signal that it used this resource identifier to create derived resources.
 
-<pre class="highlight" data-lang="json">
+```json
 {
   "resource_scopes": [ ... ],
   "resource_relations": {
@@ -366,18 +374,25 @@ The Aggregator Service authenticates the Client with OIDC to obtain an access to
     }
   }
 }
-</pre>
+```
 
 The Authorization Server MUST invalidate previous access tokens (for example by marking them inactive) if they are linked to a derived resource whose identifier has been consumed.
 
-<p class="note">TODO: clarify whether polling for a new <code>derivation_resource_id</code> is necessary, or whether the Aggregator can request the Authorization Server for a normal scope referencing the identifier or supply the identifier as a hint when requesting with a ticket.</p>
+TODO: clarify whether polling for a new `derivation_resource_id` is necessary, or whether the Aggregator can request the Authorization Server for a normal scope referencing the identifier or supply the identifier as a hint when requesting with a ticket.
 
 Resource Server Flow {#resource-server-flow}
 -------------------------------------------
 
-When a Client requests access to a derived resource from the Aggregator Service, a normal UMA flow follows. During ticket creation, the Aggregator validates that the `derivation_resource_id` used to create the derived resource is still valid. If it is invalid, the Aggregator MUST recreate the Aggregator Service. The Aggregator Authorization Server MAY respond with a `need_info` error requesting access tokens for upstream resources. In that case, the Authorization Server MUST add the `issuer`, `derivation_resource_id`, and `resource_scopes` entries to the `required_claims` array. The `issuer` identifies the upstream Authorization Server. The `derivation_resource_id` contains the identifier (or identifiers) provided when the Aggregator Service requested an upstream access token. The `resource_scopes` list enumerates the scopes required to access the upstream resource and MUST include a derivation scope.
+When a Client requests access to a derived resource from the Aggregator Service, a normal UMA flow follows. 
+During ticket creation, the Aggregator validates that the `derivation_resource_id` used to create the derived resource is still valid.
+If it is invalid, the Aggregator MUST recreate the Aggregator Service.
+The Aggregator Authorization Server MAY respond with a `need_info` error requesting access tokens for upstream resources.
+In that case, the Authorization Server MUST add the `issuer`, `derivation_resource_id`, and `resource_scopes` entries to the `required_claims` array.
+The `issuer` identifies the upstream Authorization Server.
+The `derivation_resource_id` contains the identifier (or identifiers) provided when the Aggregator Service requested an upstream access token.
+The `resource_scopes` list enumerates the scopes required to access the upstream resource and MUST include a derivation scope.
 
-<pre class="highlight" data-lang="json">
+```json
 {
   "error": "need_info",
   "ticket": "tkt-A2",
@@ -392,11 +407,11 @@ When a Client requests access to a derived resource from the Aggregator Service,
     }
   ]
 }
-</pre>
+```
 
 The Client SHOULD then request access tokens from the Authorization Server of the upstream Resource Server with the required scopes, including the derivation scope.
 
-<pre class="highlight" data-lang="json">
+```json
 {
   "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
   "permissions": [
@@ -408,11 +423,11 @@ The Client SHOULD then request access tokens from the Authorization Server of th
   "claim_token": "OIDC_token",
   "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 }
-</pre>
+```
 
 Finally, the Client retries the request to the Aggregator Service with the access tokens it received from the upstream Resource Servers.
 
-<pre class="highlight" data-lang="json">
+```json
 {
   "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
   "ticket": "tkt-A2",
@@ -427,21 +442,27 @@ Finally, the Client retries the request to the Aggregator Service with the acces
     }
   ]
 }
-</pre>
+```
 
 The Aggregator Authorization Server MUST verify the provided access tokens with the upstream Authorization Servers to confirm that the Client is authorized to access the upstream resources.
 
 
 
-Creating an Aggregator Service {#creating-an-aggregator-service}
-================================================================
-
-This section will describe how to create an Aggregator Service in more detail.
+Aggregator Status Endpoint {#aggregator-status-endpoint}
+==================================================
 
 
 
-Using an Aggregator Service {#using-an-aggregator-service}
-=========================================================
+Transformations Endpoint {#transformations-endpoint}
+==================================================
 
-Guidance for using an Aggregator Service will follow as the specification matures.
+
+
+Services Endpoint {#services-endpoint}
+==================================
+
+
+
+Service {#service}
+================
 

@@ -1,0 +1,97 @@
+Authentication and Authorization {#authentication-and-authorization}
+====================================================================
+
+The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate clients and authorize access to resources.
+The Aggregator Service authenticates the Client using OIDC and obtains access tokens for upstream Resource Servers.
+
+Client Flow {#client-flow}
+--------------------------
+
+The Aggregator Service authenticates the Client with OIDC to obtain an access token for a Resource Server.
+The Aggregator Service relies on an OIDC access token linked to the Aggregator's client identifier.
+The Aggregator SHOULD request the additional scope `urn:knows:uma:scopes:derivation-creation` from the Authorization Server of a Resource Server to enable the Aggregator functionality.
+The Authorization Server MUST return a `derivation_resource_id` together with the access token.
+The Aggregator MAY delete the `derivation_resource_id` when it is no longer needed.
+The Aggregator Service MUST update the resource registration at its Authorization Server to signal that it used this resource identifier to create derived resources.
+
+```json
+{
+  "resource_scopes": [ ... ],
+  "resource_relations": {
+    "prov:wasDerivedFrom": {
+      "issuer": "https://as.example.org",
+      "derivation_resource_id": "handle-id-1"
+    }
+  }
+}
+```
+
+The Authorization Server MUST invalidate previous access tokens (for example by marking them inactive) if they are linked to a derived resource whose identifier has been consumed.
+
+TODO: clarify whether polling for a new `derivation_resource_id` is necessary, or whether the Aggregator can request the Authorization Server for a normal scope referencing the identifier or supply the identifier as a hint when requesting with a ticket.
+
+Resource Server Flow {#resource-server-flow}
+-------------------------------------------
+
+When a Client requests access to a derived resource from the Aggregator Service, a normal UMA flow follows. 
+During ticket creation, the Aggregator validates that the `derivation_resource_id` used to create the derived resource is still valid.
+If it is invalid, the Aggregator MUST recreate the Aggregator Service.
+The Aggregator Authorization Server MAY respond with a `need_info` error requesting access tokens for upstream resources.
+In that case, the Authorization Server MUST add the `issuer`, `derivation_resource_id`, and `resource_scopes` entries to the `required_claims` array.
+The `issuer` identifies the upstream Authorization Server.
+The `derivation_resource_id` contains the identifier (or identifiers) provided when the Aggregator Service requested an upstream access token.
+The `resource_scopes` list enumerates the scopes required to access the upstream resource and MUST include a derivation scope.
+
+```json
+{
+  "error": "need_info",
+  "ticket": "tkt-A2",
+  "required_claims": [
+    {
+      "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
+      "details": {
+        "issuer": "https://a.example.org",
+        "derivation_resource_id": "handle-id-1",
+        "resource_scopes": [ "urn:knows:uma:scopes:derivation-read" ]
+      }
+    }
+  ]
+}
+```
+
+The Client SHOULD then request access tokens from the Authorization Server of the upstream Resource Server with the required scopes, including the derivation scope.
+
+```json
+{
+  "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
+  "permissions": [
+    {
+      "resource_id": "handle-id-1",
+      "scopes": [ "urn:knows:uma:scopes:derivation-read" ]
+    }
+  ],
+  "claim_token": "OIDC_token",
+  "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
+}
+```
+
+Finally, the Client retries the request to the Aggregator Service with the access tokens it received from the upstream Resource Servers.
+
+```json
+{
+  "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
+  "ticket": "tkt-A2",
+  "claim_tokens": [
+    {
+      "claim_token": "OIDC_token",
+      "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
+    },
+    {
+      "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
+      "claim_token": "as-at-2"
+    }
+  ]
+}
+```
+
+The Aggregator Authorization Server MUST verify the provided access tokens with the upstream Authorization Servers to confirm that the Client is authorized to access the upstream resources.

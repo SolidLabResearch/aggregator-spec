@@ -1,4 +1,4 @@
-Aggregator Registration {#aggregator-registration}
+Registration Endpoint {#registration-endpoint}
 =====================
 This section describes how aggregators are managed on the Aggregator Server level.
 The authorization for these endpoints is defined by the implementation and up to the Aggregator provider to decide.

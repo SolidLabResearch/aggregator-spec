@@ -4,4 +4,4 @@ Public Metadata {#public-metadata}
 - Well-known endpoint
 - Creation endpoint
 - `client.json` endpoint that exposes the client identifier used for authorization
-    - 
+

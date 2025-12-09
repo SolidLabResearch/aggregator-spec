@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="_ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_" rel="canonical">
-  <meta content="babe52d5fd03dc0a5814b356b719950671a84a2d" name="revision">
+  <meta content="1efeb939c9a646e6223f5b8177199f880f1abd2d" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2050,30 +2050,31 @@ Parts of this work may be from another specification document.  If so, those par
    <ol class="toc" role="directory">
     <li><a href="#introduction"><span class="secno">1</span> <span class="content">Introduction</span></a>
     <li><a href="#definitions"><span class="secno">2</span> <span class="content">Definitions</span></a>
-    <li><a href="#add-a-link-to-other-specs-used-webid-oidc-uma"><span class="secno">3</span> <span class="content">add a link to other specs used: WebID, OIDC, UMA</span></a>
-    <li><a href="#public-metadata"><span class="secno">4</span> <span class="content">Public Metadata</span></a>
+    <li><a href="#public-metadata"><span class="secno">3</span> <span class="content">Public Metadata</span></a>
     <li>
-     <a href="#aggregator-registration"><span class="secno">5</span> <span class="content">Aggregator Registration</span></a>
+     <a href="#registration-endpoint"><span class="secno">4</span> <span class="content">Registration Endpoint</span></a>
      <ol class="toc">
       <li>
-       <a href="#aggregator-creation"><span class="secno">5.1</span> <span class="content">Aggregator Creation</span></a>
+       <a href="#aggregator-creation"><span class="secno">4.1</span> <span class="content">Aggregator Creation</span></a>
        <ol class="toc">
-        <li><a href="#creation-provision"><span class="secno">5.1.1</span> <span class="content"><code>provision</code> Flow</span></a>
-        <li><a href="#creation-authorization"><span class="secno">5.1.2</span> <span class="content"><code>authorization_code</code> Flow</span></a>
-        <li><a href="#creation-client-credentials"><span class="secno">5.1.3</span> <span class="content"><code>client_credentials</code> Flow</span></a>
-        <li><a href="#creation-device-code"><span class="secno">5.1.4</span> <span class="content"><code>device_code</code> Flow</span></a>
+        <li><a href="#creation-provision"><span class="secno">4.1.1</span> <span class="content"><code>provision</code> Flow</span></a>
+        <li><a href="#creation-authorization"><span class="secno">4.1.2</span> <span class="content"><code>authorization_code</code> Flow</span></a>
+        <li><a href="#creation-client-credentials"><span class="secno">4.1.3</span> <span class="content"><code>client_credentials</code> Flow</span></a>
+        <li><a href="#creation-device-code"><span class="secno">4.1.4</span> <span class="content"><code>device_code</code> Flow</span></a>
        </ol>
-      <li><a href="#aggregator-login"><span class="secno">5.2</span> <span class="content">Aggregator Login</span></a>
-      <li><a href="#aggregator-deletion"><span class="secno">5.3</span> <span class="content">Aggregator Deletion</span></a>
+      <li><a href="#aggregator-login"><span class="secno">4.2</span> <span class="content">Aggregator Login</span></a>
+      <li><a href="#aggregator-deletion"><span class="secno">4.3</span> <span class="content">Aggregator Deletion</span></a>
      </ol>
     <li>
-     <a href="#authentication-and-authorization"><span class="secno">6</span> <span class="content">Authentication and Authorization</span></a>
+     <a href="#authentication-and-authorization"><span class="secno">5</span> <span class="content">Authentication and Authorization</span></a>
      <ol class="toc">
-      <li><a href="#client-flow"><span class="secno">6.1</span> <span class="content">Client Flow</span></a>
-      <li><a href="#resource-server-flow"><span class="secno">6.2</span> <span class="content">Resource Server Flow</span></a>
+      <li><a href="#client-flow"><span class="secno">5.1</span> <span class="content">Client Flow</span></a>
+      <li><a href="#resource-server-flow"><span class="secno">5.2</span> <span class="content">Resource Server Flow</span></a>
      </ol>
-    <li><a href="#creating-an-aggregator-service"><span class="secno">7</span> <span class="content">Creating an Aggregator Service</span></a>
-    <li><a href="#using-an-aggregator-service"><span class="secno">8</span> <span class="content">Using an Aggregator Service</span></a>
+    <li><a href="#aggregator-status-endpoint"><span class="secno">6</span> <span class="content">Aggregator Status Endpoint</span></a>
+    <li><a href="#transformations-endpoint"><span class="secno">7</span> <span class="content">Transformations Endpoint</span></a>
+    <li><a href="#services-endpoint"><span class="secno">8</span> <span class="content">Services Endpoint</span></a>
+    <li><a href="#service"><span class="secno">9</span> <span class="content">Service</span></a>
     <li><a href="#conformance"><span class="secno"></span> <span class="content">
     Conformance</span></a>
     <li>
@@ -2088,7 +2089,7 @@ Parts of this work may be from another specification document.  If so, those par
    <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
    <p>The introduction for the Aggregator specification will be expanded in future revisions.</p>
    <h2 class="heading settled" data-level="2" id="definitions"><span class="secno">2. </span><span class="content">Definitions</span><a class="self-link" href="#definitions"></a></h2>
-   <h2 class="heading settled" data-level="3" id="add-a-link-to-other-specs-used-webid-oidc-uma"><span class="secno">3. </span><span class="content">add a link to other specs used: WebID, OIDC, UMA</span><a class="self-link" href="#add-a-link-to-other-specs-used-webid-oidc-uma"></a></h2>
+   <p>add a link to other specs used: WebID, OIDC, UMA</p>
    <ul>
     <li data-md>
      <p>IDP Server (IDPS): An Identity Provider server that supports OIDC and issues OIDC tokens.</p>
@@ -2102,15 +2103,17 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
     <li data-md>
      <p>Resource Server (RS): An OAuth2 Resource Server that protects resources and accepts RPT tokens issued from a Authorization Server.</p>
     <li data-md>
-     <p>Aggregator Server</p>
+     <p>Aggregator Server: A server that hosts multiple Aggregators.</p>
     <li data-md>
-     <p>Aggregator</p>
+     <p>Aggregator: A service that manages multiple Aggregator Services and allows user to create and use them.</p>
     <li data-md>
-     <p>Aggregator Service</p>
+     <p>Aggregator Service: A service that aggregates data from multiple Resource Servers on behalf of a user.</p>
     <li data-md>
-     <p>Client</p>
+     <p>Client: An application that interacts with the Aggregator Service.</p>
     <li data-md>
-     <p>ClientID</p>
+     <p>ClientID: A JSON-LD document that describes a Client. It is dereferenceable via a URL.</p>
+    <li data-md>
+     <p>User: A person who owns resources on Resource Servers and uses the Client and Aggregator.</p>
     <li data-md>
      <p>OIDC token</p>
     <li data-md>
@@ -2118,7 +2121,7 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
     <li data-md>
      <p>Resource server</p>
    </ul>
-   <h2 class="heading settled" data-level="4" id="public-metadata"><span class="secno">4. </span><span class="content">Public Metadata</span><a class="self-link" href="#public-metadata"></a></h2>
+   <h2 class="heading settled" data-level="3" id="public-metadata"><span class="secno">3. </span><span class="content">Public Metadata</span><a class="self-link" href="#public-metadata"></a></h2>
    <ul>
     <li data-md>
      <p>Well-known endpoint</p>
@@ -2126,11 +2129,8 @@ The Authorization Servers checks this identity and issues RPT tokens for resourc
      <p>Creation endpoint</p>
     <li data-md>
      <p><code>client.json</code> endpoint that exposes the client identifier used for authorization</p>
-     <ul>
-      <li data-md>
-     </ul>
    </ul>
-   <h2 class="heading settled" data-level="5" id="aggregator-registration"><span class="secno">5. </span><span class="content">Aggregator Registration</span><a class="self-link" href="#aggregator-registration"></a></h2>
+   <h2 class="heading settled" data-level="4" id="registration-endpoint"><span class="secno">4. </span><span class="content">Registration Endpoint</span><a class="self-link" href="#registration-endpoint"></a></h2>
    
 This section describes how aggregators are managed on the Aggregator Server level.
 The authorization for these endpoints is defined by the implementation and up to the Aggregator provider to decide.
@@ -2138,7 +2138,7 @@ The user requires authenticated requests to manage their aggregator accounts on 
 The tokens used in these requests (IPD_client_token) prove the identity of the user and the client (ClientID) used to access the aggregator.
 
 
-   <h3 class="heading settled" data-level="5.1" id="aggregator-creation"><span class="secno">5.1. </span><span class="content">Aggregator Creation</span><a class="self-link" href="#aggregator-creation"></a></h3>
+   <h3 class="heading settled" data-level="4.1" id="aggregator-creation"><span class="secno">4.1. </span><span class="content">Aggregator Creation</span><a class="self-link" href="#aggregator-creation"></a></h3>
    
 This section describes how clients can create an Aggregator.
 There exists different flows to create an aggregator depending on the registration type.
@@ -2147,7 +2147,7 @@ There exists different flows to create an aggregator depending on the registrati
    <p class="issue" id="issue-337a7eca"><a class="self-link" href="#issue-337a7eca"></a> TODO where to add versioning info?</p>
    <p class="issue" id="issue-6ffefece"><a class="self-link" href="#issue-6ffefece"></a> TODO where to use DPOP tokens?</p>
    <p class="issue" id="issue-514cfc61"><a class="self-link" href="#issue-514cfc61"></a> TODO what about HTTP error handling?</p>
-   <h4 class="heading settled" data-level="5.1.1" id="creation-provision"><span class="secno">5.1.1. </span><span class="content"><code>provision</code> Flow</span><a class="self-link" href="#creation-provision"></a></h4>
+   <h4 class="heading settled" data-level="4.1.1" id="creation-provision"><span class="secno">4.1.1. </span><span class="content"><code>provision</code> Flow</span><a class="self-link" href="#creation-provision"></a></h4>
    <p>The <code>provision</code> flow allows clients to create an Aggregator with its own identity.
 This lets resource owners target access-control policies at the aggregator’s dedicated WebID instead of having the aggregator impersonate another user’s WebID.</p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
@@ -2162,11 +2162,12 @@ This lets resource owners target access-control policies at the aggregator’s d
 </pre>
    <p><strong>2. Aggregator Server provisions a WebID and registers it at the IDP</strong></p>
    <p>The Aggregator Server creates a WebID document and registers a new account with an IDP for that WebID.
-It also registers (or reuses) a confidential client that represents the aggregator itself and stores the associated client_id/client_secret.
-Using those credentials the Aggregator Server performs a client credentials grant to obtain the <code>IDP_aggregator_token</code> (and accompanying refresh token) that authorize the aggregator acting under its own WebID.</p>
+Using the credentials of this new account the Aggregator Server CAN perform a client credentials flow to obtain the <code>IDP_aggregator_token</code> (and accompanying refresh token) to authorize the aggregator acting under its own WebID.</p>
+   <p class="issue" id="issue-08cd4956"><a class="self-link" href="#issue-08cd4956"></a> TODO should this WebID specify that it is an aggregator/agent?</p>
    <p><strong>3. Aggregator Server creates an aggregator</strong></p>
-   <p>Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator metadata and newly created WebID.</p>
-   <h4 class="heading settled" data-level="5.1.2" id="creation-authorization"><span class="secno">5.1.2. </span><span class="content"><code>authorization_code</code> Flow</span><a class="self-link" href="#creation-authorization"></a></h4>
+   <p>Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator metadata and newly created WebID.
+The aggregator CAN NOT give these tokens or client credentials to the client.</p>
+   <h4 class="heading settled" data-level="4.1.2" id="creation-authorization"><span class="secno">4.1.2. </span><span class="content"><code>authorization_code</code> Flow</span><a class="self-link" href="#creation-authorization"></a></h4>
    <p>The <code>authorization_code</code> flow allows clients to create an aggregator that acts on behalf of the end-user, but with a token that is scoped specifically for the aggregator.</p>
    <p><img alt="PlantUML Diagram" src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4YbTAaGeg9BDqI562DZNrCBrwuSfuYDWGqXyISafYv8F0HlmnFq4JYxeNL034diy_VTVVUTSrHwxdmrqwoyL6RE7Py1lRqIQiwD7_jhZU1GU6uAZOmbPt2i5TA7bz2gbwlbn-FNpVrg-VJPQa3FIdGH61UhvTjTyxmrA0g71VVMmHZT8eBUNrk1iprgKcAgSxmO3GdxV1knSTk4rT9Ir60-NqU7LZJ1e-49mLuU8emsZDNqtSD4Hnyw6Oo3SS2tkeL3xfKrBEdbW7XHKw1qO8WE9_GOWRNK1BjBs7Mr0Dw3K_ILCo1YA5Uo3S9ApCMKQuscm3RGx3oc4abn7_OoeaeLXWRUXXXeMoZ3mYe82iRrePl1eF9JOYf1QO0RIGLCIO68JENi9oclb9z69R3pLq3gKI_RjB16kpf5NZcr8VyoAnrDID7qR3jBQKKr2rAD9UqsN9Yqze9h9KDNQSsiuNRjLYywBH5dKUQczJGRnVBje7DlBz74VYOEo-bwp_uRPI_h_lYGN1OkXAse5OcUArso8pII_i9l"></p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
@@ -2265,7 +2266,7 @@ The redirect_uri is under control of the client application and MUST already be 
   <c- f>"token_expires_in"</c-><c- p>:</c-> <c- mi>3600</c->
 <c- p>}</c->
 </pre>
-   <h4 class="heading settled" data-level="5.1.3" id="creation-client-credentials"><span class="secno">5.1.3. </span><span class="content"><code>client_credentials</code> Flow</span><a class="self-link" href="#creation-client-credentials"></a></h4>
+   <h4 class="heading settled" data-level="4.1.3" id="creation-client-credentials"><span class="secno">4.1.3. </span><span class="content"><code>client_credentials</code> Flow</span><a class="self-link" href="#creation-client-credentials"></a></h4>
    <p>The <code>client_credentials</code> flow allows clients to create an aggregator by using the OAuth2 Client Credentials Flow to obtain an OIDC token from an Identity Provider (IDP) server.</p>
    <p class="note" role="note"><span class="marker">NOTE:</span> This flow gives the aggregator complete access to the user’s resources and policies without user consent.
 This flow should only be used in trusted environments, or when a user creates an account for the aggregator.</p>
@@ -2308,9 +2309,9 @@ Because this flow hands the Aggregator long-lived credentials, it should only be
 </pre>
    <p><strong>3. Aggregator Server creates (or updates) the aggregator account</strong></p>
    <p>Armed with the <code>IDP_aggregator_token</code>, the Aggregator persists the account for the specified WebID, associates it with the requesting user, and returns the aggregator account metadata (aggregator identifier, token expiry, UMA AS linkage, etc.) to the client.</p>
-   <h4 class="heading settled" data-level="5.1.4" id="creation-device-code"><span class="secno">5.1.4. </span><span class="content"><code>device_code</code> Flow</span><a class="self-link" href="#creation-device-code"></a></h4>
+   <h4 class="heading settled" data-level="4.1.4" id="creation-device-code"><span class="secno">4.1.4. </span><span class="content"><code>device_code</code> Flow</span><a class="self-link" href="#creation-device-code"></a></h4>
    <p class="note" role="note"><span class="marker">NOTE:</span> TODO This flow is not yet specified.</p>
-   <h3 class="heading settled" data-level="5.2" id="aggregator-login"><span class="secno">5.2. </span><span class="content">Aggregator Login</span><a class="self-link" href="#aggregator-login"></a></h3>
+   <h3 class="heading settled" data-level="4.2" id="aggregator-login"><span class="secno">4.2. </span><span class="content">Aggregator Login</span><a class="self-link" href="#aggregator-login"></a></h3>
    
 The login flow allows users to update the tokens of their existing aggregator.
 This flow can be used to refresh the tokens in case they have expired.
@@ -2327,7 +2328,7 @@ For example for the <code>authorization_code</code> flow:
     <c- f>"aggregator_id"</c-><c- p>:</c-> <c- u>"agg-7890"</c->
 <c- p>}</c->
 </pre>
-   <h3 class="heading settled" data-level="5.3" id="aggregator-deletion"><span class="secno">5.3. </span><span class="content">Aggregator Deletion</span><a class="self-link" href="#aggregator-deletion"></a></h3>
+   <h3 class="heading settled" data-level="4.3" id="aggregator-deletion"><span class="secno">4.3. </span><span class="content">Aggregator Deletion</span><a class="self-link" href="#aggregator-deletion"></a></h3>
    
 The delete flow allows users to delete their existing aggregator.
 This flow is done by doing a DELETE request to the registration endpoint with the aggregator_id parameter.
@@ -2340,73 +2341,86 @@ This flow is done by doing a DELETE request to the registration endpoint with th
     <c- f>"aggregator_id"</c-><c- p>:</c-> <c- u>"agg-7890"</c->
 <c- p>}</c->
 </pre>
-   <h2 class="heading settled" data-level="6" id="authentication-and-authorization"><span class="secno">6. </span><span class="content">Authentication and Authorization</span><a class="self-link" href="#authentication-and-authorization"></a></h2>
-   <p>The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate clients and authorize access to resources. The Aggregator Service authenticates the Client using OIDC and obtains access tokens for upstream Resource Servers.</p>
-   <h3 class="heading settled" data-level="6.1" id="client-flow"><span class="secno">6.1. </span><span class="content">Client Flow</span><a class="self-link" href="#client-flow"></a></h3>
-   <p>The Aggregator Service authenticates the Client with OIDC to obtain an access token for a Resource Server. The Aggregator Service relies on an OIDC access token linked to the Aggregator’s client identifier. The Aggregator SHOULD request the additional scope <code>urn:knows:uma:scopes:derivation-creation</code> from the Authorization Server of a Resource Server to enable the Aggregator functionality. The Authorization Server MUST return a <code>derivation_resource_id</code> together with the access token. The Aggregator MAY delete the <code>derivation_resource_id</code> when it is no longer needed. The Aggregator Service MUST update the resource registration at its Authorization Server to signal that it used this resource identifier to create derived resources.</p>
-<pre class="highlight" data-lang="json">{
-  "resource_scopes": [ ... ],
-  "resource_relations": {
-    "prov:wasDerivedFrom": {
-      "issuer": "https://as.example.org",
-      "derivation_resource_id": "handle-id-1"
-    }
-  }
-}
+   <h2 class="heading settled" data-level="5" id="authentication-and-authorization"><span class="secno">5. </span><span class="content">Authentication and Authorization</span><a class="self-link" href="#authentication-and-authorization"></a></h2>
+   <p>The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate clients and authorize access to resources.
+The Aggregator Service authenticates the Client using OIDC and obtains access tokens for upstream Resource Servers.</p>
+   <h3 class="heading settled" data-level="5.1" id="client-flow"><span class="secno">5.1. </span><span class="content">Client Flow</span><a class="self-link" href="#client-flow"></a></h3>
+   <p>The Aggregator Service authenticates the Client with OIDC to obtain an access token for a Resource Server.
+The Aggregator Service relies on an OIDC access token linked to the Aggregator’s client identifier.
+The Aggregator SHOULD request the additional scope <code>urn:knows:uma:scopes:derivation-creation</code> from the Authorization Server of a Resource Server to enable the Aggregator functionality.
+The Authorization Server MUST return a <code>derivation_resource_id</code> together with the access token.
+The Aggregator MAY delete the <code>derivation_resource_id</code> when it is no longer needed.
+The Aggregator Service MUST update the resource registration at its Authorization Server to signal that it used this resource identifier to create derived resources.</p>
+<pre class="language-json highlight"><c- p>{</c->
+  <c- f>"resource_scopes"</c-><c- p>:</c-> <c- p>[</c-> ... <c- p>],</c->
+  <c- f>"resource_relations"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"prov:wasDerivedFrom"</c-><c- p>:</c-> <c- p>{</c->
+      <c- f>"issuer"</c-><c- p>:</c-> <c- u>"https://as.example.org"</c-><c- p>,</c->
+      <c- f>"derivation_resource_id"</c-><c- p>:</c-> <c- u>"handle-id-1"</c->
+    <c- p>}</c->
+  <c- p>}</c->
+<c- p>}</c->
 </pre>
    <p>The Authorization Server MUST invalidate previous access tokens (for example by marking them inactive) if they are linked to a derived resource whose identifier has been consumed.</p>
-   <p class="note" role="note">TODO: clarify whether polling for a new <code>derivation_resource_id</code> is necessary, or whether the Aggregator can request the Authorization Server for a normal scope referencing the identifier or supply the identifier as a hint when requesting with a ticket.</p>
-   <h3 class="heading settled" data-level="6.2" id="resource-server-flow"><span class="secno">6.2. </span><span class="content">Resource Server Flow</span><a class="self-link" href="#resource-server-flow"></a></h3>
-   <p>When a Client requests access to a derived resource from the Aggregator Service, a normal UMA flow follows. During ticket creation, the Aggregator validates that the <code>derivation_resource_id</code> used to create the derived resource is still valid. If it is invalid, the Aggregator MUST recreate the Aggregator Service. The Aggregator Authorization Server MAY respond with a <code>need_info</code> error requesting access tokens for upstream resources. In that case, the Authorization Server MUST add the <code>issuer</code>, <code>derivation_resource_id</code>, and <code>resource_scopes</code> entries to the <code>required_claims</code> array. The <code>issuer</code> identifies the upstream Authorization Server. The <code>derivation_resource_id</code> contains the identifier (or identifiers) provided when the Aggregator Service requested an upstream access token. The <code>resource_scopes</code> list enumerates the scopes required to access the upstream resource and MUST include a derivation scope.</p>
-<pre class="highlight" data-lang="json">{
-  "error": "need_info",
-  "ticket": "tkt-A2",
-  "required_claims": [
-    {
-      "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
-      "details": {
-        "issuer": "https://a.example.org",
-        "derivation_resource_id": "handle-id-1",
-        "resource_scopes": [ "urn:knows:uma:scopes:derivation-read" ]
-      }
-    }
-  ]
-}
+   <p>TODO: clarify whether polling for a new <code>derivation_resource_id</code> is necessary, or whether the Aggregator can request the Authorization Server for a normal scope referencing the identifier or supply the identifier as a hint when requesting with a ticket.</p>
+   <h3 class="heading settled" data-level="5.2" id="resource-server-flow"><span class="secno">5.2. </span><span class="content">Resource Server Flow</span><a class="self-link" href="#resource-server-flow"></a></h3>
+   <p>When a Client requests access to a derived resource from the Aggregator Service, a normal UMA flow follows.
+During ticket creation, the Aggregator validates that the <code>derivation_resource_id</code> used to create the derived resource is still valid.
+If it is invalid, the Aggregator MUST recreate the Aggregator Service.
+The Aggregator Authorization Server MAY respond with a <code>need_info</code> error requesting access tokens for upstream resources.
+In that case, the Authorization Server MUST add the <code>issuer</code>, <code>derivation_resource_id</code>, and <code>resource_scopes</code> entries to the <code>required_claims</code> array.
+The <code>issuer</code> identifies the upstream Authorization Server.
+The <code>derivation_resource_id</code> contains the identifier (or identifiers) provided when the Aggregator Service requested an upstream access token.
+The <code>resource_scopes</code> list enumerates the scopes required to access the upstream resource and MUST include a derivation scope.</p>
+<pre class="language-json highlight"><c- p>{</c->
+  <c- f>"error"</c-><c- p>:</c-> <c- u>"need_info"</c-><c- p>,</c->
+  <c- f>"ticket"</c-><c- p>:</c-> <c- u>"tkt-A2"</c-><c- p>,</c->
+  <c- f>"required_claims"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- f>"claim_token_format"</c-><c- p>:</c-> <c- u>"urn:ietf:params:oauth:token-type:access_token"</c-><c- p>,</c->
+      <c- f>"details"</c-><c- p>:</c-> <c- p>{</c->
+        <c- f>"issuer"</c-><c- p>:</c-> <c- u>"https://a.example.org"</c-><c- p>,</c->
+        <c- f>"derivation_resource_id"</c-><c- p>:</c-> <c- u>"handle-id-1"</c-><c- p>,</c->
+        <c- f>"resource_scopes"</c-><c- p>:</c-> <c- p>[</c-> <c- u>"urn:knows:uma:scopes:derivation-read"</c-> <c- p>]</c->
+      <c- p>}</c->
+    <c- p>}</c->
+  <c- p>]</c->
+<c- p>}</c->
 </pre>
    <p>The Client SHOULD then request access tokens from the Authorization Server of the upstream Resource Server with the required scopes, including the derivation scope.</p>
-<pre class="highlight" data-lang="json">{
-  "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
-  "permissions": [
-    {
-      "resource_id": "handle-id-1",
-      "scopes": [ "urn:knows:uma:scopes:derivation-read" ]
-    }
-  ],
-  "claim_token": "OIDC_token",
-  "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
-}
+<pre class="language-json highlight"><c- p>{</c->
+  <c- f>"grant_type"</c-><c- p>:</c-> <c- u>"urn:ietf:params:oauth:grant-type:uma-ticket"</c-><c- p>,</c->
+  <c- f>"permissions"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- f>"resource_id"</c-><c- p>:</c-> <c- u>"handle-id-1"</c-><c- p>,</c->
+      <c- f>"scopes"</c-><c- p>:</c-> <c- p>[</c-> <c- u>"urn:knows:uma:scopes:derivation-read"</c-> <c- p>]</c->
+    <c- p>}</c->
+  <c- p>],</c->
+  <c- f>"claim_token"</c-><c- p>:</c-> <c- u>"OIDC_token"</c-><c- p>,</c->
+  <c- f>"claim_token_format"</c-><c- p>:</c-> <c- u>"http://openid.net/specs/openid-connect-core-1_0.html#IDToken"</c->
+<c- p>}</c->
 </pre>
    <p>Finally, the Client retries the request to the Aggregator Service with the access tokens it received from the upstream Resource Servers.</p>
-<pre class="highlight" data-lang="json">{
-  "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
-  "ticket": "tkt-A2",
-  "claim_tokens": [
-    {
-      "claim_token": "OIDC_token",
-      "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
-    },
-    {
-      "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
-      "claim_token": "as-at-2"
-    }
-  ]
-}
+<pre class="language-json highlight"><c- p>{</c->
+  <c- f>"grant_type"</c-><c- p>:</c-> <c- u>"urn:ietf:params:oauth:grant-type:uma-ticket"</c-><c- p>,</c->
+  <c- f>"ticket"</c-><c- p>:</c-> <c- u>"tkt-A2"</c-><c- p>,</c->
+  <c- f>"claim_tokens"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- f>"claim_token"</c-><c- p>:</c-> <c- u>"OIDC_token"</c-><c- p>,</c->
+      <c- f>"claim_token_format"</c-><c- p>:</c-> <c- u>"http://openid.net/specs/openid-connect-core-1_0.html#IDToken"</c->
+    <c- p>},</c->
+    <c- p>{</c->
+      <c- f>"claim_token_format"</c-><c- p>:</c-> <c- u>"urn:ietf:params:oauth:token-type:access_token"</c-><c- p>,</c->
+      <c- f>"claim_token"</c-><c- p>:</c-> <c- u>"as-at-2"</c->
+    <c- p>}</c->
+  <c- p>]</c->
+<c- p>}</c->
 </pre>
    <p>The Aggregator Authorization Server MUST verify the provided access tokens with the upstream Authorization Servers to confirm that the Client is authorized to access the upstream resources.</p>
-   <h2 class="heading settled" data-level="7" id="creating-an-aggregator-service"><span class="secno">7. </span><span class="content">Creating an Aggregator Service</span><a class="self-link" href="#creating-an-aggregator-service"></a></h2>
-   <p>This section will describe how to create an Aggregator Service in more detail.</p>
-   <h2 class="heading settled" data-level="8" id="using-an-aggregator-service"><span class="secno">8. </span><span class="content">Using an Aggregator Service</span><a class="self-link" href="#using-an-aggregator-service"></a></h2>
-   <p>Guidance for using an Aggregator Service will follow as the specification matures.</p>
+   <h2 class="heading settled" data-level="6" id="aggregator-status-endpoint"><span class="secno">6. </span><span class="content">Aggregator Status Endpoint</span><a class="self-link" href="#aggregator-status-endpoint"></a></h2>
+   <h2 class="heading settled" data-level="7" id="transformations-endpoint"><span class="secno">7. </span><span class="content">Transformations Endpoint</span><a class="self-link" href="#transformations-endpoint"></a></h2>
+   <h2 class="heading settled" data-level="8" id="services-endpoint"><span class="secno">8. </span><span class="content">Services Endpoint</span><a class="self-link" href="#services-endpoint"></a></h2>
+   <h2 class="heading settled" data-level="9" id="service"><span class="secno">9. </span><span class="content">Service</span><a class="self-link" href="#service"></a></h2>
   </main>
   <div data-fill-with="conformance">
    <h2 class="no-ref no-num heading settled" id="conformance"><span class="content">
@@ -2581,5 +2595,6 @@ This flow is done by doing a DELETE request to the registration endpoint with th
    <div class="issue"> TODO where to add versioning info? <a class="issue-return" href="#issue-337a7eca" title="Jump to section">↵</a></div>
    <div class="issue"> TODO where to use DPOP tokens? <a class="issue-return" href="#issue-6ffefece" title="Jump to section">↵</a></div>
    <div class="issue"> TODO what about HTTP error handling? <a class="issue-return" href="#issue-514cfc61" title="Jump to section">↵</a></div>
+   <div class="issue"> TODO should this WebID specify that it is an aggregator/agent? <a class="issue-return" href="#issue-08cd4956" title="Jump to section">↵</a></div>
    <div class="issue"> TODO How does the aggregator register with the AS? <a class="issue-return" href="#issue-9e1fa78e" title="Jump to section">↵</a></div>
   </div>

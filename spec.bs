@@ -17,16 +17,20 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 </pre>
 
 <!-- Content -->
-<pre class="include" path="sections/introduction.bs"></pre>
+<pre class="include" path="sections/1-introduction.bs"></pre>
 
-<pre class="include" path="sections/definitions.bs"></pre>
+<pre class="include" path="sections/2-definitions.bs"></pre>
 
-<pre class="include" path="sections/public-metadata.bs"></pre>
+<pre class="include" path="sections/3-public-metadata.bs"></pre>
 
-<pre class="include" path="sections/aggregator-registration.bs"></pre>
+<pre class="include" path="sections/4-registration-endpoint.bs"></pre>
 
-<pre class="include" path="sections/authentication-and-authorization.bs"></pre>
+<pre class="include" path="sections/5-authentication-and-authorization.bs"></pre>
 
-<pre class="include" path="sections/creating-an-aggregator-service.bs"></pre>
+<pre class="include" path="sections/6-aggregator-status-endpoint.bs"></pre>
 
-<pre class="include" path="sections/using-an-aggregator-service.bs"></pre>
+<pre class="include" path="sections/7-transformations-endpoint.bs"></pre>
+
+<pre class="include" path="sections/8-services-endpoint.bs"></pre>
+
+<pre class="include" path="sections/9-service.bs"></pre>
