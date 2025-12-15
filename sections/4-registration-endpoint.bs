@@ -5,6 +5,10 @@ The authorization for these endpoints is defined by the implementation and up to
 The user requires authenticated requests to manage their aggregator accounts on wich the Aggregator provider can base their authorization decisions.
 The tokens used in these requests (IPD_client_token) prove the identity of the user and the client (ClientID) used to access the aggregator.
 
+ISSUE: TODO add a defenition of the endpoint here, after we go into the flows of how they are used.
+
+ISSUE: TODO add that after creation the aggregator should register the resources to the AS.
+
 Aggregator Creation {#aggregator-creation}
 ---------------------
 This section describes how clients can create an Aggregator.
@@ -16,6 +20,10 @@ ISSUE: TODO where to use DPOP tokens?
 
 ISSUE: TODO what about HTTP error handling?
 
+ISSUE: TODO mention that the aggregator can be either host based or path based: {id}.aggregator.org or aggregator.org/{id}/
+
+ISSUE: TODO the result of aggregator creation returns the ID and the base url of the aggregator (for example {id}.aggregator.org or aggregator.org/{id}/).
+
 ### `provision` Flow ### {#creation-provision}
 
 The `provision` flow allows clients to create an Aggregator with its own identity.
@@ -25,6 +33,7 @@ This lets resource owners target access-control policies at the aggregator’s d
 
 The client calls the registration endpoint authenticated with its `IPD_client_token`.
 
+<div class="example">
 ```http
 POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
@@ -34,6 +43,7 @@ Content-Type: application/json
   "registration_type": "provision",
 }
 ```
+</div>
 
 **2. Aggregator Server provisions a WebID and registers it at the IDP**
 
@@ -85,6 +95,7 @@ Aggregator --> Client: 5.3 Return aggregator account details
 
 The client begins by asking the Aggregator to bootstrap an authorization_code registration and indicate which authorization server should be used. The Aggregator responds with the public parameters required for the OIDC authorization request.
 
+<div class="example">
 ```http
 POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
@@ -95,6 +106,7 @@ Content-Type: application/json
   "authorization_server": "https://as.example"
 }
 ```
+</div>
 
 **1.1 Aggregator dereferences the WebID to discover the IDP**
 
@@ -104,6 +116,7 @@ Using the UMA authorization context, the Aggregator dereferences the user’s We
 
 After finishing WebID discovery and storing the PKCE verifier/state, the Aggregator returns the public parameters required for the IDP authorization request.
 
+<div class="example">
 ```http
 HTTP/1.1 201 Created
 Content-Type: application/json
@@ -115,6 +128,7 @@ Content-Type: application/json
   "state": "1eb7c8f5..."
 }
 ```
+</div>
 
 The Aggregator generates the PKCE verifier/challenge pair plus a random `state`, persists them together with the pending registration, and returns only the public portions (`client_id`, `code_challenge`, `state`) to the client application.
 The `authorization_server` value identifies the UMA Authorization Server (AS) that governs resource policies; once the Aggregator evaluates the user’s authorization token it can dereference its WebID and determine which Identity Provider (IDP) must be used for the subsequent OIDC exchange.
@@ -126,6 +140,7 @@ ISSUE: TODO How does the aggregator register with the AS?
 Using the information supplied by the Aggregator, the client constructs an authorization request against the Identity Provider.
 The redirect_uri is under control of the client application and MUST already be registered in the JSON-LD client metadata document hosted at the dereferenceable `client_id`.
 
+<div class="example">
 ```http
 GET https://idp.example/authorize?
     response_type=code&
@@ -136,6 +151,7 @@ GET https://idp.example/authorize?
     code_challenge_method=S256&
     state=1eb7c8f5...
 ```
+</div>
 
 **3. User authenticates and consents at the IDP**
 
@@ -143,15 +159,18 @@ The IDP performs its usual login and consent screens, after which it issues an a
 
 **4. IDP redirects the user agent back to the client’s redirect_uri**
 
+<div class="example">
 ```http
 HTTP/1.1 302 Found
 Location: https://app.example/callback?code=SplxlOBeZQQYbYS6WxSbIA&state=1eb7c8f5...
 ```
+</div>
 
 **5. Client posts the authorization code back to the Aggregator**
 
 The client sends the code, redirect URI, and echoed state to the registration endpoint so the Aggregator can finish the flow.
 
+<div class="example">
 ```http
 POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
@@ -164,6 +183,7 @@ Content-Type: application/json
   "state": "1eb7c8f5..."
 }
 ```
+</div>
 
 **5.1 Aggregator dereferences the client metadata**
 
@@ -171,6 +191,7 @@ The Aggregator dereferences the `client_id` JSON-LD document to confirm the regi
 
 **5.2 Aggregator redeems the authorization code at the IDP token endpoint**
 
+<div class="example">
 ```http
 POST /token HTTP/1.1
 Host: idp.example
@@ -183,9 +204,11 @@ redirect_uri=https%3A%2F%2Fapp.example%2Fcallback&
 client_id=https%3A%2F%2Faggregator.example%2Fclient.jsonld&
 code_verifier=Hjs8...stored...
 ```
+</div>
 
 The IDP verifies the authorization_code, ensures the redirect_uri matches the original authorization request, and recomputes the PKCE challenge from the supplied `code_verifier`. If everything matches, it returns:
 
+<div class="example">
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -197,11 +220,13 @@ Content-Type: application/json
   "expires_in": 3600
 }
 ```
+</div>
 
 **5.3 Aggregator finalizes the account and responds**
 
 Using the issued tokens, the Aggregator creates the aggregator account linked to the user and returns the aggregator account details to the client.
 
+<div class="example">
 ```http
 HTTP/1.1 201 Created
 Content-Type: application/json
@@ -209,10 +234,9 @@ Content-Type: application/json
 {
   "aggregator_id": "agg-7890",
   "authorization_server": "https://as.example",
-  "webid": "https://aggregator.example/webids/agg-7890#id",
-  "token_expires_in": 3600
 }
 ```
+</div>
 
 
 ### `client_credentials` Flow ### {#creation-client-credentials}
@@ -227,6 +251,7 @@ This flow should only be used in trusted environments, or when a user creates an
 The client explicitly asks the Aggregator to act with full credentials for the provided WebID, indicating which UMA Authorization Server manages the protected resources.
 Because this flow hands the Aggregator long-lived credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.
 
+<div class="example">
 ```http
 POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
@@ -240,11 +265,13 @@ Content-Type: application/json
   "password": "s3cr3t-password"
 }
 ```
+</div>
 
 **2. Aggregator Server performs credential bootstrap with the IDP**
 
 The Aggregator uses the supplied username/password (plus the WebID context) to authenticate against the Identity Provider’s management or token endpoint, registering (or reusing) a confidential client that represents the Aggregator’s service account for that user. It then runs an OAuth 2.0 client_credentials grant using the obtained client_id/client_secret to mint an `IDP_aggregator_token` scoped to the user’s WebID.
 
+<div class="example">
 ```http
 POST /token HTTP/1.1
 Host: idp.example
@@ -255,9 +282,11 @@ grant_type=client_credentials&
 webid=https%3A%2F%2Fuser.example%2Fwebid%23me&
 scope=openid%20webid%20offline_access
 ```
+</div>
 
 The IDP issues access and refresh tokens that grant the Aggregator the same capabilities as the user’s own credentials.
 
+<div class="example">
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -269,6 +298,7 @@ Content-Type: application/json
   "expires_in": 7200
 }
 ```
+</div>
 
 **3. Aggregator Server creates (or updates) the aggregator account**
 
@@ -283,10 +313,11 @@ Aggregator Login {#aggregator-login}
 -------------------
 The login flow allows users to update the tokens of their existing aggregator.
 This flow can be used to refresh the tokens in case they have expired.
-The flow is the same as with creating an aggregator but a aggregator_id parameter is provided in step 1.
+The flow is the same as with creating an aggregator but an aggregator_id parameter is provided in step 1.
 The exact steps depend on the registration_type used when creating the aggregator.
 For example for the `authorization_code` flow:
 
+<div class="example">
 ```http
 POST /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
@@ -296,12 +327,14 @@ Content-Type: application/json
     "aggregator_id": "agg-7890"
 }
 ```
+</div>
 
 Aggregator Deletion {#aggregator-deletion}
 -------------------
 The delete flow allows users to delete their existing aggregator.
 This flow is done by doing a DELETE request to the registration endpoint with the aggregator_id parameter.
 
+<div class="example">
 ```http
 DELETE /registration HTTP/1.1
 Authorization: Bearer <IPD_client_token>
@@ -310,3 +343,4 @@ Content-Type: application/json
     "aggregator_id": "agg-7890"
 }
 ```
+</div>

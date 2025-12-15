@@ -1,3 +1,0 @@
-Services Endpoint {#services-endpoint}
-==================================
-

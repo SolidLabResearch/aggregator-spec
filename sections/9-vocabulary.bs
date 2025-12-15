@@ -1,0 +1,76 @@
+Vocabulary {#vocabulary}
+===========================
+
+The Aggregator vocabulary is defined in the `aggr:` namespace (`https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/`).
+The following classes and properties are used throughout this specification.
+
+Classes {#aggr-vocabulary-classes}
+---------------------------
+
+### aggr:Service ### {#aggr-service-class}
+Represents a configured Aggregator pipeline that can be created, inspected, and removed via `/config/services/{service_id}`.
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+**subClassOf:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity)
+
+### aggr:ServiceCollection ### {#aggr-service-collection-class}
+Describes the `/config/services` collection and the metadata returned when listing configured services.
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+**subClassOf:** [schema:Collection](https://schema.org/Collection), [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
+
+Properties {#aggr-vocabulary-properties}
+---------------------------
+
+### aggr:service ### {#aggr-service-property}
+Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:ServiceCollection`<br>
+**range:** `aggr:Service`
+
+### aggr:status ### {#aggr-status-property}
+Provides the lifecycle phase of an `aggr:Service` (values such as `running`, `stopped`, or `error`).
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:Service`<br>
+**range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
+
+### aggr:transformation ### {#aggr-transformation-property}
+Associates an `aggr:Service` with the FnO execution graph that describes how inputs are transformed.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:Service`<br>
+**range:** [fno:Execution](https://w3id.org/function/spec/#execution)
+
+Example {#aggr-vocabulary-example}
+-------
+
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/> .
+@prefix fno:  <https://w3id.org/function/ontology#> .
+@prefix hydra: <http://www.w3.org/ns/hydra/core#> .
+@prefix prov: <https://www.w3.org/ns/prov#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+aggr:Service a rdfs:Class ;
+    rdfs:subClassOf prov:Activity .
+
+aggr:ServiceCollection a rdfs:Class ;
+    rdfs:subClassOf schema:Collection , hydra:Collection .
+
+aggr:service a rdf:Property ;
+    rdfs:domain aggr:ServiceCollection ;
+    rdfs:range aggr:Service .
+
+aggr:status a rdf:Property ;
+    rdfs:domain aggr:Service ;
+    rdfs:range xsd:string .
+
+aggr:transformation a rdf:Property ;
+    rdfs:domain aggr:Service ;
+    rdfs:range fno:Execution .
+```

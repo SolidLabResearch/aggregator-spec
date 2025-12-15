@@ -25,12 +25,12 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 
 <pre class="include" path="sections/4-registration-endpoint.bs"></pre>
 
-<pre class="include" path="sections/5-authentication-and-authorization.bs"></pre>
+<pre class="include" path="sections/5-authentication.bs"></pre>
 
 <pre class="include" path="sections/6-aggregator-status-endpoint.bs"></pre>
 
-<pre class="include" path="sections/7-transformations-endpoint.bs"></pre>
+<pre class="include" path="sections/7-configuration-endpoint.bs"></pre>
 
-<pre class="include" path="sections/8-services-endpoint.bs"></pre>
+<pre class="include" path="sections/8-service-lifecycle.bs"></pre>
 
-<pre class="include" path="sections/9-service.bs"></pre>
+<pre class="include" path="sections/9-vocabulary.bs"></pre>

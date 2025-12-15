@@ -1,3 +1,14 @@
 Aggregator Status Endpoint {#aggregator-status-endpoint}
 ==================================================
 
+ISSUE: TODO allow this to be json-ld with more semantics?
+
+The Aggregator Status Endpoint (`{aggregator-url}/`) allows clients to retrieve the current status of their aggregator.
+This endpoint MUST be guarded by the authentication and authorization mechanisms described in the [[#authentication]].
+The endpoint MUST return the following information about the aggregator, but additional fields MAY be included as needed:
+**- id:** (string) The unique identifier of the aggregator.
+**- created_at:** (datetime) The timestamp when the aggregator was created.
+**- login_status:** (boolean) Indicates whether the token of the aggregator is currently valid.
+**- token_expiry:** (datetime) The timestamp when the aggregator's token will expire.
+**- transformations:** (string) The URL of the transformations endpoint.
+**- services:** (string) The URL of the services endpoint.
