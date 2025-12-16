@@ -1,5 +1,5 @@
-Vocabulary {#vocabulary}
-===========================
+RDF Vocabulary (aggr:) {#rdf-vocabulary}
+===================================
 
 The Aggregator vocabulary is defined in the `aggr:` namespace (`https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/`).
 The following classes and properties are used throughout this specification.

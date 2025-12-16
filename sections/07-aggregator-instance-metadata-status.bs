@@ -1,10 +1,10 @@
-Aggregator Status Endpoint {#aggregator-status-endpoint}
-==================================================
+Aggregator Instance Metadata (Status) {#aggregator-instance-metadata}
+=================================================================
 
 ISSUE: TODO allow this to be json-ld with more semantics?
 
-The Aggregator Status Endpoint (`{aggregator-url}/`) allows clients to retrieve the current status of their aggregator.
-This endpoint MUST be guarded by the authentication and authorization mechanisms described in the [[#authentication]].
+The Aggregator Instance Metadata resource (`{aggregator-url}/`) allows clients to retrieve the current status of their aggregator.
+This endpoint MUST be guarded by the authentication and authorization mechanisms described in the [[#security-model]].
 The endpoint MUST return the following information about the aggregator, but additional fields MAY be included as needed:
 **- id:** (string) The unique identifier of the aggregator.
 **- created_at:** (datetime) The timestamp when the aggregator was created.

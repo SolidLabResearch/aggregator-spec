@@ -1,5 +1,5 @@
-Authentication {#authentication}
-===============================
+Security Model (Authentication & Authorization) {#security-model}
+===============================================================
 
 This section describes how the Aggregator handles authentication and authorization for:
 
@@ -12,12 +12,12 @@ All Aggregator endpoints are protected using User-Managed Access (UMA).
 
 NOTE: The following behavior extends the A4DS specification and is intended to be incorporated in a future version of A4DS.
 
-Requesting Flow {#requesting-flow}
----------------------------------
+Upstream Access (Requesting) {#requesting-flow}
+----------------------------------------------
 
 ISSUE: TODO: how does the Aggregator tell the Authorization Server (AS) which transformation it intends to perform on the data?
 
-Equipped with an identity token (ID token) from an Identity Provider (IdP) as described in [[#registration-endpoint]], the Aggregator Service follows the Authorization for Data Spaces (A4DS) specification to obtain access tokens for upstream Resource Servers.
+Equipped with an identity token (ID token) from an Identity Provider (IdP) as described in [[#aggregator-registration]], the Aggregator Service follows the Authorization for Data Spaces (A4DS) specification to obtain access tokens for upstream Resource Servers.
 
 <pre class="plantuml">
 @startuml
@@ -147,8 +147,8 @@ Content-Type: application/json
 If a resource isn't used anymore by the Aggregator Service, the Aggregator Service SHOULD update the resource registration to remove the `derivation_resource_id` from the `prov:wasDerivedFrom` relations, and MAY expire all previous access tokens for this resource.
 Also the Aggregator Service SHOULD delete the resource from its Upstream Resource Server, by following the Resource ID deletion procedure.
 
-Serving Flow {#serving-flow}
----------------------------------
+Client Access (Serving) {#serving-flow}
+--------------------------------------
 
 When a Client requests access to resources from the Aggregator Service, the Aggregator Service acts as a Resource Server and relies on UMA to authorize access.
 For each incoming request:

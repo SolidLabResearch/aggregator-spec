@@ -1,24 +1,24 @@
-Public Metadata {#public-metadata}
-=================================
+Aggregator Server Discovery (Server Metadata) {#aggregator-server-discovery}
+===============================================================
 
-`/` {#aggregator-configuration}
----------------------
+Server Metadata Resource (`/`) {#server-metadata-resource}
+----------------------------------------------------------
 
 Endpoint that exposes the public metadata about the aggregator server.
 This endpoint MUST be accessible without authentication and MUST provide at least the following information:
 - **id:** (OPTIONAL) The unique identifier of the aggregator server (The current IRI).
-- **registration_endpoint:** The URL of the registration endpoint ([[#registration-endpoint]]).
-- **supported_registration_types:** A list of strings that are valid registration types supported by the server (e.g., "client_credentials", "authorization_code") ([[#registration-endpoint]]).
+- **registration_endpoint:** The URL of the registration endpoint ([[#aggregator-registration]]).
+- **supported_registration_types:** A list of strings that are valid registration types supported by the server (e.g., "client_credentials", "authorization_code") ([[#aggregator-registration]]).
 - **version:** The version of the aggregator specification that the server adheres to.
-- **client_id**: URL of the client_id {{#client-json}}.
-- **transformations:** URL of the transformations endpoint {{#transformations}}.
+- **client_id**: URL of the client metadata document [[#client-metadata-document]].
+- **transformations:** URL of the transformation catalog [[#transformation-catalog]].
 
-It must be accessible with JSON and might use content negotiation based on [[HTTP]] for semanticly anotated versions.
+It must be accessible with JSON and might use content negotiation based on [[RFC9110]] for semanticly anotated versions.
 
 ISSUE: TODO add example with semantics? add hasTransformationCollection
 
-`./client.json` {#client-json}
----------------------
+Client Metadata Document (`./client.json`) {#client-metadata-document}
+--------------------------------------------------------
 
 Endpoint that exposes the client identifier used for authorization.
 
@@ -27,8 +27,8 @@ ISSUE: TODO what needs to be included?
 ISSUE: TODO add example with semantics
 
 
-`./transformations` {#transformations}
----------------------
+Transformation Catalog (`./transformations`) {#transformation-catalog}
+--------------------------------------------------------------
 
 This endpoint returns a RDF document describing the transformations supported by the aggregator server on a server level.
 This RDF document SHOULD be exposed using content negotiation based on HTTP.

@@ -1,9 +1,9 @@
-Service Lifecycle {#service-lifecycle}
-================
+Client Workflows (Non-normative) {#client-workflows}
+====================================================
 
 This section gives some examples on how a client can create, find, use and delete services on the Aggregator.
 This section is non-normative, and is only meant to illustrate the usage of the various endpoints defined in this specification.
-This section assumes the client has already created an Aggregator using the Registration Endpoint ([[#registration-endpoint]]) and is able to authenticate using the mechanisms defined in [[#authentication]].
+This section assumes the client has already created an Aggregator using the Aggregator Registration API ([[#aggregator-registration]]) and is able to authenticate using the mechanisms defined in [[#security-model]].
 
 Creating a Service {#creating-a-service}
 -----------------

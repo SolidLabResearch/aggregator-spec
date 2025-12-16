@@ -1,24 +1,24 @@
-Configuration Endpoint {#configuration-endpoint}
-==================================
+Aggregator Management API (Configuration) {#aggregator-management-api}
+==================================================================
 
-The Configuration Endpoint gives an authenticated client a complete view on the Aggregator: it exposes the transformations that can be used to assemble a pipeline and it lets the client create, inspect, and remove concrete Aggregator Services (called _actors_ in the reference implementation). 
+The Aggregator Management API gives an authenticated client a complete view on the Aggregator: it exposes the transformations that can be used to assemble a pipeline and it lets the client create, inspect, and remove concrete Aggregator Services (called _actors_ in the reference implementation). 
 All configuration routes:
 
-- MUST be protected by the authentication and authorization mechanisms defined in [[#authentication]]; an unauthorized request MUST fail before reaching the handler.
+- MUST be protected by the authentication and authorization mechanisms defined in [[#security-model]]; an unauthorized request MUST fail before reaching the handler.
 - MUST answer CORS preflight requests by responding to `OPTIONS` with `204 No Content` and the permissive `Access-Control-Allow-*` headers shown in the reference implementation (`Authorization` MUST be listed in `Access-Control-Allow-Headers`).
 - MUST respond with JSON using `Content-Type: application/json` unless explicitly stated otherwise.
 
-Available Transformations {#config-transformations}
--------------------------------
+Available Transformations (Authenticated) {#config-transformations}
+------------------------------------------------------------------
 
-The `/config/transformations` resource is an extention on the public `/transformations` endpoint defined in [[#transformations]].
+The `/config/transformations` resource is an extention on the public `/transformations` endpoint defined in [[#transformation-catalog]].
 It allows clients to discover which transformations are available.
 This endpoint, contrasting to the public `/transformations`, MAY be user specific and MUST require authentication.
 A client SHOULD combinge the information from this endpoint with the public `/transformations` endpoint to get a complete view on the available transformations.
 The endpoint follows the same content negotiation rules and other requirements as the public `/transformations` endpoint.
 
-Service Collection {#config-services}
--------------------------------
+Service Collection (`/config/services`) {#config-services}
+---------------------------------------------------------
 
 `/config/services` represents the collection of configured Aggregator Services.
 The Aggregator MUST register this UMA resource with the Authorization Server and advertise the `read` and `create` scopes so that clients can both inspect and add members.
@@ -27,7 +27,7 @@ The Aggregator MUST register this UMA resource with the Authorization Server and
 :: Returns the collection metadata. The server MUST respond with `200 OK`, `Content-Type: application/json`, and an `ETag` header whose value increases whenever a service is added or removed. The `ETag` allows clients to detect collection changes without re-downloading it.
 
 : `GET`
-:: Returns the current list of service identifiers. The payload MUST be a JSON object with a `services` array that only contains strings, and SHOULD expose JSON-LD semantics by referencing the Aggregator vocabulary defined in [[#vocabulary]]. Example:
+:: Returns the current list of service identifiers. The payload MUST be a JSON object with a `services` array that only contains strings, and SHOULD expose JSON-LD semantics by referencing the Aggregator vocabulary defined in [[#rdf-vocabulary]]. Example:
 
     ISSUE: TODO add a "formal" defenition of the JSON structure
 
@@ -64,8 +64,8 @@ The Aggregator MUST register this UMA resource with the Authorization Server and
 
     If the request body is invalid the server MUST respond with `400 Bad Request`. Failures while instantiating the service MUST result in `500 Internal Server Error`.
 
-Individual Service {#config-services-service-id}
--------------------------------
+Service Resource (`/config/services/{service_id}`) {#config-services-service-id}
+-------------------------------------------------------------------------------
 
 Operations on an individual service require the `read` and `delete` scopes on the `/config/services/{service_id}` path. 
 The path component `{service_id}` MUST exactly match one of the identifiers returned by the collection resource; a request for a non-existent service MUST return `404 Not Found`, while malformed paths MUST yield `400 Bad Request`.
@@ -75,7 +75,7 @@ The path component `{service_id}` MUST exactly match one of the identifiers retu
 
 : `GET`
 :: A JSON representation of the service SHOULD be returned with `200 OK` and with a `Content-Type`.
-    These representations MAY include a JSON-LD context that maps the `aggr:` terms defined in [[#vocabulary]] so clients can consume typed data, and content negotiation SHOULD be supported.
+    These representations MAY include a JSON-LD context that maps the `aggr:` terms defined in [[#rdf-vocabulary]] so clients can consume typed data, and content negotiation SHOULD be supported.
     The representation MUST include at least the following fields:
     - **id:** The service identifier.
     - **status:** The current status of the service (e.g., "running", "stopped", "error").

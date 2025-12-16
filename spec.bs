@@ -17,20 +17,22 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 </pre>
 
 <!-- Content -->
-<pre class="include" path="sections/1-introduction.bs"></pre>
+<pre class="include" path="sections/01-introduction-and-scope.bs"></pre>
 
-<pre class="include" path="sections/2-definitions.bs"></pre>
+<pre class="include" path="sections/02-definitions.bs"></pre>
 
-<pre class="include" path="sections/3-public-metadata.bs"></pre>
+<pre class="include" path="sections/03-architecture-and-resource-model.bs"></pre>
 
-<pre class="include" path="sections/4-registration-endpoint.bs"></pre>
+<pre class="include" path="sections/04-aggregator-server-discovery-server-metadata.bs"></pre>
 
-<pre class="include" path="sections/5-authentication.bs"></pre>
+<pre class="include" path="sections/05-aggregator-registration-provisioning-api.bs"></pre>
 
-<pre class="include" path="sections/6-aggregator-status-endpoint.bs"></pre>
+<pre class="include" path="sections/06-security-model-authentication-and-authorization.bs"></pre>
 
-<pre class="include" path="sections/7-configuration-endpoint.bs"></pre>
+<pre class="include" path="sections/07-aggregator-instance-metadata-status.bs"></pre>
 
-<pre class="include" path="sections/8-service-lifecycle.bs"></pre>
+<pre class="include" path="sections/08-aggregator-management-api-configuration.bs"></pre>
 
-<pre class="include" path="sections/9-vocabulary.bs"></pre>
+<pre class="include" path="sections/09-client-workflows-non-normative.bs"></pre>
+
+<pre class="include" path="sections/10-rdf-vocabulary-aggr.bs"></pre>

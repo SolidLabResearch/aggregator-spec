@@ -1,5 +1,5 @@
-Registration Endpoint {#registration-endpoint}
-=====================
+Aggregator Registration (Provisioning) API {#aggregator-registration}
+==================================================================
 This section describes how aggregators are managed on the Aggregator Server level.
 The authorization for these endpoints is defined by the implementation and up to the Aggregator provider to decide.
 The user requires authenticated requests to manage their aggregator accounts on wich the Aggregator provider can base their authorization decisions.
@@ -9,8 +9,8 @@ ISSUE: TODO add a defenition of the endpoint here, after we go into the flows of
 
 ISSUE: TODO add that after creation the aggregator should register the resources to the AS.
 
-Aggregator Creation {#aggregator-creation}
----------------------
+Aggregator Creation (Registration) {#aggregator-creation}
+--------------------------------------------------------
 This section describes how clients can create an Aggregator.
 There exists different flows to create an aggregator depending on the registration type.
 
