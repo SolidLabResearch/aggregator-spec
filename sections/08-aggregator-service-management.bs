@@ -1,0 +1,274 @@
+Aggregator Service Management {#aggregator-service-management}
+==================================================================
+
+The Aggregator Management API gives an authenticated client a complete view on the Aggregator: it exposes the transformations that can be used to assemble a pipeline and it lets the client create, inspect, and remove concrete Aggregator Services. 
+Implementations MAY use different URLs as long as the Aggregator Metadata document (described in [[#aggregator-description]]) links to the concrete entry points.
+All configuration routes:
+
+- MUST be protected by the authentication and authorization mechanisms defined in [[#aggregator-security-model]]; an unauthorized request MUST fail before reaching the handler.
+- MUST answer CORS preflight requests by responding to `OPTIONS` with `204 No Content` and the permissive `Access-Control-Allow-*` headers shown in the reference implementation (`Authorization` MUST be listed in `Access-Control-Allow-Headers`).
+- MUST respond with JSON using `Content-Type: application/json` unless explicitly stated otherwise.
+
+
+Service Collection {#service-collection}
+---------------------------------------------------------
+
+This resource represents the collection of configured Aggregator Services.
+The location of this resource is advertised in the Aggregator Description ([[#aggregator-description]]) via the `service_collection` field.
+Clients MUST treat that advertised URL as authoritative and MUST NOT assume a fixed path (the examples in this section use `/services` purely for illustration).
+The Aggregator MUST register this UMA resource with the Authorization Server and advertise the `read` and `create` scopes so that clients can both inspect and add members.
+
+: `HEAD`
+:: Returns the collection metadata. The server MUST respond with `200 OK`, `Content-Type: application/json`, and an `ETag` header whose value increases whenever a service is added or removed. The `ETag` allows clients to detect collection changes without re-downloading it.
+
+: `GET`
+:: Returns the current list of service resources.
+    The server MUST set the same `ETag` value as the `HEAD` response.
+    The server MAY additionally expose semantically annotated RDF representations (for example JSON-LD or Turtle) using HTTP content negotiation based on [[RFC9110]].
+    The payload MUST be a JSON object and MUST include at least the following fields:
+
+    : **services** (REQUIRED):
+    :: The value is a JSON array of strings.
+    :: Each member MUST be an absolute URL (IRI) of a Service Resource that can be dereferenced by the client.
+    :: In semantically annotated representations, this member maps to the predicate `aggr:service` ([[#aggr-service-property]]).
+    : **id** (OPTIONAL):
+    :: The value is a string containing the absolute URL that identifies this Service Collection (typically the same URL as the request target).
+    :: In semantically annotated representations, this is the RDF subject (i.e., `@id`) of the `aggr:ServiceCollection` resource ([[#aggr-service-collection-class]]).
+
+    <div class="example">
+    ```json
+    {
+      "@context": {
+        "id": "@id",
+        "services": {
+          "@id": "aggr:service",
+          "@container": "@set",
+          "@type": "@id"
+        },
+        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#"
+      },
+      "id": "https://aggregator.example.org/services",
+      "services": [
+        "https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5",
+        "https://aggregator.example.org/services/42"
+      ]
+    }
+    ```
+    </div>
+
+: `POST`
+:: Creates a new service. 
+    The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type). 
+    ISSUE: TODO define at least one required media type and canonical representation for the pipeline description (e.g., Turtle/JSON-LD for FnO execution), and define how clients discover which media types are supported.
+    Upon successful creation the server MUST
+
+      1. Persist the new service and increment the collection `ETag`.
+      2. Register a new UMA resource for the created Service Resource URL (e.g., `/services/{service_id}`) with the `read` and `delete` scopes so the creator—or any other party with an RPT containing those scopes—can manage the service.
+      3. Return `201 Created`, set `Content-Type: application/json`, and include the full JSON representation of the service in the response body.
+
+    If the request body is invalid the server MUST respond with `400 Bad Request`. Failures while instantiating the service MUST result in `500 Internal Server Error`.
+    ISSUE: TODO define error handling for authorization failures and UMA challenges on `POST` (e.g., `401 Unauthorized` with UMA ticket vs `403 Forbidden`) and specify required `WWW-Authenticate` parameters.
+
+Service Resource {#service-resource}
+-------------------------------------------------------------------------------
+
+Operations on an individual service require the `read` and `delete` scopes on the Service Resource URL (e.g., `/services/{service_id}`).
+The service URL MUST be one of the URLs returned by the collection resource; a request for a non-existent service MUST return `404 Not Found`, while malformed service URLs MUST yield `400 Bad Request`.
+
+: `HEAD`
+:: Returns the service metadata. The server MUST respond with `200 OK` and `ETag`, and `Content-Type` headers whose value MUST change whenever the service state changes.
+
+: `GET`
+:: A JSON representation of the service SHOULD be returned with `200 OK` and with a `Content-Type`.
+    These representations MAY include a JSON-LD context that maps the `aggr:` terms defined in [[#vocabulary]] so clients can consume typed data, and content negotiation SHOULD be supported.
+    The representation MUST include at least the following fields:
+
+    : **id** (REQUIRED):
+    :: The value is a string containing the absolute URL of this Service Resource.
+    :: In semantically annotated representations, this is the RDF subject (i.e., `@id`) of the `aggr:Service` resource ([[#aggr-service-class]]).
+
+    : **status** (REQUIRED):
+    :: The value is a string indicating the current status of the service (e.g., `"running"`, `"restarting"`, `"stopped"`, or `"errored"`).
+    :: In semantically annotated representations, this member maps to the predicate `aggr:status` ([[#aggr-status-property]]).
+    : **transformation** (REQUIRED):
+    :: The value is either a string containing an IRI of the transformation/execution graph, or a JSON object embedding an FnO execution description.
+    :: In semantically annotated representations, this member maps to the predicate `aggr:transformation` ([[#aggr-transformation-property]]).
+
+    : **created_at** (REQUIRED):
+    :: The value is a string timestamp (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]).
+    :: In semantically annotated representations, this member maps to the predicate `aggr:createdAt` ([[#aggr-created-at-property]]).
+    : **location** (REQUIRED):
+    :: The value is a string containing an absolute URL where the service output can be accessed.
+    :: In semantically annotated representations, this member maps to the predicate `aggr:location` ([[#aggr-location-property]]).
+
+
+: `DELETE`
+:: Stops and removes the service.
+    The Aggregator MUST stop the running pipeline, delete the persisted service entry, increment the collection `ETag`, unregister the service’s UMA resource (e.g., `/services/{service_id}`), and respond with `200 OK`.
+    Clients that held the service identifier MUST treat it as invalid after receiving the success response.
+
+ISSUE: TODO add a compact example for the Service Resource representation (JSON and JSON-LD).
+ISSUE: TODO define the canonical status codes and headers for create/read/delete (e.g., `201 Created` + `Location` for creation) and align the non-normative examples with the normative requirements.
+
+Service Management Flows (Non-normative) {#service-management-flows}
+----------------------------------------
+
+This section gives some examples on how a client can create, find, use and delete services on the Aggregator.
+This section is non-normative, and is only meant to illustrate the usage of the various endpoints defined in this specification.
+This section assumes the client has already created an Aggregator using the Aggregator Registration API ([[#aggregator-registration]]) and is able to authenticate using the mechanisms defined in [[#aggregator-security-model]].
+
+### Creating a Service ### {#creating-a-service}
+
+To create a new Aggregator Service, a client starts by doing a `POST` request to the Service Collection endpoint (i.e., the URL advertised via `service_collection` in the Aggregator Description; this section uses `/services` as an example).
+The body of the post is an execution of an FnO function [[!FNO]]; the details will be provided later as this request fails due to missing authentication.
+
+<div class="example">
+```http
+POST /services HTTP/1.1
+Host: aggregator.example.org
+Content-Type: text/turtle
+
+@prefix trans: <http://aggregator.example.org/transformations>
+@prefix fno: <https://w3id.org/function/ontology#>
+
+_:execution a fno:Execution ;
+    fno:executes trans:AggregateSources ;
+    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
+```
+</div>
+
+The Aggregator fetches a ticket from the Authorization Server with the resource_id `1a2b-creation-endpoint` it got during asset creation.
+ISSUE: TODO clarify how the UMA resource_id for the Service Collection is discovered/derived and how it relates to the advertised Service Collection URL.
+
+<div class="example">
+```http
+HTTP/1.1 /ticket
+Host: as.example.org
+Content-Type: application/json
+{
+    "resource_id": "1a2b-creation-endpoint",
+    "resource_scopes": ["https://example.org/modes/create"]
+}
+```
+</div>
+
+This returns a ticket that discribes the request done to the RS (the Aggregator in this case).
+
+<div class="example">
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+{
+    "ticket": "ticket-1"
+}
+```
+</div>
+
+This ticket is then returned to the client in a `401 Unauthorized` response.
+
+<div class="example">
+```http
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: UMA realm="example", as_uri="https://as.example.org", ticket="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+</div>
+
+The client then requests an RPT from the AS using the ticket, as defined in [[#aggregator-security-model]].
+The original request can then be retried, this time including the RPT in the `Authorization` header.
+
+<div class="example">
+```http
+POST /services HTTP/1.1
+Host: aggregator.example.org
+Authorization: Bearer ey...
+Content-Type: text/turtle
+
+@prefix trans: <http://aggregator.example.org/transformations>
+@prefix fno: <https://w3id.org/function/ontology#>
+
+_:execution a fno:Execution ;
+    fno:executes trans:AggregateSources ;
+    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
+```
+</div>
+
+If the request is valid, the Aggregator will create a new service, register the appropriate UMA resource, and return a `201 Created` response with the service representation in the body.
+
+<div class="example">
+```http
+HTTP/1.1 200 OK
+Content-Type: text/turtle
+
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix trans: <http://aggregator.example.org/transformations#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5>
+    a aggr:Service ;
+    aggr:status "running" ;
+    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
+    aggr:location <https://example.org/410b093c-04b3-4fac-87be-4d393f40b2e5> ;
+    aggr:transformation [
+        a fno:Execution ;
+        fno:executes trans:AggregateSources ;
+        trans:sources ( <http://example.org/source/1> <http://example.org/source/2> )
+    ] .
+```
+</div>
+
+### Discovering Services ### {#discovering-services}
+
+To discover the services currently registered on the Aggregator, a client can do a `GET` request to the Service Collection endpoint (this section uses `/services` as an example).
+After authenticating using the mechanisms defined in [[#aggregator-security-model]], the Aggregator will return a list with the registered service from [[#creating-a-service]].
+
+<div class="example">
+```http
+HTTP/1.1 200 OK
+Content-Type: text/turtle
+
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<> a aggr:ServiceCollection ;
+    aggr:service <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5> .
+```
+</div>
+
+Dereferencing this URL will return the full service representation.
+
+<div class="example">
+```http
+HTTP/1.1 201 Created
+Content-Type: text/turtle
+
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix trans: <http://aggregator.example.org/transformations#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5>
+    a aggr:Service ;
+    aggr:status "running" ;
+    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
+    aggr:location <https://example.org/410b093c-04b3-4fac-87be-4d393f40b2e5> ;
+    aggr:transformation [
+        a fno:Execution ;
+        fno:executes trans:AggregateSources ;
+        trans:sources ( <http://example.org/source/1> <http://example.org/source/2> )
+    ] .
+```
+</div>
+
+### Using a Simple Service ### {#using-a-service}
+
+After discovering the service, the client can use the `location` URL to access the output of the service.
+For example, if the service produces a JSON output, the client can do a `GET` request to the `location` URL.
+This will again require authentication using the mechanisms defined in [[#aggregator-security-model]] to access this resource.
+This time the client might need to gather multiple access claims from the AS's of `http://example.org/source/1` and `http://example.org/source/2`.
+
+### Using a Complex Service ### {#using-a-complex-service}
+
+As a complex example the resulting service could be an aggregator that combines multiple data sources into a single output stream available at the `location` URL.
+For example we assume this results is a kafka stream.
+
+ISSUE: TODO add the example flow here

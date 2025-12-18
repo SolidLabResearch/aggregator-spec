@@ -1,6 +1,0 @@
-Introduction & Scope {#introduction}
-====================
-
-The introduction for the Aggregator specification will be expanded in future revisions.
-
-ISSUE: TODO add that the use of semantics is encouraged but not mandatory.

@@ -1,4 +1,4 @@
-Security Model (Authentication & Authorization) {#security-model}
+Aggregator Security Model (Authentication & Authorization) {#aggregator-security-model}
 ===============================================================
 
 This section describes how the Aggregator handles authentication and authorization for:
@@ -6,11 +6,14 @@ This section describes how the Aggregator handles authentication and authorizati
 - outgoing requests from the Aggregator to upstream Resource Servers; and
 - incoming requests from Clients to the Aggregator.
 
-The Aggregator relies on the Authorization for Data Spaces (A4DS) specification to authenticate Clients and authorize access to resources.
-For streaming or non-HTTP interfaces, the Aggregator MAY additionally use the Service Authorization for Data Spaces (SA4DS) specification.
-All Aggregator endpoints are protected using User-Managed Access (UMA).
+The Aggregator relies on the Authorization for Data Spaces (A4DS) specification [[!A4DS]] to authenticate Clients and authorize access to resources.
+For streaming or non-HTTP interfaces, the Aggregator MAY additionally use the Service Authorization for Data Spaces (SA4DS) specification [[!SA4DS]].
+All Aggregator endpoints are protected using User-Managed Access (UMA) [[!UMA]].
 
 NOTE: The following behavior extends the A4DS specification and is intended to be incorporated in a future version of A4DS.
+
+ISSUE: TODO these are flows but not realy endpoint definitions.
+ISSUE: TODO specify which concrete endpoints on the Aggregator (and its Authorization Server) are required for UMA ticket issuance, UMA grant requests, and token introspection, including required request/response fields.
 
 Upstream Access (Requesting) {#requesting-flow}
 ----------------------------------------------
@@ -89,12 +92,14 @@ Content-Type: application/json
 {
     "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
     "ticket": "tkt-URS",
-    "scope": "urn:knows:uma:scopes:derivation-creation"
-    "claim_token": "IDP_aggregator_token",
+    "scope": "urn:knows:uma:scopes:derivation-creation",
+    "claim_token": "<IDP_aggregator_token>",
     "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken",
 }
 ```
 </div>
+
+ISSUE: TODO fix remaining example payloads in this section to be valid JSON (no trailing commas, consistent placeholder tokens) and align them with the normative UMA grant request format.
 **2.1 Upstream Authorization Server validates the ID token**
 
 The Upstream Authorization Server validates the ID token with the Identity Provider that issued it.
