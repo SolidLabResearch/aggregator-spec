@@ -16,21 +16,58 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     type: dfn; text: server-sent events
 </pre>
 
+<pre class="biblio">
+{
+  "A4DS": {
+    "href": "https://solid.github.io/authorization-for-data-spaces/",
+    "title": "Authorization for Data Spaces (A4DS)"
+  },
+  "FNO": {
+    "href": "https://w3id.org/function/spec/",
+    "title": "Function Ontology (FnO)"
+  },
+  "OIDC-Core": {
+    "href": "https://openid.net/specs/openid-connect-core-1_0.html",
+    "title": "OpenID Connect Core 1.0"
+  },
+  "OIDC-Registration": {
+    "href": "https://openid.net/specs/openid-connect-registration-1_0.html",
+    "title": "OpenID Connect Dynamic Client Registration 1.0"
+  },
+  "SA4DS": {
+    "href": "https://solid.github.io/service-authorization-for-data-spaces/",
+    "title": "Service Authorization for Data Spaces (SA4DS)"
+  },
+  "SOLID-OIDC": {
+    "href": "https://solidproject.org/TR/solid-oidc",
+    "title": "Solid OIDC"
+  },
+  "UMA": {
+    "href": "https://docs.kantarainitiative.org/uma/rec-uma-core.html",
+    "title": "User-Managed Access (UMA) 2.0"
+  },
+  "WEBID-PROFILE": {
+    "href": "https://solid.github.io/webid-profile/",
+    "title": "WebID Profile"
+  }
+}
+</pre>
+
 <!-- Content -->
-<pre class="include" path="sections/1-introduction.bs"></pre>
+<pre class="include" path="sections/01-introduction.bs"></pre>
 
-<pre class="include" path="sections/2-definitions.bs"></pre>
+<pre class="include" path="sections/02-definitions.bs"></pre>
 
-<pre class="include" path="sections/3-public-metadata.bs"></pre>
+<pre class="include" path="sections/03-architecture-and-resource-model.bs"></pre>
 
-<pre class="include" path="sections/4-registration-endpoint.bs"></pre>
+<pre class="include" path="sections/04-aggregator-server-metadata.bs"></pre>
 
-<pre class="include" path="sections/5-authentication-and-authorization.bs"></pre>
+<pre class="include" path="sections/05-aggregator-management.bs"></pre>
 
-<pre class="include" path="sections/6-aggregator-status-endpoint.bs"></pre>
+<pre class="include" path="sections/06-security-model-authentication-and-authorization.bs"></pre>
 
-<pre class="include" path="sections/7-transformations-endpoint.bs"></pre>
+<pre class="include" path="sections/07-aggregator-metadata.bs"></pre>
 
-<pre class="include" path="sections/8-services-endpoint.bs"></pre>
+<pre class="include" path="sections/08-aggregator-service-management.bs"></pre>
 
-<pre class="include" path="sections/9-service.bs"></pre>
+<pre class="include" path="sections/09-vocabulary.bs"></pre>

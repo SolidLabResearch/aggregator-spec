@@ -1,0 +1,79 @@
+Architecture & Resource Model {#architecture-resource-model}
+===========================================================
+
+This section describes the high-level architecture of an Aggregator deployment and the resource model exposed by this specification.
+It connects the terminology in [[#definitions]] to the endpoint definitions in later sections.
+
+Actors and Responsibilities {#architecture-actors}
+-------------------------------------------------
+
+The protocol distinguishes the following parties:
+
+- **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator Services.
+- **Aggregator Server:** The server that exposes public discovery information and a registration API to create Aggregator Instances.
+- **Aggregator Instance:** A user-specific (or tenant-specific) logical instance created via registration, exposing instance metadata and a management API.
+- **Aggregator Service:** A configured data-processing pipeline created and managed within an Aggregator Instance.
+- **Identity Provider (IdP):** Issues OIDC tokens used to prove identity as part of registration and upstream authorization flows.
+- **Authorization Server (AS):** A UMA-capable OAuth2 Authorization Server that issues RPTs for protected resources.
+- **Resource Server (RS):** An upstream resource server hosting data that the Aggregator Service may access on behalf of the user.
+
+Resource Types {#resource-types}
+-------------------------------
+
+This specification defines HTTP resources at three levels:
+
+- **Aggregator Server resources:** metadata and instance registration (see [[#aggregator-server-metadata]] and [[#aggregator-registration]]).
+- **Aggregator Instance resources:** instance metadata and service management (see [[#aggregator-metadata]] and [[#aggregator-service-management]]).
+- **Aggregator Service resources:** a service collection and individual services managed under the instance (see [[#service-collection]] and [[#service-resource]]).
+
+Base URLs and Addressing {#base-urls-and-addressing}
+---------------------------------------------------
+
+An implementation MUST define a stable base URL for:
+
+- the Aggregator Server (the `aggregator-server-url`); and
+- each Aggregator Instance (the `aggregator-url`).
+
+All paths in this specification are expressed relative to either the server base URL or the instance base URL:
+
+- **Server-relative resources:** the server metadata resource at `{aggregator-server-url}/` (see [[#aggregator-server-metadata]]) and the discovery endpoints it links to, such as a registration API (e.g., `{aggregator-server-url}/registration/`; see [[#aggregator-management]]), the Client Identifier Document, and the public transformation catalog (see [[#client-identifier-document]] and [[#public-transformation-catalog]]).
+- **Instance-relative resources:** the instance metadata resource at `{aggregator-url}/` (see [[#aggregator-metadata]]) and the management endpoints that the instance advertises (e.g., `{aggregator-url}/services`; see [[#aggregator-service-management]]).
+
+An implementation MAY use either of the following instance addressing patterns:
+
+- **Host-based instances:** `https://{instance-id}.aggregator.example/`
+- **Path-based instances:** `https://aggregator.example/{instance-id}/`
+
+If an implementation supports multiple patterns, it MUST ensure that URLs returned in representations are self-consistent for a given instance (i.e., all links for that instance share the same instance base URL).
+Clients SHOULD treat server-provided URLs as authoritative and avoid constructing URLs by string concatenation.
+Unless a path is explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use different locations as long as the relevant metadata resources advertise the authoritative links.
+
+Discovery and Entry Points {#discovery-and-entry-points}
+--------------------------------------------------------
+
+- The Aggregator Server exposes a public discovery resource at its server base URL (see [[#server-description]]).
+- Clients create (or obtain access to) an Aggregator Instance via the registration API (see [[#aggregator-registration]]).
+- The resulting instance base URL is the entry point for instance metadata (see [[#aggregator-metadata]]) and instance management (see [[#aggregator-service-management]]).
+
+Security Boundaries {#security-boundaries}
+-----------------------------------------
+
+All security requirements are defined in [[#aggregator-security-model]].
+At a high level:
+
+- Public (no authentication): the server metadata resource (see [[#server-description]]) and the resources it links to, such as the transformation catalog and Client Identifier Document (see [[#public-transformation-catalog]] and [[#client-identifier-document]]).
+- Protected (UMA): the instance metadata resource (see [[#aggregator-metadata]]) and all resources under the management API (see [[#aggregator-service-management]]).
+
+ISSUE: TODO clarify the boundary between the Aggregator Instance (management API) and the Aggregator Service output resources (the `location` URLs), including whether outputs are always protected by the same Authorization Server and UMA policies.
+
+Example URL Layout (Non-normative) {#example-url-layout}
+-------------------------------------------------------
+
+Given an Aggregator Server at `https://aggregator.example/` and a path-based Aggregator instance at `https://aggregator.example/abc123/`:
+
+- Server metadata: `https://aggregator.example/`
+- Registration: `https://aggregator.example/registration`
+- Transformation catalog: `https://aggregator.example/transformations`
+- Instance metadata: `https://aggregator.example/abc123/`
+- Instance Transformation catalog: `https://aggregator.example/abc123/config/transformations`
+- Service collection: `https://aggregator.example/abc123/config/services`

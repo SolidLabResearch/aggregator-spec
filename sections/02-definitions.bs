@@ -1,0 +1,50 @@
+Definitions {#definitions}
+===================================
+
+This section defines terminology used throughout this specification.
+Where applicable, terms are aligned with external specifications such as WebID Profiles, OpenID Connect (OIDC) [[!OIDC-Core]], OAuth 2.0 [[RFC6749]], and User-Managed Access (UMA) [[!UMA]].
+
+Core Roles and Components {#definitions-core}
+---------------------------------------------
+
+- **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator Services.
+
+- **Aggregator Server:** The server deployment that exposes public discovery metadata and a registration API used to create and manage Aggregator Instances.
+
+- **Aggregator Instance** (often shortened to “Aggregator”): A user- or tenant-scoped logical instance created via the registration endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
+
+- **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service references a transformation/execution graph and exposes a `location` where the derived result can be retrieved (see [[#aggregator-service-management]]).
+
+- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator Instance (see [[#public-transformation-catalog]] and [[#private-transformation-catalog]]).
+
+Identity, Authorization, and Tokens {#definitions-security}
+----------------------------------------------------------
+
+- **User (End-user):** A person or agent that owns or controls resources and uses a Clienbt to configure an Aggregator deployment.
+
+- **WebID:** An HTTP(S) IRI that identifies an agent and can be dereferenced to obtain a WebID Profile document as defined in [[!WEBID-PROFILE]].
+
+- **Identity Provider (IdP):** An OpenID Connect Provider following the SOLID-OIDC spec ([[!SOLID-OIDC]]) that authenticates a user based on it's WebID Profile ([[!WEBID-PROFILE]]) and issues ID tokens used by this protocol during registration and authorization workflows.
+
+- **Authorization Server (AS):** An OAuth 2.0 Authorization Server that supports UMA as defined in ([[!A4DS]]) and issues Requesting Party Tokens (RPTs) for protected resources.
+
+- **Resource Server (RS):** An HTTP server that hosts protected resources. In UMA terminology, a Resource Server protects resources and interacts with an Authorization Server to obtain UMA tickets and validate RPTs.
+
+- **UMA Ticket:** A value returned in a `WWW-Authenticate: UMA ...` challenge when a client requests a protected resource without sufficient authorization. The client presents the ticket to the Authorization Server to obtain an RPT.
+
+- **Requesting Party Token (RPT):** An OAuth 2.0 bearer token issued by an Authorization Server under UMA that encodes permissions/scopes for a protected resource (see [[RFC6750]]).
+
+- **ID Token:** An OpenID Connect ID token representing the authenticated user (and, depending on the deployment, the client). The protocol uses ID tokens as claim tokens in UMA exchanges and during registration flows as described in [[#aggregator-security-model]].
+
+- **Client Identifier Document:** A dereferenceable client metadata document that provides the `client_id` value and associated OpenID Connect Dynamic Client Registration metadata as required by the deployment (see [[#client-identifier-document]]).
+
+Namespaces {#aggregator-server-namespaces}
+-----------------------------------------
+
+The following namespace prefixes are used throughout this specification and SHOULD appear in RDF serializations (e.g., Turtle, JSON-LD contexts):
+
+- `aggr:` → `https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#`
+- `dct:` → `http://purl.org/dc/terms/`
+- `fno:` → `https://w3id.org/function/ontology#`
+- `rdf:` → `http://www.w3.org/1999/02/22-rdf-syntax-ns#`
+- `xsd:` → `http://www.w3.org/2001/XMLSchema#`

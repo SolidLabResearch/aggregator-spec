@@ -1,4 +1,0 @@
-Introduction {#introduction}
-============================
-
-The introduction for the Aggregator specification will be expanded in future revisions.

@@ -1,3 +1,0 @@
-Aggregator Status Endpoint {#aggregator-status-endpoint}
-==================================================
-
