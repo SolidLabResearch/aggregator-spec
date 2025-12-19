@@ -1,8 +1,7 @@
 Vocabulary {#vocabulary}
 ===================================
 
-ISSUE: TODO add links to the vocabulary so they are dereferenceable
-ISSUE: TODO add missing terms used elsewhere in the specification (e.g., the transformation catalog terms `aggr:TransformationCollection` and `aggr:hasTransformation`) and ensure all example predicates/classes are defined or referenced.
+ISSUE: TODO ensure all example predicates/classes are defined or referenced.
 
 The Aggregator vocabulary is defined in the `aggr:` namespace (`https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#`).
 The following classes and properties are used throughout this specification.
@@ -31,6 +30,12 @@ Describes the Aggregator Server Description document that advertises discovery m
 
 ### aggr:ServiceCollection ### {#aggr-service-collection-class}
 Describes the service collection resource (e.g., `/config/services`) and the metadata returned when listing configured services.
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+**subClassOf:** [schema:Collection](https://schema.org/Collection), [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
+
+### aggr:TransformationCollection ### {#aggr-transformation-collection-class}
+Describes a transformation catalog resource that lists the transformations supported by an Aggregator Server (and optionally instance-specific transformations).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Collection](https://schema.org/Collection), [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
@@ -110,6 +115,13 @@ Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:ServiceCollection`<br>
 **range:** `aggr:Service`
+
+### aggr:hasTransformation ### {#aggr-has-transformation-property}
+Links an `aggr:TransformationCollection` to the transformations it advertises.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:TransformationCollection`<br>
+**range:** [fno:Function](https://w3id.org/function/spec/#Function)
 
 ### aggr:status ### {#aggr-status-property}
 Provides the lifecycle phase of an `aggr:Service` (values such as `running`, `stopped`, or `error`).

@@ -7,8 +7,6 @@ It connects the terminology in [[#definitions]] to the endpoint definitions in l
 Actors and Responsibilities {#architecture-actors}
 -------------------------------------------------
 
-ISSUE: TODO add figure showing architecture
-
 The protocol distinguishes the following parties:
 
 - **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator Services.
@@ -24,10 +22,8 @@ Resource Types {#resource-types}
 
 This specification defines HTTP resources at three levels:
 
-ISSUE: TODO fix this list
-
-- **Aggregator Server resources:** discovery and registration (see [[#aggregator-server-metadata]] and [[#aggregator-registration]]).
-- **Aggregator Instance resources:** instance metadata and management (see [[#aggregator-metadata]] and [[#aggregator-service-management]]).
+- **Aggregator Server resources:** metadata and instance registration (see [[#aggregator-server-metadata]] and [[#aggregator-registration]]).
+- **Aggregator Instance resources:** instance metadata and service management (see [[#aggregator-metadata]] and [[#aggregator-service-management]]).
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see [[#service-collection]] and [[#service-resource]]).
 
 Base URLs and Addressing {#base-urls-and-addressing}

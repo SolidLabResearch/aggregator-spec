@@ -9,34 +9,24 @@ Core Roles and Components {#definitions-core}
 
 - **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator Services.
 
-- **Aggregator Server:** The server deployment that exposes public discovery metadata (the Aggregator Server Description) and a registration API used to create and manage Aggregator Instances.
-
-- **Aggregator Server Description:** The public metadata document hosted at the Aggregator Server base URL that advertises discovery information such as the registration endpoint, supported registration flows, the Client Identifier Document, and the public transformation catalog (see [[#server-description]]).
+- **Aggregator Server:** The server deployment that exposes public discovery metadata and a registration API used to create and manage Aggregator Instances.
 
 - **Aggregator Instance** (often shortened to “Aggregator”): A user- or tenant-scoped logical instance created via the registration endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
 
-- **Aggregator Description:** The instance metadata document hosted at the Aggregator Instance base URL. It exposes instance state and advertises authoritative URLs for instance-level endpoints such as the service collection and transformations endpoint (see [[#aggregator-description]]).
-
 - **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service references a transformation/execution graph and exposes a `location` where the derived result can be retrieved (see [[#aggregator-service-management]]).
 
-- **Service Collection:** The collection resource that lists the services configured in an Aggregator Instance and supports creating new services (see [[#service-collection]]).
-
-- **Service Resource:** The resource representing a single Aggregator Service (see [[#service-resource]]).
-
-- **Public Transformation Catalog:** A server-level catalog that describes the transformations supported by the Aggregator Server (see [[#public-transformation-catalog]]).
-
-- **Transformations Endpoint:** An instance-level endpoint that extends the public transformation catalog with instance-specific (possibly protected) transformations (see [[#private-transformation-catalog]]).
+- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator Instance (see [[#public-transformation-catalog]] and [[#private-transformation-catalog]]).
 
 Identity, Authorization, and Tokens {#definitions-security}
 ----------------------------------------------------------
 
-- **User (End-user):** A person or agent that owns or controls resources and uses a Client to configure an Aggregator deployment.
+- **User (End-user):** A person or agent that owns or controls resources and uses a Clienbt to configure an Aggregator deployment.
 
 - **WebID:** An HTTP(S) IRI that identifies an agent and can be dereferenced to obtain a WebID Profile document as defined in [[!WEBID-PROFILE]].
 
-- **Identity Provider (IdP):** An OpenID Connect Provider that authenticates a user and issues OIDC tokens (e.g., ID tokens) used by this protocol during registration and authorization workflows.
+- **Identity Provider (IdP):** An OpenID Connect Provider following the SOLID-OIDC spec ([[!SOLID-OIDC]]) that authenticates a user based on it's WebID Profile ([[!WEBID-PROFILE]]) and issues ID tokens used by this protocol during registration and authorization workflows.
 
-- **Authorization Server (AS):** An OAuth 2.0 Authorization Server that supports UMA and issues Requesting Party Tokens (RPTs) for protected resources.
+- **Authorization Server (AS):** An OAuth 2.0 Authorization Server that supports UMA as defined in ([[!A4DS]]) and issues Requesting Party Tokens (RPTs) for protected resources.
 
 - **Resource Server (RS):** An HTTP server that hosts protected resources. In UMA terminology, a Resource Server protects resources and interacts with an Authorization Server to obtain UMA tickets and validate RPTs.
 
@@ -45,15 +35,6 @@ Identity, Authorization, and Tokens {#definitions-security}
 - **Requesting Party Token (RPT):** An OAuth 2.0 bearer token issued by an Authorization Server under UMA that encodes permissions/scopes for a protected resource (see [[RFC6750]]).
 
 - **ID Token:** An OpenID Connect ID token representing the authenticated user (and, depending on the deployment, the client). The protocol uses ID tokens as claim tokens in UMA exchanges and during registration flows as described in [[#aggregator-security-model]].
-
-- **`IDP_client_token`:** A bearer token presented by the Client to authenticate to the Aggregator Server’s registration and management endpoints. This token is issued by an Identity Provider and is used for client/user authentication and authorization decisions (see [[#aggregator-security-model]]).
-
-- **`IDP_aggregator_token`:** A token obtained by the Aggregator on behalf of an Aggregator Instance that allows it to act for a given WebID in downstream UMA/OIDC interactions, as described in the registration flows (see [[#aggregator-registration]] and [[#aggregator-security-model]]).
-
-ISSUE: TODO clarify the expected token types and claims in this specification (e.g., whether `IDP_client_token` is an access token or ID token, which audiences/issuers are valid, and how it relates to the claim tokens shown in UMA examples).
-
-Client Identification {#definitions-client-identification}
----------------------------------------------------------
 
 - **Client Identifier Document:** A dereferenceable client metadata document that provides the `client_id` value and associated OpenID Connect Dynamic Client Registration metadata as required by the deployment (see [[#client-identifier-document]]).
 

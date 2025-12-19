@@ -11,6 +11,9 @@ The Aggregator Server Description is a public metadata document that allows clie
 This document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MUST be accessible without authentication, and MUST provide at least the following information.
 Each JSON member is paired with an RDF predicate from [[#vocabulary]] so the document can also be served as JSON-LD or other RDF formats using content negotiation based on [[RFC9110]]:
 
+In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` in Turtle).
+Clients MAY rely on this type statement when consuming semantic representations.
+
 : **registration_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the Aggregator Registration Endpoint ([[#aggregator-registration]]); in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` ([[#aggr-registration-endpoint-property]]).
 : **supported_registration_types** (REQUIRED):
@@ -82,10 +85,6 @@ This property can allow an Aggregator Server implementation to restrict which cl
 
 Public Transformation Catalog {#public-transformation-catalog}
 --------------------------------------------------------------
-
-ISSUE: TODO mention this is not JSON-first
-ISSUE: TODO define the vocabulary terms used by this section (e.g., `aggr:TransformationCollection`, `aggr:hasTransformation`) and add them to [[#vocabulary]].
-ISSUE: TODO define a JSON-first representation for the public transformation catalog in addition to the RDF representation, or explicitly require RDF-only.
 
 This endpoint returns a RDF document describing the transformations supported by the aggregator server on a server level.
 Servers MAY publish this catalog at any deployment-specific URL; the Aggregator Server Description MUST advertise it via the `transformation_catalog` field.

@@ -16,7 +16,8 @@ It MUST be accessible as JSON using `application/json` and MAY additionally expo
 The endpoint MUST return at least the following information about the aggregator, but additional fields MAY be included as needed.
 Each field SHOULD be expressed using the RDF properties defined in [[#vocabulary]] so the document MAY be served as JSON-LD or other RDF formats:
 
-ISSUE: TODO define whether the Aggregator Description MUST include `@type: "aggr:Aggregator"` (or an equivalent RDF type statement) in semantic representations, and whether clients may rely on it.
+In semantically annotated representations, the Aggregator Description MUST state that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-class]]) (e.g., via `@type` in JSON-LD or `a aggr:Aggregator` in Turtle).
+Clients MAY rely on this type statement when consuming semantic representations.
 
 : **id** (OPTIONAL):
 :: The value is a string containing the absolute URL that identifies the Aggregator Instance (typically the instance base URL itself); in the RDF representations, this is the RDF subject (i.e., `@id`) of the `aggr:Aggregator` resource ([[#aggr-aggregator-class]]).
@@ -75,8 +76,6 @@ In that case this document MUST be an RDF document that conforms to the WebID Pr
 }
 ```
 </div>
-
-ISSUE: TODO clarify whether `solid:oidcIssuer` is required/recommended for interop, and whether it should be replaced by an `aggr:` vocabulary term (or referenced normatively as an external predicate).
 
 Transformations Endpoint {#private-transformation-catalog}
 ------------------------------------------------------------------

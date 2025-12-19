@@ -17,7 +17,6 @@ The endpoint supports creating Aggregator Instances, replacing the stored token 
 The endpoint MUST reject unauthenticated requests with `401 Unauthorized`.
 
 ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained (e.g., DPoP).
-ISSUE: TODO specify how a client discovers or selects the `authorization_server` URL for a given user/WebID, and what validation the Aggregator Server performs to prevent mismatched or malicious AS values.
 
 : `POST`
 :: Creates an Aggregator Instance or replaces the stored token set for an existing instance.

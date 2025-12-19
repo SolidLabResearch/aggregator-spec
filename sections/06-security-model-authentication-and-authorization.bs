@@ -12,8 +12,7 @@ All Aggregator endpoints are protected using User-Managed Access (UMA) [[!UMA]].
 
 NOTE: The following behavior extends the A4DS specification and is intended to be incorporated in a future version of A4DS.
 
-ISSUE: TODO these are flows but not realy endpoint definitions.
-ISSUE: TODO specify which concrete endpoints on the Aggregator (and its Authorization Server) are required for UMA ticket issuance, UMA grant requests, and token introspection, including required request/response fields.
+ISSUE: TODO we should maybe split this up into a normative section and a non-normative explanation with sequence diagrams.
 
 Upstream Access (Requesting) {#requesting-flow}
 ----------------------------------------------
@@ -93,13 +92,16 @@ Content-Type: application/json
     "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
     "ticket": "tkt-URS",
     "scope": "urn:knows:uma:scopes:derivation-creation",
-    "claim_token": "<IDP_aggregator_token>",
-    "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken",
+    "claim_tokens": [
+      {
+        "claim_token": "<IDP_aggregator_token>",
+        "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
+      }
+    ]
 }
 ```
 </div>
 
-ISSUE: TODO fix remaining example payloads in this section to be valid JSON (no trailing commas, consistent placeholder tokens) and align them with the normative UMA grant request format.
 **2.1 Upstream Authorization Server validates the ID token**
 
 The Upstream Authorization Server validates the ID token with the Identity Provider that issued it.
@@ -116,7 +118,7 @@ The Authorization Server can link this identifier to the Aggregator's identity t
 HTTP/1.1 200 OK
 Content-Type: application/json
 {
-    "access_token": "uas-at",
+    "access_token": "<upstream_access_token>",
     "derivation_resource_id": "handle-id-1"
 }
 ```
@@ -138,14 +140,16 @@ PUT /resource-registration/agg-service-123 HTTP/1.1
 Host: as.example.org
 Content-Type: application/json
 {
-  ...
-    "resource_relations": {
-          "prov:wasDerivedFrom": {
-              "issuer": "https://as.example.org",
-              "derivation_resource_id": "handle-id-1"
-          }
-        }
-    }
+  "resource_id": "agg-service-123",
+  "resource_relations": {
+    "prov:wasDerivedFrom": [
+      {
+        "issuer": "https://as.example.org",
+        "derivation_resource_id": "handle-id-1"
+      }
+    ]
+  }
+}
 ```
 </div>
 
@@ -241,7 +245,7 @@ The Client includes any claim tokens it already has (for example, its ID token) 
   "ticket": "tkt-A2",
   "claim_tokens": [
     {
-      "claim_token": "OIDC_token",
+      "claim_token": "<ID_token>",
       "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
     }
   ]
@@ -289,11 +293,15 @@ The Client SHOULD then request access tokens from the Authorization Server of th
   "permissions": [
     {
       "resource_id": "handle-id-1",
-      "scopes": [ "urn:knows:uma:scopes:derivation-read" ]
+      "resource_scopes": [ "urn:knows:uma:scopes:derivation-read" ]
     }
   ],
-  "claim_token": "OIDC_token",
-  "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
+  "claim_tokens": [
+    {
+      "claim_token": "<ID_token>",
+      "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
+    }
+  ]
 }
 ```
 </div>
@@ -308,12 +316,12 @@ Once the Client has obtained the required upstream access tokens, it sends anoth
   "ticket": "tkt-A2",
   "claim_tokens": [
     {
-      "claim_token": "OIDC_token",
+      "claim_token": "<ID_token>",
       "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
     },
     {
       "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
-      "claim_token": "as-at-2"
+      "claim_token": "<upstream_access_token>"
     }
   ]
 }

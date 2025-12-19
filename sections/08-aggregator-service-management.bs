@@ -58,16 +58,12 @@ The Aggregator MUST register this UMA resource with the Authorization Server and
 
 : `POST`
 :: Creates a new service. 
-    The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type). 
-    ISSUE: TODO define at least one required media type and canonical representation for the pipeline description (e.g., Turtle/JSON-LD for FnO execution), and define how clients discover which media types are supported.
-    Upon successful creation the server MUST
-
+    The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type using HTTP content negotiation based on [[RFC9110]]). 
       1. Persist the new service and increment the collection `ETag`.
       2. Register a new UMA resource for the created Service Resource URL (e.g., `/services/{service_id}`) with the `read` and `delete` scopes so the creator—or any other party with an RPT containing those scopes—can manage the service.
       3. Return `201 Created`, set `Content-Type: application/json`, and include the full JSON representation of the service in the response body.
 
     If the request body is invalid the server MUST respond with `400 Bad Request`. Failures while instantiating the service MUST result in `500 Internal Server Error`.
-    ISSUE: TODO define error handling for authorization failures and UMA challenges on `POST` (e.g., `401 Unauthorized` with UMA ticket vs `403 Forbidden`) and specify required `WWW-Authenticate` parameters.
 
 Service Resource {#service-resource}
 -------------------------------------------------------------------------------
@@ -107,9 +103,6 @@ The service URL MUST be one of the URLs returned by the collection resource; a r
     The Aggregator MUST stop the running pipeline, delete the persisted service entry, increment the collection `ETag`, unregister the service’s UMA resource (e.g., `/services/{service_id}`), and respond with `200 OK`.
     Clients that held the service identifier MUST treat it as invalid after receiving the success response.
 
-ISSUE: TODO add a compact example for the Service Resource representation (JSON and JSON-LD).
-ISSUE: TODO define the canonical status codes and headers for create/read/delete (e.g., `201 Created` + `Location` for creation) and align the non-normative examples with the normative requirements.
-
 Service Management Flows (Non-normative) {#service-management-flows}
 ----------------------------------------
 
@@ -138,7 +131,6 @@ _:execution a fno:Execution ;
 </div>
 
 The Aggregator fetches a ticket from the Authorization Server with the resource_id `1a2b-creation-endpoint` it got during asset creation.
-ISSUE: TODO clarify how the UMA resource_id for the Service Collection is discovered/derived and how it relates to the advertised Service Collection URL.
 
 <div class="example">
 ```http
