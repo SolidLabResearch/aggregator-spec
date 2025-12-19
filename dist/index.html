@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="_ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_" rel="canonical">
-  <meta content="f62ab004053c0f3c0bfe53fe477ff104c716000f" name="revision">
+  <meta content="153d80212c44fe25c6c1c9b40c3b769af4954fd1" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2621,7 +2621,7 @@ Using the credentials of this new account the Aggregator Server CAN perform a cl
 The aggregator SHOULD NOT give these tokens or client credentials to the client.</p>
    <h4 class="heading settled" data-level="5.2.2" id="creation-authorization"><span class="secno">5.2.2. </span><span class="content">Creation <code>authorization_code</code> Flow</span><a class="self-link" href="#creation-authorization"></a></h4>
    <p>The <code>authorization_code</code> flow allows clients to create an aggregator that acts on behalf of the end-user, but with a token that is scoped specifically for the aggregator.</p>
-   <p><img alt="PlantUML Diagram" src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4YbTAaGeg9BDqI562DZNrCBrwuSfuYDWGqXyISafYv8F0HlmnFq4JYxeNL034diy_VTVVUTSrHwxdmrqwoyL6RE7Py1lRqIQiwD7_jhZU1GU6uAZOmbPt2i5TA7bz2gbwlbn-FNpVrg-VJPQa3FIdGH61UhvTjTyxmrA0g71VVMmHZT8eBUNrk1iprgKcAgSxmO3GdxV1knSTk4rT9Ir60-NqU7LZJ1e-49mLuU8emsZDNqtSD4Hnyw6Oo3SS2tkeL3xfKrBEdbW7XHKw1qO8WE9_GOWRNK1BjBs7Mr0Dw3K_ILCo1YA5Uo3S9ApCMKQuscm3RGx3oc4abn7_OoeaeLXWRUXXXeMoZ3mYe82iRrePl1eF9JOYf1QO0RIGLCIO68JENi9oclb9z69R3pLq3gKI_RjB16kpf5NZcr8VyoAnrDID7qR3jBQKKr2rAD9UqsN9Yqze9h9KDNQSsiuNRjLYywBH5dKUQczJGRnVBje7DlBz74VYOEo-bwp_uRPI_h_lYGN1OkXAse5OcUArso8pII_i9l"></p>
+   <p><img alt="PlantUML Diagram" src="uml/f89d15189bc77457ba4b37e36b7f67ec4b246993.svg"></p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
    <p>The client begins by asking the Aggregator to bootstrap an authorization_code registration and indicate which authorization server should be used. The Aggregator responds with the public parameters required for the OIDC authorization request.</p>
    <div class="example" id="example-aacab791">
@@ -2852,7 +2852,7 @@ All Aggregator endpoints are protected using User-Managed Access (UMA) <a data-l
    <h3 class="heading settled" data-level="6.1" id="requesting-flow"><span class="secno">6.1. </span><span class="content">Upstream Access (Requesting)</span><a class="self-link" href="#requesting-flow"></a></h3>
    <p class="issue" id="issue-d3446cc8"><a class="self-link" href="#issue-d3446cc8"></a> TODO: how does the Aggregator tell the Authorization Server (AS) which transformation it intends to perform on the data?</p>
    <p>Equipped with an identity token (ID token) from an Identity Provider (IdP) as described in <a href="#aggregator-registration">§ 5.1 Aggregator Registration Endpoint</a>, the Aggregator Service follows the Authorization for Data Spaces (A4DS) specification to obtain access tokens for upstream Resource Servers.</p>
-   <p><img alt="PlantUML Diagram" src="https://www.plantuml.com/plantuml/svg/XPF1Ji9048RlVOe99uY1ME3aWR295muc15AlPDEEiA5iw-uKWo-XYLxKW_7YC_Wyle0-WjDjQIkHUEbb_t_-R_xTZYr9GzaczknQwLGQkG7-aWfLAZNDQHSZ60n9wcMCdjSuWvPOBWqk9IK6vcYsAaJuV7xw-hXhWRGWZef5Hgl4g5j9Aj7EYWQ-Nr_UAgkO_pO7gIM3p3P3csI6WohNmxkp1BDZbd_JWiEqIOIQ5ErWQfAjYfpyyTvf9z7KymHqHtdW6VWz9hhEq1ANL9ArTG8o3D5Qe6IDkkEnr3c4S_YL9RWGmAbh9BZYMlOJF1P2juxeiu4oenlwOYHBH2uOmF3KXq3BSbECuAGfBe7p-7uDt6Gi8aVvUhd6XqiPgqWImkIyLF1H0LMCwUybUQbCdiK4RPkvcPrg0v5B1o0QKOp6ZQgjSoxsEozKrEnry4UlDufM1z1r2GDcvjiYVgcyVTLaCLBaoCCU1AbRgPh8xr7n8t4adgYHX-wEwZF8d949nwWZ_bb-00??"></p>
+   <p><img alt="PlantUML Diagram" src="uml/d75e5ec61c587df74d72d9c247374bed8f39b22f.svg"></p>
    <p><strong>1. Requesting the upstream resource without token</strong>
 The Aggregator Service requests the upstream resource without an access token. If the resource is protected with UMA, the Upstream Resource Server responds with a <code>401 Unauthorized</code> status and a UMA ticket.</p>
    <div class="example" id="example-ed9c0e3b">
@@ -2955,7 +2955,7 @@ For each incoming request:</p>
     <li data-md>
      <p>Once authorization succeeds, the Client retries the request to the Aggregator Service with a valid access token, and the Aggregator Service returns the derived resource.</p>
    </ol>
-   <p><img alt="PlantUML Diagram" src="https://www.plantuml.com/plantuml/svg/XLJ1RjD04BtxAqOz9Q91n74kI4Mrp8K34cemfqZMoXwxgpXhipiEX1C_W13SW4F5YL-erB_f3z1FO7PTEp4OkDYoFU_DUszsV6v8Q6gsfMSsKjL2YotmbMGgQw5eHViIGMDAGXKbUjxHDpY9IebylxlwyUds_OUxgyyt9o0CHCEgi2Wq5e8g3IlKEvaYt7xzylFweoiE_reSDdHPQVbEaAoKWwBcNj--zz1mDGJ7jI6DxE2_q9YXNWIp9n0-Xlb3kC3N3Hg23BNSOSQEJTNe5DTgeYfWCLAP9i-vapLCrGRLr0iTFbnPXdbF4JyFWILja21dOCVaSI7CkeO-brEZrN7rX3Oq2tt7otMHhLj0y6WEiHBtXbZQWoDCvy5gy0ykQjHRQGnxP_s5vcmIsjTurcp5h0MUhjKznLdRrRv8Io6tYJDdfgrU9zTdTyyKwShKV100tqf3KXLj38PRo1o4slUGk9NZmojHoamGGjCDHgGf6ZD0rhhQoGopgHTt2RNuHOUtC-GOcvBw42DR4812p1AfyegfD9kNcf-T3GDl95soASwXGNtQJjPn9Tr84fbPs_sZIQiQsNaRgdEnE8Gwwc6jx8p7kNi_aUNXAOuHJFf-pdKmFaJhPLp0n0nZ3xZHdx6tUGy33Wu36Wyuu0bSl7ZfJl7HMlO7kj-VvR_snqbdcgDjMGxFa_juM8ubwnhkRoUj4xPaOKz_Q-HvvwWo_e_z0W??"></p>
+   <p><img alt="PlantUML Diagram" src="uml/5b3d1a9048733b39382e6f8a5d825d8c05cb42c9.svg"></p>
    <p><strong>1. Client requests derived resource from Aggregator Service without token</strong>
 The Client sends a request to the Aggregator Service for a derived resource without including a valid Requesting Party Token (RPT), or with an RPT that does not grant sufficient permission.</p>
    <div class="example" id="example-6592a9b4">
@@ -3238,9 +3238,7 @@ The payload MUST be a JSON object and MUST include at least the following fields
     <dt data-md><code>POST</code>
     <dd data-md>
      <p>Creates a new service.
-The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type). 
-ISSUE: TODO define at least one required media type and canonical representation for the pipeline description (e.g., Turtle/JSON-LD for FnO execution), and define how clients discover which media types are supported.
-Upon successful creation the server MUST</p>
+The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type using HTTP content negotiation based on <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>).</p>
      <ol>
       <li data-md>
        <p>Persist the new service and increment the collection <code>ETag</code>.</p>
@@ -3249,8 +3247,7 @@ Upon successful creation the server MUST</p>
       <li data-md>
        <p>Return <code>201 Created</code>, set <code>Content-Type: application/json</code>, and include the full JSON representation of the service in the response body.</p>
      </ol>
-     <p>If the request body is invalid the server MUST respond with <code>400 Bad Request</code>. Failures while instantiating the service MUST result in <code>500 Internal Server Error</code>.
-ISSUE: TODO define error handling for authorization failures and UMA challenges on <code>POST</code> (e.g., <code>401 Unauthorized</code> with UMA ticket vs <code>403 Forbidden</code>) and specify required <code>WWW-Authenticate</code> parameters.</p>
+     <p>If the request body is invalid the server MUST respond with <code>400 Bad Request</code>. Failures while instantiating the service MUST result in <code>500 Internal Server Error</code>.</p>
    </dl>
    <h3 class="heading settled" data-level="8.2" id="service-resource"><span class="secno">8.2. </span><span class="content">Service Resource</span><a class="self-link" href="#service-resource"></a></h3>
    <p>Operations on an individual service require the <code>read</code> and <code>delete</code> scopes on the Service Resource URL (e.g., <code>/services/{service_id}</code>).
@@ -3297,8 +3294,6 @@ The representation MUST include at least the following fields:</p>
 The Aggregator MUST stop the running pipeline, delete the persisted service entry, increment the collection <code>ETag</code>, unregister the service’s UMA resource (e.g., <code>/services/{service_id}</code>), and respond with <code>200 OK</code>.
 Clients that held the service identifier MUST treat it as invalid after receiving the success response.</p>
    </dl>
-   <p class="issue" id="issue-2398cdba"><a class="self-link" href="#issue-2398cdba"></a> TODO add a compact example for the Service Resource representation (JSON and JSON-LD).
-ISSUE: TODO define the canonical status codes and headers for create/read/delete (e.g., <code>201 Created</code> + <code>Location</code> for creation) and align the non-normative examples with the normative requirements.</p>
    <h3 class="heading settled" data-level="8.3" id="service-management-flows"><span class="secno">8.3. </span><span class="content">Service Management Flows (Non-normative)</span><a class="self-link" href="#service-management-flows"></a></h3>
    <p>This section gives some examples on how a client can create, find, use and delete services on the Aggregator.
 This section is non-normative, and is only meant to illustrate the usage of the various endpoints defined in this specification.
@@ -3322,7 +3317,6 @@ The body of the post is an execution of an FnO function <a data-link-type="bibli
 </pre>
    </div>
    <p>The Aggregator fetches a ticket from the Authorization Server with the resource_id <code>1a2b-creation-endpoint</code> it got during asset creation.</p>
-   <p class="issue" id="issue-39955c6b"><a class="self-link" href="#issue-39955c6b"></a> TODO clarify how the UMA resource_id for the Service Collection is discovered/derived and how it relates to the advertised Service Collection URL.</p>
    <div class="example" id="example-64b00d3d">
     <a class="self-link" href="#example-64b00d3d"></a>
 
@@ -3445,8 +3439,7 @@ This time the client might need to gather multiple access claims from the AS’s
 For example we assume this results is a kafka stream.</p>
    <p class="issue" id="issue-61182933"><a class="self-link" href="#issue-61182933"></a> TODO add the example flow here</p>
    <h2 class="heading settled" data-level="9" id="vocabulary"><span class="secno">9. </span><span class="content">Vocabulary</span><a class="self-link" href="#vocabulary"></a></h2>
-   <p class="issue" id="issue-1d3033fd"><a class="self-link" href="#issue-1d3033fd"></a> TODO add links to the vocabulary so they are dereferenceable
-ISSUE: TODO ensure all example predicates/classes are defined or referenced.</p>
+   <p class="issue" id="issue-b98edfce"><a class="self-link" href="#issue-b98edfce"></a> TODO ensure all example predicates/classes are defined or referenced.</p>
    <p>The Aggregator vocabulary is defined in the <code>aggr:</code> namespace (<code>https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#</code>).
 The following classes and properties are used throughout this specification.</p>
    <h3 class="heading settled" data-level="9.1" id="vocabulary-classes"><span class="secno">9.1. </span><span class="content">Classes</span><a class="self-link" href="#vocabulary-classes"></a></h3>
@@ -3853,10 +3846,6 @@ References the Aggregator Server’s public transformation catalog.
    <div class="issue"> TODO we should maybe split this up into a normative section and a non-normative explanation with sequence diagrams. <a class="issue-return" href="#issue-db304333" title="Jump to section">↵</a></div>
    <div class="issue"> TODO: how does the Aggregator tell the Authorization Server (AS) which transformation it intends to perform on the data? <a class="issue-return" href="#issue-d3446cc8" title="Jump to section">↵</a></div>
    <div class="issue"> TODO: if this resource has already been requested, the Upstream Authorization Server already has a <code>derivation_resource_id</code> for this Aggregator. Does the Aggregator need to request a new one, or can it reuse the existing one? <a class="issue-return" href="#issue-4e4603b6" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO add a compact example for the Service Resource representation (JSON and JSON-LD).
-ISSUE: TODO define the canonical status codes and headers for create/read/delete (e.g., <code>201 Created</code> + <code>Location</code> for creation) and align the non-normative examples with the normative requirements. <a class="issue-return" href="#issue-2398cdba" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO clarify how the UMA resource_id for the Service Collection is discovered/derived and how it relates to the advertised Service Collection URL. <a class="issue-return" href="#issue-39955c6b" title="Jump to section">↵</a></div>
    <div class="issue"> TODO add the example flow here <a class="issue-return" href="#issue-61182933" title="Jump to section">↵</a></div>
-   <div class="issue"> TODO add links to the vocabulary so they are dereferenceable
-ISSUE: TODO ensure all example predicates/classes are defined or referenced. <a class="issue-return" href="#issue-1d3033fd" title="Jump to section">↵</a></div>
+   <div class="issue"> TODO ensure all example predicates/classes are defined or referenced. <a class="issue-return" href="#issue-b98edfce" title="Jump to section">↵</a></div>
   </div>

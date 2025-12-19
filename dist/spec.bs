@@ -473,7 +473,7 @@ The aggregator SHOULD NOT give these tokens or client credentials to the client.
 
 The `authorization_code` flow allows clients to create an aggregator that acts on behalf of the end-user, but with a token that is scoped specifically for the aggregator.
 
-<img src="https://www.plantuml.com/plantuml/svg/TLEzJiCm4Dxz5AUkb4YbTAaGeg9BDqI562DZNrCBrwuSfuYDWGqXyISafYv8F0HlmnFq4JYxeNL034diy_VTVVUTSrHwxdmrqwoyL6RE7Py1lRqIQiwD7_jhZU1GU6uAZOmbPt2i5TA7bz2gbwlbn-FNpVrg-VJPQa3FIdGH61UhvTjTyxmrA0g71VVMmHZT8eBUNrk1iprgKcAgSxmO3GdxV1knSTk4rT9Ir60-NqU7LZJ1e-49mLuU8emsZDNqtSD4Hnyw6Oo3SS2tkeL3xfKrBEdbW7XHKw1qO8WE9_GOWRNK1BjBs7Mr0Dw3K_ILCo1YA5Uo3S9ApCMKQuscm3RGx3oc4abn7_OoeaeLXWRUXXXeMoZ3mYe82iRrePl1eF9JOYf1QO0RIGLCIO68JENi9oclb9z69R3pLq3gKI_RjB16kpf5NZcr8VyoAnrDID7qR3jBQKKr2rAD9UqsN9Yqze9h9KDNQSsiuNRjLYywBH5dKUQczJGRnVBje7DlBz74VYOEo-bwp_uRPI_h_lYGN1OkXAse5OcUArso8pII_i9l" alt="PlantUML Diagram" no-autosize>
+<img src="uml/f89d15189bc77457ba4b37e36b7f67ec4b246993.svg" alt="PlantUML Diagram" no-autosize>
 
 **1. Client starts flow with Aggregator Server**
 
@@ -752,7 +752,7 @@ ISSUE: TODO: how does the Aggregator tell the Authorization Server (AS) which tr
 
 Equipped with an identity token (ID token) from an Identity Provider (IdP) as described in [[#aggregator-registration]], the Aggregator Service follows the Authorization for Data Spaces (A4DS) specification to obtain access tokens for upstream Resource Servers.
 
-<img src="https://www.plantuml.com/plantuml/svg/XPF1Ji9048RlVOe99uY1ME3aWR295muc15AlPDEEiA5iw-uKWo-XYLxKW_7YC_Wyle0-WjDjQIkHUEbb_t_-R_xTZYr9GzaczknQwLGQkG7-aWfLAZNDQHSZ60n9wcMCdjSuWvPOBWqk9IK6vcYsAaJuV7xw-hXhWRGWZef5Hgl4g5j9Aj7EYWQ-Nr_UAgkO_pO7gIM3p3P3csI6WohNmxkp1BDZbd_JWiEqIOIQ5ErWQfAjYfpyyTvf9z7KymHqHtdW6VWz9hhEq1ANL9ArTG8o3D5Qe6IDkkEnr3c4S_YL9RWGmAbh9BZYMlOJF1P2juxeiu4oenlwOYHBH2uOmF3KXq3BSbECuAGfBe7p-7uDt6Gi8aVvUhd6XqiPgqWImkIyLF1H0LMCwUybUQbCdiK4RPkvcPrg0v5B1o0QKOp6ZQgjSoxsEozKrEnry4UlDufM1z1r2GDcvjiYVgcyVTLaCLBaoCCU1AbRgPh8xr7n8t4adgYHX-wEwZF8d949nwWZ_bb-00??" alt="PlantUML Diagram" no-autosize>
+<img src="uml/d75e5ec61c587df74d72d9c247374bed8f39b22f.svg" alt="PlantUML Diagram" no-autosize>
 
 **1. Requesting the upstream resource without token**
 The Aggregator Service requests the upstream resource without an access token. If the resource is protected with UMA, the Upstream Resource Server responds with a `401 Unauthorized` status and a UMA ticket.
@@ -871,7 +871,7 @@ For each incoming request:
 3. The Client interacts with the Aggregator Authorization Server (and, if required, upstream Authorization Servers) to obtain the access tokens needed to access the derived resource.
 4. Once authorization succeeds, the Client retries the request to the Aggregator Service with a valid access token, and the Aggregator Service returns the derived resource.
 
-<img src="https://www.plantuml.com/plantuml/svg/XLJ1RjD04BtxAqOz9Q91n74kI4Mrp8K34cemfqZMoXwxgpXhipiEX1C_W13SW4F5YL-erB_f3z1FO7PTEp4OkDYoFU_DUszsV6v8Q6gsfMSsKjL2YotmbMGgQw5eHViIGMDAGXKbUjxHDpY9IebylxlwyUds_OUxgyyt9o0CHCEgi2Wq5e8g3IlKEvaYt7xzylFweoiE_reSDdHPQVbEaAoKWwBcNj--zz1mDGJ7jI6DxE2_q9YXNWIp9n0-Xlb3kC3N3Hg23BNSOSQEJTNe5DTgeYfWCLAP9i-vapLCrGRLr0iTFbnPXdbF4JyFWILja21dOCVaSI7CkeO-brEZrN7rX3Oq2tt7otMHhLj0y6WEiHBtXbZQWoDCvy5gy0ykQjHRQGnxP_s5vcmIsjTurcp5h0MUhjKznLdRrRv8Io6tYJDdfgrU9zTdTyyKwShKV100tqf3KXLj38PRo1o4slUGk9NZmojHoamGGjCDHgGf6ZD0rhhQoGopgHTt2RNuHOUtC-GOcvBw42DR4812p1AfyegfD9kNcf-T3GDl95soASwXGNtQJjPn9Tr84fbPs_sZIQiQsNaRgdEnE8Gwwc6jx8p7kNi_aUNXAOuHJFf-pdKmFaJhPLp0n0nZ3xZHdx6tUGy33Wu36Wyuu0bSl7ZfJl7HMlO7kj-VvR_snqbdcgDjMGxFa_juM8ubwnhkRoUj4xPaOKz_Q-HvvwWo_e_z0W??" alt="PlantUML Diagram" no-autosize>
+<img src="uml/5b3d1a9048733b39382e6f8a5d825d8c05cb42c9.svg" alt="PlantUML Diagram" no-autosize>
 
 **1. Client requests derived resource from Aggregator Service without token**
 The Client sends a request to the Aggregator Service for a derived resource without including a valid Requesting Party Token (RPT), or with an RPT that does not grant sufficient permission.
@@ -1169,16 +1169,12 @@ The Aggregator MUST register this UMA resource with the Authorization Server and
 
 : `POST`
 :: Creates a new service. 
-    The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type). 
-    ISSUE: TODO define at least one required media type and canonical representation for the pipeline description (e.g., Turtle/JSON-LD for FnO execution), and define how clients discover which media types are supported.
-    Upon successful creation the server MUST
-
+    The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type using HTTP content negotiation based on [[RFC9110]]). 
       1. Persist the new service and increment the collection `ETag`.
       2. Register a new UMA resource for the created Service Resource URL (e.g., `/services/{service_id}`) with the `read` and `delete` scopes so the creator—or any other party with an RPT containing those scopes—can manage the service.
       3. Return `201 Created`, set `Content-Type: application/json`, and include the full JSON representation of the service in the response body.
 
     If the request body is invalid the server MUST respond with `400 Bad Request`. Failures while instantiating the service MUST result in `500 Internal Server Error`.
-    ISSUE: TODO define error handling for authorization failures and UMA challenges on `POST` (e.g., `401 Unauthorized` with UMA ticket vs `403 Forbidden`) and specify required `WWW-Authenticate` parameters.
 
 Service Resource {#service-resource}
 -------------------------------------------------------------------------------
@@ -1218,9 +1214,6 @@ The service URL MUST be one of the URLs returned by the collection resource; a r
     The Aggregator MUST stop the running pipeline, delete the persisted service entry, increment the collection `ETag`, unregister the service’s UMA resource (e.g., `/services/{service_id}`), and respond with `200 OK`.
     Clients that held the service identifier MUST treat it as invalid after receiving the success response.
 
-ISSUE: TODO add a compact example for the Service Resource representation (JSON and JSON-LD).
-ISSUE: TODO define the canonical status codes and headers for create/read/delete (e.g., `201 Created` + `Location` for creation) and align the non-normative examples with the normative requirements.
-
 Service Management Flows (Non-normative) {#service-management-flows}
 ----------------------------------------
 
@@ -1249,8 +1242,6 @@ _:execution a fno:Execution ;
 </div>
 
 The Aggregator fetches a ticket from the Authorization Server with the resource_id `1a2b-creation-endpoint` it got during asset creation.
-
-ISSUE: TODO clarify how the UMA resource_id for the Service Collection is discovered/derived and how it relates to the advertised Service Collection URL.
 
 <div class="example">
 ```http
@@ -1390,7 +1381,6 @@ ISSUE: TODO add the example flow here
 Vocabulary {#vocabulary}
 ===================================
 
-ISSUE: TODO add links to the vocabulary so they are dereferenceable
 ISSUE: TODO ensure all example predicates/classes are defined or referenced.
 
 The Aggregator vocabulary is defined in the `aggr:` namespace (`https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#`).
