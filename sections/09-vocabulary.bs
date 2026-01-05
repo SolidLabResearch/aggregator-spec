@@ -60,7 +60,7 @@ Registration flow based on OAuth 2.0 Authorization Code [[RFC6749]] (via OpenID 
 **subClassOf:** `aggr:RegistrationFlow`
 
 ### aggr:ClientCredentialsFlow ### {#aggr-client-credentials-flow-class}
-Registration flow based on OAuth 2.0 Client Credentials [[RFC6749]], where the Aggregator obtains a token using user-provided long-lived credentials.
+Registration flow based on OAuth 2.0 Client Credentials [[RFC6749]], where the Aggregator obtains a token using user-provided long-lived client credentials.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** `aggr:RegistrationFlow`

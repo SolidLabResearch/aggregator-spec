@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="_ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_" rel="canonical">
-  <meta content="153d80212c44fe25c6c1c9b40c3b769af4954fd1" name="revision">
+  <meta content="d9d74ff7787246f8e5fbdfa8b755d74a3040db18" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2016,7 +2016,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Aggregator Specification</h1>
    <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2025-12-19">19 December 2025</time></span></h2>
+    <time class="dt-updated" datetime="2026-01-05">5 January 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2032,7 +2032,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 19 December 2025,
+In addition, as of 5 January 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2076,11 +2076,7 @@ Parts of this work may be from another specification document.  If so, those par
     <li>
      <a href="#aggregator-management"><span class="secno">5</span> <span class="content">Aggregator Management</span></a>
      <ol class="toc">
-      <li>
-       <a href="#aggregator-registration"><span class="secno">5.1</span> <span class="content">Aggregator Registration Endpoint</span></a>
-       <ol class="toc">
-        <li><a href="#aggregator-registration-error-handling"><span class="secno">5.1.1</span> <span class="content">Error Handling {#aggregator-registration-error-handling}</span></a>
-       </ol>
+      <li><a href="#aggregator-registration"><span class="secno">5.1</span> <span class="content">Aggregator Registration Endpoint</span></a>
       <li>
        <a href="#aggregator-management-flows"><span class="secno">5.2</span> <span class="content">Aggregator Management Flows (Non-normative)</span></a>
        <ol class="toc">
@@ -2403,9 +2399,9 @@ Clients MAY rely on this type statement when consuming semantic representations.
    <h3 class="heading settled" data-level="4.2" id="client-identifier-document"><span class="secno">4.2. </span><span class="content">Client Identifier Document</span><a class="self-link" href="#client-identifier-document"></a></h3>
    <p>Endpoint that exposes the client identifier of the aggregator used for authorization.
 Servers MAY host this document at any URL; the <code>client_identifier</code> property in the Aggregator Server Description MUST contain the authoritative absolute URL.
-The metadata SHOULD conform to the OpenID Connect Dynamic Client Registration specification <a data-link-type="biblio" href="#biblio-oidc-registration" title="OpenID Connect Dynamic Client Registration 1.0">[OIDC-Registration]</a> as the Solid specification <a data-link-type="biblio" href="#biblio-solid-oidc" title="Solid OIDC">[SOLID-OIDC]</a> prescribes.
-Only for the aggregator the <code>redirect_uris</code> property is OPTIONAL instead of required as multiple clients can create an Aggregator on the same Aggregator Server.
-This property can allow an Aggregator Server implementation to restrict which clients can create aggregators on the server.</p>
+The Client Identifier Document MUST conform to the Solid specification <a data-link-type="biblio" href="#biblio-solid-oidc" title="Solid OIDC">[SOLID-OIDC]</a> and uses the fields from the OpenID Connect Dynamic Client Registration specification <a data-link-type="biblio" href="#biblio-oidc-registration" title="OpenID Connect Dynamic Client Registration 1.0">[OIDC-Registration]</a>.
+Only for the aggregator the <code>redirect_uris</code> property is OPTIONAL instead of required, as multiple clients can create an Aggregator on the same Aggregator Server.
+Adding this property can allow an Aggregator Server implementation to restrict which clients can create aggregators on the server.</p>
    <h3 class="heading settled" data-level="4.3" id="public-transformation-catalog"><span class="secno">4.3. </span><span class="content">Public Transformation Catalog</span><a class="self-link" href="#public-transformation-catalog"></a></h3>
    <p>This endpoint returns a RDF document describing the transformations supported by the aggregator server on a server level.
 Servers MAY publish this catalog at any deployment-specific URL; the Aggregator Server Description MUST advertise it via the <code>transformation_catalog</code> field.
@@ -2495,7 +2491,8 @@ The following string tokens are defined, each corresponding to an RDF class in t
        <p><strong>registration_type: "provision"</strong></p>
        <ul>
         <li data-md>
-         <p>No additional members are required.</p>
+         <p>No additional members are required.
+ISSUE: TODO specify that the Aggregator Server should register an account at the IdP for the new WebID, and a account at an Authorization Server for UMA to manage aggregator resource permissions.</p>
        </ul>
       <li data-md>
        <p><strong>registration_type: "authorization_code"</strong></p>
@@ -2537,9 +2534,9 @@ The server MAY also include IdP discovery hints (for example <code>issuer</code>
         <li data-md>
          <p><strong>webid</strong> (string, REQUIRED): The WebID that the Aggregator Instance should act as.</p>
         <li data-md>
-         <p><strong>username</strong> (string, REQUIRED)</p>
+         <p><strong>client_id</strong> (string, REQUIRED)</p>
         <li data-md>
-         <p><strong>password</strong> (string, REQUIRED)</p>
+         <p><strong>client_secret</strong> (string, REQUIRED)</p>
        </ul>
       <li data-md>
        <p><strong>registration_type: "device_code"</strong></p>
@@ -2579,8 +2576,7 @@ The request body MUST be a JSON object with <code>Content-Type: application/json
      </ul>
      <p>If deletion succeeds the server MUST respond with <code>204 No Content</code>.</p>
    </dl>
-   <h4 class="heading settled" data-level="5.1.1" id="aggregator-registration-error-handling"><span class="secno">5.1.1. </span><span class="content">Error Handling {#aggregator-registration-error-handling}</span><a class="self-link" href="#aggregator-registration-error-handling"></a></h4>
-   <p>The server MUST respond with:</p>
+   <p>For error conditions, the server MUST respond with:</p>
    <ul>
     <li data-md>
      <p><code>400 Bad Request</code> for malformed JSON or missing/invalid request members for the selected <code>registration_type</code>.</p>
@@ -2754,9 +2750,9 @@ The redirect_uri is under control of the client application and MUST already be 
 This flow should only be used in trusted environments, or when a user creates an account for the aggregator.</p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
    <p>The client explicitly asks the Aggregator to act with full credentials for the provided WebID, indicating which UMA Authorization Server manages the protected resources.
-Because this flow hands the Aggregator long-lived credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.</p>
-   <div class="example" id="example-b31f851f">
-    <a class="self-link" href="#example-b31f851f"></a>
+Because this flow hands the Aggregator long-lived client credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.</p>
+   <div class="example" id="example-b350496b">
+    <a class="self-link" href="#example-b350496b"></a>
 
 <pre class="language-http highlight"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IDP_client_token></c->
@@ -2766,13 +2762,13 @@ Because this flow hands the Aggregator long-lived credentials, it should only be
   <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"client_credentials"</c-><c- p>,</c->
   <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c-><c- p>,</c->
   <c- f>"webid"</c-><c- p>:</c-> <c- u>"https://user.example/webid#me"</c-><c- p>,</c->
-  <c- f>"username"</c-><c- p>:</c-> <c- u>"alice@example.org"</c-><c- p>,</c->
-  <c- f>"password"</c-><c- p>:</c-> <c- u>"s3cr3t-password"</c->
+  <c- f>"client_id"</c-><c- p>:</c-> <c- u>"aggregator-service-account"</c-><c- p>,</c->
+  <c- f>"client_secret"</c-><c- p>:</c-> <c- u>"s3cr3t-client-secret"</c->
 <c- p>}</c->
 </pre>
    </div>
-   <p><strong>2. Aggregator Server performs credential bootstrap with the IDP</strong></p>
-   <p>The Aggregator uses the supplied username/password (plus the WebID context) to authenticate against the Identity Provider’s management or token endpoint, registering (or reusing) a confidential client that represents the Aggregator’s service account for that user. It then runs an OAuth 2.0 client_credentials grant using the obtained client_id/client_secret to mint an <code>IDP_aggregator_token</code> scoped to the user’s WebID.</p>
+   <p><strong>2. Aggregator Server performs client credentials grant with the IDP</strong></p>
+   <p>The Aggregator uses the supplied client_id/client_secret (plus the WebID context) to authenticate against the Identity Provider’s token endpoint and runs an OAuth 2.0 client_credentials grant to mint an <code>IDP_aggregator_token</code> scoped to the user’s WebID.</p>
    <div class="example" id="example-88da6ef0">
     <a class="self-link" href="#example-88da6ef0"></a>
 
@@ -3503,7 +3499,7 @@ Registration flow based on OAuth 2.0 Authorization Code <a data-link-type="bibli
 <strong>subClassOf:</strong> <code>aggr:RegistrationFlow</code></p>
    <h4 class="heading settled" data-level="9.1.9" id="aggr-client-credentials-flow-class"><span class="secno">9.1.9. </span><span class="content">aggr:ClientCredentialsFlow</span><a class="self-link" href="#aggr-client-credentials-flow-class"></a></h4>
    
-Registration flow based on OAuth 2.0 Client Credentials <a data-link-type="biblio" href="#biblio-rfc6749" title="The OAuth 2.0 Authorization Framework">[RFC6749]</a>, where the Aggregator obtains a token using user-provided long-lived credentials.
+Registration flow based on OAuth 2.0 Client Credentials <a data-link-type="biblio" href="#biblio-rfc6749" title="The OAuth 2.0 Authorization Framework">[RFC6749]</a>, where the Aggregator obtains a token using user-provided long-lived client credentials.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
@@ -3815,7 +3811,7 @@ References the Aggregator Server’s public transformation catalog.
    <dt id="biblio-sa4ds">[SA4DS]
    <dd><a href="https://solid.github.io/service-authorization-for-data-spaces/"><cite>Service Authorization for Data Spaces (SA4DS)</cite></a>. URL: <a href="https://solid.github.io/service-authorization-for-data-spaces/">https://solid.github.io/service-authorization-for-data-spaces/</a>
    <dt id="biblio-solid-oidc">[SOLID-OIDC]
-   <dd><a href="https://solidproject.org/TR/solid-oidc"><cite>Solid OIDC</cite></a>. URL: <a href="https://solidproject.org/TR/solid-oidc">https://solidproject.org/TR/solid-oidc</a>
+   <dd><a href="https://solidproject.org/TR/oidc"><cite>Solid OIDC</cite></a>. URL: <a href="https://solidproject.org/TR/oidc">https://solidproject.org/TR/oidc</a>
    <dt id="biblio-uma">[UMA]
    <dd><a href="https://docs.kantarainitiative.org/uma/rec-uma-core.html"><cite>User-Managed Access (UMA) 2.0</cite></a>. URL: <a href="https://docs.kantarainitiative.org/uma/rec-uma-core.html">https://docs.kantarainitiative.org/uma/rec-uma-core.html</a>
    <dt id="biblio-webid-profile">[WEBID-PROFILE]

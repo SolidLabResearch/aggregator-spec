@@ -39,7 +39,7 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "title": "Service Authorization for Data Spaces (SA4DS)"
   },
   "SOLID-OIDC": {
-    "href": "https://solidproject.org/TR/solid-oidc",
+    "href": "https://solidproject.org/TR/oidc",
     "title": "Solid OIDC"
   },
   "UMA": {

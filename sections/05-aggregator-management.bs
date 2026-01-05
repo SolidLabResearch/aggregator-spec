@@ -34,6 +34,7 @@ ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained
 
     - **registration_type: "provision"**
         - No additional members are required.
+            ISSUE: TODO specify that the Aggregator Server should register an account at the IdP for the new WebID, and a account at an Authorization Server for UMA to manage aggregator resource permissions.
 
     - **registration_type: "authorization_code"**
         - **authorization_server** (string, REQUIRED): URL of the UMA Authorization Server that governs the user’s resources.
@@ -54,8 +55,8 @@ ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained
     - **registration_type: "client_credentials"**
         - **authorization_server** (string, REQUIRED): URL of the UMA Authorization Server that governs the user’s resources.
         - **webid** (string, REQUIRED): The WebID that the Aggregator Instance should act as.
-        - **username** (string, REQUIRED)
-        - **password** (string, REQUIRED)
+        - **client_id** (string, REQUIRED)
+        - **client_secret** (string, REQUIRED)
 
     - **registration_type: "device_code"**
         - Not specified.
@@ -81,9 +82,8 @@ ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained
 
     If deletion succeeds the server MUST respond with `204 No Content`.
 
-### Error Handling {#aggregator-registration-error-handling}
 
-The server MUST respond with:
+For error conditions, the server MUST respond with:
 - `400 Bad Request` for malformed JSON or missing/invalid request members for the selected `registration_type`.
 - `401 Unauthorized` when the request is missing authentication or when the `IDP_client_token` is invalid.
 - `403 Forbidden` when the authenticated user is not allowed to manage the requested Aggregator Instance.
@@ -314,7 +314,7 @@ This flow should only be used in trusted environments, or when a user creates an
 **1. Client starts flow with Aggregator Server**
 
 The client explicitly asks the Aggregator to act with full credentials for the provided WebID, indicating which UMA Authorization Server manages the protected resources.
-Because this flow hands the Aggregator long-lived credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.
+Because this flow hands the Aggregator long-lived client credentials, it should only be used when the user intentionally provisions the Aggregator as a trusted service account.
 
 <div class="example">
 ```http
@@ -326,15 +326,15 @@ Content-Type: application/json
   "registration_type": "client_credentials",
   "authorization_server": "https://as.example",
   "webid": "https://user.example/webid#me",
-  "username": "alice@example.org",
-  "password": "s3cr3t-password"
+  "client_id": "aggregator-service-account",
+  "client_secret": "s3cr3t-client-secret"
 }
 ```
 </div>
 
-**2. Aggregator Server performs credential bootstrap with the IDP**
+**2. Aggregator Server performs client credentials grant with the IDP**
 
-The Aggregator uses the supplied username/password (plus the WebID context) to authenticate against the Identity Provider’s management or token endpoint, registering (or reusing) a confidential client that represents the Aggregator’s service account for that user. It then runs an OAuth 2.0 client_credentials grant using the obtained client_id/client_secret to mint an `IDP_aggregator_token` scoped to the user’s WebID.
+The Aggregator uses the supplied client_id/client_secret (plus the WebID context) to authenticate against the Identity Provider’s token endpoint and runs an OAuth 2.0 client_credentials grant to mint an `IDP_aggregator_token` scoped to the user’s WebID.
 
 <div class="example">
 ```http

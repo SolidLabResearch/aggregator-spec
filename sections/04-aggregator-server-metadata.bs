@@ -79,9 +79,9 @@ Client Identifier Document {#client-identifier-document}
 
 Endpoint that exposes the client identifier of the aggregator used for authorization.
 Servers MAY host this document at any URL; the `client_identifier` property in the Aggregator Server Description MUST contain the authoritative absolute URL.
-The metadata SHOULD conform to the OpenID Connect Dynamic Client Registration specification [[!OIDC-Registration]] as the Solid specification [[!SOLID-OIDC]] prescribes.
-Only for the aggregator the `redirect_uris` property is OPTIONAL instead of required as multiple clients can create an Aggregator on the same Aggregator Server.
-This property can allow an Aggregator Server implementation to restrict which clients can create aggregators on the server.
+The Client Identifier Document MUST conform to the Solid specification [[!SOLID-OIDC]] and uses the fields from the OpenID Connect Dynamic Client Registration specification [[!OIDC-Registration]].
+Only for the aggregator the `redirect_uris` property is OPTIONAL instead of required, as multiple clients can create an Aggregator on the same Aggregator Server.
+Adding this property can allow an Aggregator Server implementation to restrict which clients can create aggregators on the server.
 
 Public Transformation Catalog {#public-transformation-catalog}
 --------------------------------------------------------------
