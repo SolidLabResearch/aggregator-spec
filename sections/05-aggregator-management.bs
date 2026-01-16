@@ -24,6 +24,7 @@ ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained
     - **registration_type** (REQUIRED):
         The value is a string token; it MUST be one of the `supported_registration_types` advertised in the Aggregator Server Description ([[#server-description]]).
         The following string tokens are defined, each corresponding to an RDF class in the Aggregator vocabulary ([[#vocabulary]]) for semantically annotated representations:
+        - `"none"` ↔ `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]])
         - `"provision"` ↔ `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]])
         - `"authorization_code"` ↔ `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]])
         - `"client_credentials"` ↔ `aggr:ClientCredentialsFlow` ([[#aggr-client-credentials-flow-class]])
@@ -32,42 +33,67 @@ ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained
 
     Depending on `registration_type`, additional members are defined:
 
+    - **registration_type: "none"**
+        - No additional members are required.
+
+        In this flow the Aggregator Instance has no identity and all requests to upstream resource servers will be unauthenticated.
+        All hosted resources MUST be public or accessible without authentication.
+        In this flow the registration post request MIGHT not require authentication, depending on the deployment’s policy.
+
     - **registration_type: "provision"**
         - No additional members are required.
-            ISSUE: TODO specify that the Aggregator Server should register an account at the IdP for the new WebID, and a account at an Authorization Server for UMA to manage aggregator resource permissions.
+
+        In this flow the Aggregator server MUST provision an identity for the Aggregator Instance that is registered at the Identity Provider (IdP).
 
     - **registration_type: "authorization_code"**
-        - **authorization_server** (string, REQUIRED): URL of the UMA Authorization Server that governs the user’s resources.
+        The `authorization_code` flow uses two `POST` messages to the `registration_endpoint`:
+        - **Start request** (bootstraps PKCE [[RFC7636]]): The request body MUST include:
+            - **registration_type** (string, REQUIRED): `"authorization_code"`.
+            - **authorization_server** (string, REQUIRED)
+            - **client_id** (string, REQUIRED): Dereferenceable client metadata document for the client application.
 
-        The `authorization_code` flow has two `POST` messages:
-        - **Start request** (bootstraps PKCE [[RFC7636]]): The request MUST NOT include `code`, `redirect_uri`, or `state`. The server MUST respond with `201 Created` and a JSON object containing:
-            - **client_id** (string, REQUIRED): The client identifier (dereferenceable client metadata document).
+          The server MUST respond with `201 Created` and a JSON object containing:
+            - **aggregator_client_id** (string, REQUIRED): The client identifier of the aggregator (dereferenceable client metadata document).
             - **code_challenge** (string, REQUIRED)
             - **code_challenge_method** (string, REQUIRED)
             - **state** (string, REQUIRED)
-                The server MAY also include IdP discovery hints (for example `issuer` or `authorization_endpoint`) if the client cannot determine them through other means.
 
-        - **Finish request** (redeems the authorization code): The request MUST include:
+          The server MAY also include IdP discovery hints (for example `issuer` or `authorization_endpoint`) if the client cannot determine them through other means.
+
+        - **Finish request** (redeems the authorization code): The request body MUST include:
+            - **registration_type** (string, REQUIRED): `"authorization_code"`.
             - **code** (string, REQUIRED): The authorization code issued by the IdP.
             - **redirect_uri** (string, REQUIRED): The redirect URI used in the authorization request.
             - **state** (string, REQUIRED): The `state` returned by the start request.
 
+          The finish request reuses the stored `authorization_server` and `client_id` from the start request and MUST NOT include them.
+          The server MUST verify that `redirect_uri` matches one of the redirect URIs registered in the client metadata document dereferenced from `client_id` and that `state` matches the stored state for the pending registration.
+          
+          ISSUE: The client needs to trust all redirect URIs registered in the aggregator client metadata document, if the clients clientID is not dereferenceable.
+
     - **registration_type: "client_credentials"**
         - **authorization_server** (string, REQUIRED): URL of the UMA Authorization Server that governs the user’s resources.
-        - **webid** (string, REQUIRED): The WebID that the Aggregator Instance should act as.
         - **client_id** (string, REQUIRED)
         - **client_secret** (string, REQUIRED)
+        - **idp** (string, REQUIRED): The idp that the Aggregator Instance should use.
 
     - **registration_type: "device_code"**
         - Not specified.
 
+    To update the tokens for an existing Aggregator Instance, the client MUST include the `aggregator_id` member along with the other required members for the selected `registration_type`.
+    This CAN only be done for the following `registration_type` values, for other values the server SHOULD respond with `400 Bad Request`:
+    - `client_credentials`: To change the client_id and client_secret.
+    - `authorization_code`: To obtain a new access token and refresh token after the previous ones have expired.
+    - `device_code`: To obtain a new access token and refresh token after the previous ones have expired.
+    
     For successful `POST` requests that create/update an Aggregator Instance (i.e., `provision`, `client_credentials`, and the `authorization_code` finish request), the server MUST respond with:
     - `201 Created` when it created a new Aggregator Instance (i.e., no `aggregator_id` was provided).
     - `200 OK` when it replaced the token set for an existing Aggregator Instance (i.e., `aggregator_id` was provided).
 
     For successful `POST` requests that create/update an Aggregator Instance (i.e., all types except the `authorization_code` start request), the response MUST be a JSON object and MUST include:
     - **aggregator_id** (string, REQUIRED): Opaque identifier for the Aggregator Instance (used for subsequent management operations).
-    - **authorization_server** (string, OPTIONAL): Included when relevant for the registration type.
+    - **subject** (string, OPTIONAL): The WebID or Client_ID for which OIDC tokens were created. This MUST be added to the response when the request was a registration type `provision`.
+    - **idp** (string, OPTIONAL): The Identity Provider (IdP) that issued the OIDC tokens for the Aggregator Instance. This MUST be added to the response when the request was a registration type `provision` and the subject is not a WebID.
 
     The response SHOULD also include:
     - **aggregator** (string, OPTIONAL): Absolute URL of the Aggregator Instance base URL that dereferences to the Aggregator Description ([[#aggregator-description]]).
@@ -114,15 +140,45 @@ Content-Type: application/json
 ```
 </div>
 
-**2. Aggregator Server provisions a WebID and registers it at the IDP**
+**2. Aggregator Server provisions an account at an IDP**
 
-The Aggregator Server creates a WebID document that conforms to the WebID Profile specification [[!WEBID-PROFILE]] and registers a new account with an IDP for that WebID.
-Using the credentials of this new account the Aggregator Server CAN perform a client credentials flow to obtain the `IDP_aggregator_token` (and accompanying refresh token) to authorize the aggregator acting under its own WebID.
+The Aggregator Server provisions an account at an IDP. 
+This might be linked to a WebID document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
+Using the credentials of this account the Aggregator Server can perform a client credentials flow to obtain the `IDP_aggregator_token` (and accompanying refresh token) to authorize the aggregator acting under its own WebID.
 
 **3. Aggregator Server creates an aggregator**
 
 Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator description ([[#aggregator-description]]).
-The aggregator SHOULD NOT give these tokens or client credentials to the client.
+The aggregator should not give these tokens or client credentials to the client.
+
+<div class="example">
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "aggregator_id": "agg-7890",
+  "aggregator": "https://aggregator.example/aggregators/agg-7890/",
+  "subject": "https://aggregator.example/webid#me"
+}
+```
+</div>
+
+Or with a non-WebID subject:
+
+<div class="example">
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "aggregator_id": "agg-7890",
+  "aggregator": "https://aggregator.example/aggregators/agg-7890/",
+  "subject": "aggregator@example.com",
+  "idp": "https://idp.example/"
+}
+```
+</div>
 
 ### Creation `authorization_code` Flow ### {#creation-authorization}
 
@@ -135,12 +191,10 @@ skinparam participantStyle rectangle
 participant Client as "Client 🧑‍💻"
 participant User as "User 🙋"
 participant "Aggregator Server 🤖" as Aggregator
-participant "User WebID 📄" as WebID
 participant "Client ID 📄" as AppClientDoc
 participant "IDP 🔐" as IDP
 
 Client -> Aggregator: 1. Start aggregator creation
-Aggregator <-> WebID: 1.1 Dereference WebID
 Aggregator --> Client: 1.2 Return client_id, code_challenge, state
 
 Client -> IDP: 2. Redirect to IDP login
@@ -169,7 +223,8 @@ Content-Type: application/json
 
 {
   "registration_type": "authorization_code",
-  "authorization_server": "https://as.example"
+  "authorization_server": "https://as.example",
+  "client_id": "https://app.example/client.jsonld"
 }
 ```
 </div>
@@ -188,7 +243,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 
 {
-  "client_id": "https://aggregator.example/client.jsonld",
+  "aggregator_client_id": "https://aggregator.example/client.jsonld",
   "code_challenge": "1uLSZp2...",
   "code_challenge_method": "S256",
   "state": "1eb7c8f5..."
@@ -251,7 +306,8 @@ Content-Type: application/json
 
 **5.1 Aggregator dereferences the client metadata**
 
-The Aggregator dereferences the `client_id` JSON-LD document to confirm the registered redirect URIs, contact metadata, and other security requirements, then verifies that the supplied redirect_uri belongs to that set and that the returned `state` matches the stored nonce.
+The Aggregator dereferences the `https://app.example/client.jsonld` JSON-LD document to confirm the registered redirect URIs.
+The aggregator then verifies that the supplied `redirect_uri` belongs to that set and that the returned `state` matches the stored state.
 
 **5.2 Aggregator redeems the authorization code at the IDP token endpoint**
 
@@ -297,7 +353,6 @@ Content-Type: application/json
 
 {
   "aggregator_id": "agg-7890",
-  "authorization_server": "https://as.example",
   "aggregator": "https://aggregator.example/aggregators/agg-7890/"
 }
 ```

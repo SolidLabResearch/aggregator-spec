@@ -13,14 +13,14 @@ Core Roles and Components {#definitions-core}
 
 - **Aggregator Instance** (often shortened to “Aggregator”): A user- or tenant-scoped logical instance created via the registration endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
 
-- **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service references a transformation/execution graph and exposes a `location` where the derived result can be retrieved (see [[#aggregator-service-management]]).
+- **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service is represented as an FnO execution (`fno:Execution`) that identifies the executed function and its inputs; outputs are described by the function's output parameters (see [[#aggregator-service-management]]).
 
-- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator Instance (see [[#public-transformation-catalog]] and [[#private-transformation-catalog]]).
+- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator Instance (see [[#public-transformation-catalog]] and [[#instance-level-transformation-catalog]]).
 
 Identity, Authorization, and Tokens {#definitions-security}
 ----------------------------------------------------------
 
-- **User (End-user):** A person or agent that owns or controls resources and uses a Clienbt to configure an Aggregator deployment.
+- **User (End-user):** A person or agent that owns or controls resources and uses a Client to configure an Aggregator deployment.
 
 - **WebID:** An HTTP(S) IRI that identifies an agent and can be dereferenced to obtain a WebID Profile document as defined in [[!WEBID-PROFILE]].
 

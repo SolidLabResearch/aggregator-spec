@@ -4,7 +4,7 @@ Shortname: aggregator-spec
 Level: none
 Status: LD
 Editor: Maarten Vandenbrande, Ghent University - imec http://idlab.ugent.be/, maarten.vandenbrande@ugent.be
-Abstract: This document has the specification of the aggregator.
+Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments, registering aggregator instances, and managing services that execute data transformations. The protocol leverages OAuth 2.0 and User-Managed Access (UMA) for authentication and authorization, enabling secure access to protected derived resources.
 Markup Shorthands: markdown yes, css no
 Local Boilerplate: logo yes
 Canonical URL: _ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_
@@ -19,7 +19,7 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 <pre class="biblio">
 {
   "A4DS": {
-    "href": "https://solid.github.io/authorization-for-data-spaces/",
+    "href": "https://spec.knows.idlab.ugent.be/A4DS/L1/latest/",
     "title": "Authorization for Data Spaces (A4DS)"
   },
   "FNO": {

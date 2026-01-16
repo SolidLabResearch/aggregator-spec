@@ -64,7 +64,7 @@ At a high level:
 - Public (no authentication): the server metadata resource (see [[#server-description]]) and the resources it links to, such as the transformation catalog and Client Identifier Document (see [[#public-transformation-catalog]] and [[#client-identifier-document]]).
 - Protected (UMA): the instance metadata resource (see [[#aggregator-metadata]]) and all resources under the management API (see [[#aggregator-service-management]]).
 
-ISSUE: TODO clarify the boundary between the Aggregator Instance (management API) and the Aggregator Service output resources (the `location` URLs), including whether outputs are always protected by the same Authorization Server and UMA policies.
+ISSUE: TODO clarify the boundary between the Aggregator Instance (management API) and the Aggregator Service output resources referenced by execution output parameters (for example `trans:result`), including whether outputs are always protected by the same Authorization Server and UMA policies.
 
 Example URL Layout (Non-normative) {#example-url-layout}
 -------------------------------------------------------

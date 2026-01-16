@@ -4,7 +4,7 @@ Shortname: aggregator-spec
 Level: none
 Status: LD
 Editor: Maarten Vandenbrande, Ghent University - imec http://idlab.ugent.be/, maarten.vandenbrande@ugent.be
-Abstract: This document has the specification of the aggregator.
+Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments, registering aggregator instances, and managing services that execute data transformations. The protocol leverages OAuth 2.0 and User-Managed Access (UMA) for authentication and authorization, enabling secure access to protected derived resources.
 Markup Shorthands: markdown yes, css no
 Local Boilerplate: logo yes
 Canonical URL: _ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_
@@ -19,7 +19,7 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 <pre class="biblio">
 {
   "A4DS": {
-    "href": "https://solid.github.io/authorization-for-data-spaces/",
+    "href": "https://spec.knows.idlab.ugent.be/A4DS/L1/latest/",
     "title": "Authorization for Data Spaces (A4DS)"
   },
   "FNO": {
@@ -59,7 +59,7 @@ Introduction {#introduction}
 ====================
 
 This specification defines the Aggregator Protocol, an HTTP-based interface that lets a client create and manage Aggregator Instances and configure Aggregator Services that execute data transformations.
-Transformations are described and discovered using the Function Ontology (FnO) [[!FNO]]; a service is configured by referencing a transformation (or execution graph) and providing its inputs, after which the client can retrieve the derived result from the service’s advertised `location`.
+Transformations are described and discovered using the Function Ontology (FnO) [[!FNO]]; a service is configured by referencing a transformation (a `fno:Execution`) and providing its parameters, after which the client can retrieve the derived result from the output defined by that function.
 
 ISSUE: TODO clarify whether Aggregator Services may reference transformations not advertised in the server/instance transformation catalogs, and how servers validate and authorize execution of arbitrary FnO graphs.
 
@@ -89,14 +89,14 @@ Core Roles and Components {#definitions-core}
 
 - **Aggregator Instance** (often shortened to “Aggregator”): A user- or tenant-scoped logical instance created via the registration endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
 
-- **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service references a transformation/execution graph and exposes a `location` where the derived result can be retrieved (see [[#aggregator-service-management]]).
+- **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service is represented as an FnO execution (`fno:Execution`) that identifies the executed function and its inputs; outputs are described by the function's output parameters (see [[#aggregator-service-management]]).
 
-- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator Instance (see [[#public-transformation-catalog]] and [[#private-transformation-catalog]]).
+- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator Instance (see [[#public-transformation-catalog]] and [[#instance-level-transformation-catalog]]).
 
 Identity, Authorization, and Tokens {#definitions-security}
 ----------------------------------------------------------
 
-- **User (End-user):** A person or agent that owns or controls resources and uses a Clienbt to configure an Aggregator deployment.
+- **User (End-user):** A person or agent that owns or controls resources and uses a Client to configure an Aggregator deployment.
 
 - **WebID:** An HTTP(S) IRI that identifies an agent and can be dereferenced to obtain a WebID Profile document as defined in [[!WEBID-PROFILE]].
 
@@ -193,7 +193,7 @@ At a high level:
 - Public (no authentication): the server metadata resource (see [[#server-description]]) and the resources it links to, such as the transformation catalog and Client Identifier Document (see [[#public-transformation-catalog]] and [[#client-identifier-document]]).
 - Protected (UMA): the instance metadata resource (see [[#aggregator-metadata]]) and all resources under the management API (see [[#aggregator-service-management]]).
 
-ISSUE: TODO clarify the boundary between the Aggregator Instance (management API) and the Aggregator Service output resources (the `location` URLs), including whether outputs are always protected by the same Authorization Server and UMA policies.
+ISSUE: TODO clarify the boundary between the Aggregator Instance (management API) and the Aggregator Service output resources referenced by execution output parameters (for example `trans:result`), including whether outputs are always protected by the same Authorization Server and UMA policies.
 
 Example URL Layout (Non-normative) {#example-url-layout}
 -------------------------------------------------------
@@ -369,6 +369,7 @@ ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained
     - **registration_type** (REQUIRED):
         The value is a string token; it MUST be one of the `supported_registration_types` advertised in the Aggregator Server Description ([[#server-description]]).
         The following string tokens are defined, each corresponding to an RDF class in the Aggregator vocabulary ([[#vocabulary]]) for semantically annotated representations:
+        - `"none"` ↔ `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]])
         - `"provision"` ↔ `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]])
         - `"authorization_code"` ↔ `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]])
         - `"client_credentials"` ↔ `aggr:ClientCredentialsFlow` ([[#aggr-client-credentials-flow-class]])
@@ -377,42 +378,67 @@ ISSUE: TODO specify whether and how `IDP_client_token` can be sender-constrained
 
     Depending on `registration_type`, additional members are defined:
 
+    - **registration_type: "none"**
+        - No additional members are required.
+
+        In this flow the Aggregator Instance has no identity and all requests to upstream resource servers will be unauthenticated.
+        All hosted resources MUST be public or accessible without authentication.
+        In this flow the registration post request MIGHT not require authentication, depending on the deployment’s policy.
+
     - **registration_type: "provision"**
         - No additional members are required.
-            ISSUE: TODO specify that the Aggregator Server should register an account at the IdP for the new WebID, and a account at an Authorization Server for UMA to manage aggregator resource permissions.
+
+        In this flow the Aggregator server MUST provision an identity for the Aggregator Instance that is registered at the Identity Provider (IdP).
 
     - **registration_type: "authorization_code"**
-        - **authorization_server** (string, REQUIRED): URL of the UMA Authorization Server that governs the user’s resources.
+        The `authorization_code` flow uses two `POST` messages to the `registration_endpoint`:
+        - **Start request** (bootstraps PKCE [[RFC7636]]): The request body MUST include:
+            - **registration_type** (string, REQUIRED): `"authorization_code"`.
+            - **authorization_server** (string, REQUIRED)
+            - **client_id** (string, REQUIRED): Dereferenceable client metadata document for the client application.
 
-        The `authorization_code` flow has two `POST` messages:
-        - **Start request** (bootstraps PKCE [[RFC7636]]): The request MUST NOT include `code`, `redirect_uri`, or `state`. The server MUST respond with `201 Created` and a JSON object containing:
-            - **client_id** (string, REQUIRED): The client identifier (dereferenceable client metadata document).
+          The server MUST respond with `201 Created` and a JSON object containing:
+            - **aggregator_client_id** (string, REQUIRED): The client identifier of the aggregator (dereferenceable client metadata document).
             - **code_challenge** (string, REQUIRED)
             - **code_challenge_method** (string, REQUIRED)
             - **state** (string, REQUIRED)
-                The server MAY also include IdP discovery hints (for example `issuer` or `authorization_endpoint`) if the client cannot determine them through other means.
 
-        - **Finish request** (redeems the authorization code): The request MUST include:
+          The server MAY also include IdP discovery hints (for example `issuer` or `authorization_endpoint`) if the client cannot determine them through other means.
+
+        - **Finish request** (redeems the authorization code): The request body MUST include:
+            - **registration_type** (string, REQUIRED): `"authorization_code"`.
             - **code** (string, REQUIRED): The authorization code issued by the IdP.
             - **redirect_uri** (string, REQUIRED): The redirect URI used in the authorization request.
             - **state** (string, REQUIRED): The `state` returned by the start request.
 
+          The finish request reuses the stored `authorization_server` and `client_id` from the start request and MUST NOT include them.
+          The server MUST verify that `redirect_uri` matches one of the redirect URIs registered in the client metadata document dereferenced from `client_id` and that `state` matches the stored state for the pending registration.
+          
+          ISSUE: The client needs to trust all redirect URIs registered in the aggregator client metadata document, if the clients clientID is not dereferenceable.
+
     - **registration_type: "client_credentials"**
         - **authorization_server** (string, REQUIRED): URL of the UMA Authorization Server that governs the user’s resources.
-        - **webid** (string, REQUIRED): The WebID that the Aggregator Instance should act as.
         - **client_id** (string, REQUIRED)
         - **client_secret** (string, REQUIRED)
+        - **idp** (string, REQUIRED): The idp that the Aggregator Instance should use.
 
     - **registration_type: "device_code"**
         - Not specified.
 
+    To update the tokens for an existing Aggregator Instance, the client MUST include the `aggregator_id` member along with the other required members for the selected `registration_type`.
+    This CAN only be done for the following `registration_type` values, for other values the server SHOULD respond with `400 Bad Request`:
+    - `client_credentials`: To change the client_id and client_secret.
+    - `authorization_code`: To obtain a new access token and refresh token after the previous ones have expired.
+    - `device_code`: To obtain a new access token and refresh token after the previous ones have expired.
+    
     For successful `POST` requests that create/update an Aggregator Instance (i.e., `provision`, `client_credentials`, and the `authorization_code` finish request), the server MUST respond with:
     - `201 Created` when it created a new Aggregator Instance (i.e., no `aggregator_id` was provided).
     - `200 OK` when it replaced the token set for an existing Aggregator Instance (i.e., `aggregator_id` was provided).
 
     For successful `POST` requests that create/update an Aggregator Instance (i.e., all types except the `authorization_code` start request), the response MUST be a JSON object and MUST include:
     - **aggregator_id** (string, REQUIRED): Opaque identifier for the Aggregator Instance (used for subsequent management operations).
-    - **authorization_server** (string, OPTIONAL): Included when relevant for the registration type.
+    - **subject** (string, OPTIONAL): The WebID or Client_ID for which OIDC tokens were created. This MUST be added to the response when the request was a registration type `provision`.
+    - **idp** (string, OPTIONAL): The Identity Provider (IdP) that issued the OIDC tokens for the Aggregator Instance. This MUST be added to the response when the request was a registration type `provision` and the subject is not a WebID.
 
     The response SHOULD also include:
     - **aggregator** (string, OPTIONAL): Absolute URL of the Aggregator Instance base URL that dereferences to the Aggregator Description ([[#aggregator-description]]).
@@ -459,21 +485,51 @@ Content-Type: application/json
 ```
 </div>
 
-**2. Aggregator Server provisions a WebID and registers it at the IDP**
+**2. Aggregator Server provisions an account at an IDP**
 
-The Aggregator Server creates a WebID document that conforms to the WebID Profile specification [[!WEBID-PROFILE]] and registers a new account with an IDP for that WebID.
-Using the credentials of this new account the Aggregator Server CAN perform a client credentials flow to obtain the `IDP_aggregator_token` (and accompanying refresh token) to authorize the aggregator acting under its own WebID.
+The Aggregator Server provisions an account at an IDP. 
+This might be linked to a WebID document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
+Using the credentials of this account the Aggregator Server can perform a client credentials flow to obtain the `IDP_aggregator_token` (and accompanying refresh token) to authorize the aggregator acting under its own WebID.
 
 **3. Aggregator Server creates an aggregator**
 
 Using the obtained tokens, the Aggregator Server creates an aggregator linked to the user, and returns the aggregator description ([[#aggregator-description]]).
-The aggregator SHOULD NOT give these tokens or client credentials to the client.
+The aggregator should not give these tokens or client credentials to the client.
+
+<div class="example">
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "aggregator_id": "agg-7890",
+  "aggregator": "https://aggregator.example/aggregators/agg-7890/",
+  "subject": "https://aggregator.example/webid#me"
+}
+```
+</div>
+
+Or with a non-WebID subject:
+
+<div class="example">
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "aggregator_id": "agg-7890",
+  "aggregator": "https://aggregator.example/aggregators/agg-7890/",
+  "subject": "aggregator@example.com",
+  "idp": "https://idp.example/"
+}
+```
+</div>
 
 ### Creation `authorization_code` Flow ### {#creation-authorization}
 
 The `authorization_code` flow allows clients to create an aggregator that acts on behalf of the end-user, but with a token that is scoped specifically for the aggregator.
 
-<img src="uml/f89d15189bc77457ba4b37e36b7f67ec4b246993.svg" alt="PlantUML Diagram" no-autosize>
+<img src="uml/1f73f502381e604721f17cdd4d941d717dc4311a.svg" alt="PlantUML Diagram" no-autosize>
 
 **1. Client starts flow with Aggregator Server**
 
@@ -487,7 +543,8 @@ Content-Type: application/json
 
 {
   "registration_type": "authorization_code",
-  "authorization_server": "https://as.example"
+  "authorization_server": "https://as.example",
+  "client_id": "https://app.example/client.jsonld"
 }
 ```
 </div>
@@ -506,7 +563,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 
 {
-  "client_id": "https://aggregator.example/client.jsonld",
+  "aggregator_client_id": "https://aggregator.example/client.jsonld",
   "code_challenge": "1uLSZp2...",
   "code_challenge_method": "S256",
   "state": "1eb7c8f5..."
@@ -569,7 +626,8 @@ Content-Type: application/json
 
 **5.1 Aggregator dereferences the client metadata**
 
-The Aggregator dereferences the `client_id` JSON-LD document to confirm the registered redirect URIs, contact metadata, and other security requirements, then verifies that the supplied redirect_uri belongs to that set and that the returned `state` matches the stored nonce.
+The Aggregator dereferences the `https://app.example/client.jsonld` JSON-LD document to confirm the registered redirect URIs.
+The aggregator then verifies that the supplied `redirect_uri` belongs to that set and that the returned `state` matches the stored state.
 
 **5.2 Aggregator redeems the authorization code at the IDP token endpoint**
 
@@ -615,7 +673,6 @@ Content-Type: application/json
 
 {
   "aggregator_id": "agg-7890",
-  "authorization_server": "https://as.example",
   "aggregator": "https://aggregator.example/aggregators/agg-7890/"
 }
 ```
@@ -806,16 +863,18 @@ Content-Type: application/json
 ```
 </div>
 
+ISSUE: TODO `claim_tokens` actually doesn't exist in the UMA spec; we should use `claims` instead and do multiple posts. But in the normative section explain that any claim token pushing is fine.
+
 **2.1 Upstream Authorization Server validates the ID token**
 
 The Upstream Authorization Server validates the ID token with the Identity Provider that issued it.
 
 **2.2 Upstream Authorization Server returns access token and derivation resource identifier**
 
-Adding the derivation-creation scope signals to the Authorization Server that the Aggregator intends to create a derived resource based on the requested upstream resource.
-The Authorization Server MUST then include a `derivation_resource_id` in the response.
+Adding the derivation-creation scope signals to the Upstream Authorization Server that the Aggregator intends to create a derived resource based on the requested upstream resource.
+The Upstream Authorization Server MUST then include a `derivation_resource_id` in the response.
 The `derivation_resource_id` is a unique identifier that the Aggregator will use to reference this upstream resource when creating derived resources.
-The Authorization Server can link this identifier to the Aggregator's identity to manage and track derived resources.
+The Upstream Authorization Server can link this identifier to the Aggregator's identity to manage and track derived resources.
 
 <div class="example">
 ```http
@@ -858,7 +917,7 @@ Content-Type: application/json
 </div>
 
 If a resource isn't used anymore by the Aggregator Service, the Aggregator Service SHOULD update the resource registration to remove the `derivation_resource_id` from the `prov:wasDerivedFrom` relations, and MAY expire all previous access tokens for this resource.
-Also the Aggregator Service SHOULD delete the resource from its Upstream Resource Server, by following the Resource ID deletion procedure.
+Also the Aggregator Service SHOULD delete the `derivation_resource_id` from its Upstream Authorization Server, by following the Resource ID deletion procedure.
 
 Client Access (Serving) {#serving-flow}
 --------------------------------------
@@ -1047,11 +1106,11 @@ Clients MAY rely on this type statement when consuming semantic representations.
 : **token_expiry** (OPTIONAL):
 :: The value is a string timestamp indicating when the aggregator's access token will expire (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in the RDF representations, this member maps to the predicate `aggr:tokenExpiry` ([[#aggr-token-expiry-property]]).
 : **transformation_catalog** (REQUIRED):
-:: The value is a string containing the absolute URL of the instance’s Transformations Endpoint ([[#private-transformation-catalog]]); in the RDF representations, this member maps to the predicate `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
+:: The value is a string containing the absolute URL of the instance’s Transformations Endpoint ([[#instance-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
 : **service_collection** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection ([[#service-collection]]); in the RDF representations, this member maps to the predicate `aggr:servicesEndpoint` ([[#aggr-services-endpoint-property]]).
  
-This document CAN be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used.
+This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used.
 In that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
 
 <div class="example">
@@ -1096,8 +1155,8 @@ In that case this document MUST be an RDF document that conforms to the WebID Pr
 ```
 </div>
 
-Transformations Endpoint {#private-transformation-catalog}
-------------------------------------------------------------------
+Instance-level Transformations Catalog {#instance-level-transformation-catalog}
+-------------------------------------------------------------------
 
 This endpoint is the instance-level extension on the public Transformation Catalog defined in [[#public-transformation-catalog]].
 Implementations MAY expose it at any URL, but the Aggregator Description MUST advertise the correct location via its `transformation_catalog` field (`aggr:transformationsEndpoint`).
@@ -1169,25 +1228,34 @@ The Aggregator MUST register this UMA resource with the Authorization Server and
 
 : `POST`
 :: Creates a new service. 
-    The request body MUST contain a pipeline description that references the available transformations (implementations MAY decide on the exact media type using HTTP content negotiation based on [[RFC9110]]). 
+    The request MUST be authorized with the `create` scope on the Service Collection resource.
+    The request body MUST contain an `fno:Execution` that references a transformation from the public or instance-level transformation catalog, unless it references a client-provided `fno:Composition` handled as described below (implementations MAY decide on the exact media type using HTTP content negotiation based on [[RFC9110]]). 
+    This execution description MUST conform to the FnO specification [[!FNO]] and MUST include `fno:executes` with the IRI of the function to execute.
+    The client CAN either use a blank node or an IRI as the subject of the `fno:Execution`, using an IRI allows the client to suggest a specific identifier for the created service.
+    Servers MAY honor this suggested identifier; if they do, the created service URL MUST equal the suggested IRI.
+    Servers that do not honor client-suggested identifiers MUST ignore the suggestion and generate their own identifier.
+    If `fno:executes` references a `fno:Composition` provided by the client, the server MUST either reject the request with `400 Bad Request` or accept it and publish the composition in the instance-level transformation catalog.
+    On success, the server MUST:
       1. Persist the new service and increment the collection `ETag`.
       2. Register a new UMA resource for the created Service Resource URL (e.g., `/services/{service_id}`) with the `read` and `delete` scopes so the creator—or any other party with an RPT containing those scopes—can manage the service.
-      3. Return `201 Created`, set `Content-Type: application/json`, and include the full JSON representation of the service in the response body.
+      3. Return `201 Created`, set `Content-Type: application/json`, and include the full JSON representation of the service (as defined in [[#service-resource]]) in the response body.
 
     If the request body is invalid the server MUST respond with `400 Bad Request`. Failures while instantiating the service MUST result in `500 Internal Server Error`.
+    If the server honors a suggested identifier and the suggested identifier is not available, the server MUST respond with `409 Conflict`.
 
 Service Resource {#service-resource}
 -------------------------------------------------------------------------------
 
 Operations on an individual service require the `read` and `delete` scopes on the Service Resource URL (e.g., `/services/{service_id}`).
 The service URL MUST be one of the URLs returned by the collection resource; a request for a non-existent service MUST return `404 Not Found`, while malformed service URLs MUST yield `400 Bad Request`.
+In semantically annotated representations, the service resource MUST also be typed as `fno:Execution`.
 
 : `HEAD`
 :: Returns the service metadata. The server MUST respond with `200 OK` and `ETag`, and `Content-Type` headers whose value MUST change whenever the service state changes.
 
 : `GET`
 :: A JSON representation of the service SHOULD be returned with `200 OK` and with a `Content-Type`.
-    These representations MAY include a JSON-LD context that maps the `aggr:` terms defined in [[#vocabulary]] so clients can consume typed data, and content negotiation SHOULD be supported.
+    These representations MAY include a JSON-LD context that maps the `aggr:` and `fno:` terms defined in [[#vocabulary]] so clients can consume typed data, and content negotiation SHOULD be supported.
     The representation MUST include at least the following fields:
 
     : **id** (REQUIRED):
@@ -1195,19 +1263,24 @@ The service URL MUST be one of the URLs returned by the collection resource; a r
     :: In semantically annotated representations, this is the RDF subject (i.e., `@id`) of the `aggr:Service` resource ([[#aggr-service-class]]).
 
     : **status** (REQUIRED):
-    :: The value is a string indicating the current status of the service (e.g., `"running"`, `"restarting"`, `"stopped"`, or `"errored"`).
+    :: The value is a string indicating the current status of the service (e.g., `"running"`, `"starting"`, `"stopped"`, or `"errored"`).
     :: In semantically annotated representations, this member maps to the predicate `aggr:status` ([[#aggr-status-property]]).
-    : **transformation** (REQUIRED):
-    :: The value is either a string containing an IRI of the transformation/execution graph, or a JSON object embedding an FnO execution description.
-    :: In semantically annotated representations, this member maps to the predicate `aggr:transformation` ([[#aggr-transformation-property]]).
+
+    : **status_detail** (OPTIONAL):
+    :: The value is a string providing a human-readable detail about the current status (for example, a stop reason or error message).
+    :: When `status` is `"errored"`, the server SHOULD include this field.
+    :: In semantically annotated representations, this member maps to the predicate `aggr:statusDetail` ([[#aggr-status-detail-property]]).
 
     : **created_at** (REQUIRED):
     :: The value is a string timestamp (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]).
     :: In semantically annotated representations, this member maps to the predicate `aggr:createdAt` ([[#aggr-created-at-property]]).
-    : **location** (REQUIRED):
-    :: The value is a string containing an absolute URL where the service output can be accessed.
-    :: In semantically annotated representations, this member maps to the predicate `aggr:location` ([[#aggr-location-property]]).
 
+    : **executes** (REQUIRED):
+    :: The value is a string containing the IRI of the FnO function being executed.
+    :: In semantically annotated representations, this member maps to the predicate `fno:executes`.
+
+    The representation MUST also include any required input and output parameters for the executed FnO function, using the FnO parameters and outputs predicates defined in the function's FnO description.
+    The representation MAY include additional fields (e.g., `fno:name`, `fno:solves`, etc.) as needed.
 
 : `DELETE`
 :: Stops and removes the service.
@@ -1299,7 +1372,7 @@ If the request is valid, the Aggregator will create a new service, register the 
 
 <div class="example">
 ```http
-HTTP/1.1 200 OK
+HTTP/1.1 201 Created
 Content-Type: text/turtle
 
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
@@ -1309,14 +1382,13 @@ Content-Type: text/turtle
 
 <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5>
     a aggr:Service ;
+    a fno:Execution ;
     aggr:status "running" ;
+    aggr:statusDetail "" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    aggr:location <https://example.org/410b093c-04b3-4fac-87be-4d393f40b2e5> ;
-    aggr:transformation [
-        a fno:Execution ;
-        fno:executes trans:AggregateSources ;
-        trans:sources ( <http://example.org/source/1> <http://example.org/source/2> )
-    ] .
+    fno:executes trans:AggregateSources ;
+    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
+    trans:result ( <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> ) .
 ```
 </div>
 
@@ -1351,27 +1423,26 @@ Content-Type: text/turtle
 
 <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5>
     a aggr:Service ;
+    a fno:Execution ;
     aggr:status "running" ;
+    aggr:statusDetail "" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    aggr:location <https://example.org/410b093c-04b3-4fac-87be-4d393f40b2e5> ;
-    aggr:transformation [
-        a fno:Execution ;
-        fno:executes trans:AggregateSources ;
-        trans:sources ( <http://example.org/source/1> <http://example.org/source/2> )
-    ] .
+    fno:executes trans:AggregateSources ;
+    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
+    trans:result ( <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> ) .
 ```
 </div>
 
 ### Using a Simple Service ### {#using-a-service}
 
-After discovering the service, the client can use the `location` URL to access the output of the service.
-For example, if the service produces a JSON output, the client can do a `GET` request to the `location` URL.
+After discovering the service, the client can use the output parameter defined by the executed function (for example `trans:result`) to access the output of the service.
+For example, if the service produces a JSON output, the client can do a `GET` request to the URL provided by that output parameter.
 This will again require authentication using the mechanisms defined in [[#aggregator-security-model]] to access this resource.
 This time the client might need to gather multiple access claims from the AS's of `http://example.org/source/1` and `http://example.org/source/2`.
 
 ### Using a Complex Service ### {#using-a-complex-service}
 
-As a complex example the resulting service could be an aggregator that combines multiple data sources into a single output stream available at the `location` URL.
+As a complex example the resulting service could be an aggregator that combines multiple data sources into a single output stream available at the URL indicated by the output parameter (for example `trans:result`).
 For example we assume this results is a kafka stream.
 
 ISSUE: TODO add the example flow here
@@ -1400,7 +1471,7 @@ Describes an Aggregator Instance (its base URL is the Aggregator Description res
 Represents a configured Aggregator pipeline that can be created, inspected, and removed via the Service Management API (e.g., `/config/services/{service_id}`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity)
+**subClassOf:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity), [fno:Execution](https://w3id.org/function/spec/#Execution)
 
 ### aggr:AggregatorServer ### {#aggr-aggregator-server-class}
 Describes the Aggregator Server Description document that advertises discovery metadata.
@@ -1426,6 +1497,12 @@ This specification models each flow as an RDF class so that `aggr:supportedRegis
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)
+
+### aggr:NoAuthFlow ### {#aggr-no-auth-flow-class}
+Registration flow where the Aggregator Instance does not authenticate and only accesses public resources.
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+**subClassOf:** `aggr:RegistrationFlow`
 
 ### aggr:ProvisionFlow ### {#aggr-provision-flow-class}
 Registration flow where the Aggregator Server provisions an Aggregator Instance with its own identity.
@@ -1510,19 +1587,12 @@ Provides the lifecycle phase of an `aggr:Service` (values such as `running`, `st
 **domain:** `aggr:Service`<br>
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
-### aggr:transformation ### {#aggr-transformation-property}
-Associates an `aggr:Service` with the FnO execution graph that describes how inputs are transformed.
+### aggr:statusDetail ### {#aggr-status-detail-property}
+Provides a human-readable explanation of the current `aggr:Service` status (for example, a stop reason or error message).
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
-**range:** [fno:Execution](https://w3id.org/function/spec/#execution)
-
-### aggr:location ### {#aggr-location-property}
-Links an `aggr:Service` to the URL where its output can be accessed.
-
-**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
-**range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
+**range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
 ### aggr:registrationEndpoint ### {#aggr-registration-endpoint-property}
 Links an `aggr:AggregatorServer` to its registration endpoint.

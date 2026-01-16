@@ -20,7 +20,7 @@ Describes an Aggregator Instance (its base URL is the Aggregator Description res
 Represents a configured Aggregator pipeline that can be created, inspected, and removed via the Service Management API (e.g., `/config/services/{service_id}`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity)
+**subClassOf:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity), [fno:Execution](https://w3id.org/function/spec/#Execution)
 
 ### aggr:AggregatorServer ### {#aggr-aggregator-server-class}
 Describes the Aggregator Server Description document that advertises discovery metadata.
@@ -46,6 +46,12 @@ This specification models each flow as an RDF class so that `aggr:supportedRegis
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)
+
+### aggr:NoAuthFlow ### {#aggr-no-auth-flow-class}
+Registration flow where the Aggregator Instance does not authenticate and only accesses public resources.
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+**subClassOf:** `aggr:RegistrationFlow`
 
 ### aggr:ProvisionFlow ### {#aggr-provision-flow-class}
 Registration flow where the Aggregator Server provisions an Aggregator Instance with its own identity.
@@ -130,19 +136,12 @@ Provides the lifecycle phase of an `aggr:Service` (values such as `running`, `st
 **domain:** `aggr:Service`<br>
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
-### aggr:transformation ### {#aggr-transformation-property}
-Associates an `aggr:Service` with the FnO execution graph that describes how inputs are transformed.
+### aggr:statusDetail ### {#aggr-status-detail-property}
+Provides a human-readable explanation of the current `aggr:Service` status (for example, a stop reason or error message).
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
-**range:** [fno:Execution](https://w3id.org/function/spec/#execution)
-
-### aggr:location ### {#aggr-location-property}
-Links an `aggr:Service` to the URL where its output can be accessed.
-
-**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
-**range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
+**range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
 ### aggr:registrationEndpoint ### {#aggr-registration-endpoint-property}
 Links an `aggr:AggregatorServer` to its registration endpoint.

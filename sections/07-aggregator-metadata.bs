@@ -28,11 +28,11 @@ Clients MAY rely on this type statement when consuming semantic representations.
 : **token_expiry** (OPTIONAL):
 :: The value is a string timestamp indicating when the aggregator's access token will expire (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in the RDF representations, this member maps to the predicate `aggr:tokenExpiry` ([[#aggr-token-expiry-property]]).
 : **transformation_catalog** (REQUIRED):
-:: The value is a string containing the absolute URL of the instance’s Transformations Endpoint ([[#private-transformation-catalog]]); in the RDF representations, this member maps to the predicate `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
+:: The value is a string containing the absolute URL of the instance’s Transformations Endpoint ([[#instance-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
 : **service_collection** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection ([[#service-collection]]); in the RDF representations, this member maps to the predicate `aggr:servicesEndpoint` ([[#aggr-services-endpoint-property]]).
  
-This document CAN be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used.
+This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used.
 In that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
 
 <div class="example">
@@ -77,8 +77,8 @@ In that case this document MUST be an RDF document that conforms to the WebID Pr
 ```
 </div>
 
-Transformations Endpoint {#private-transformation-catalog}
-------------------------------------------------------------------
+Instance-level Transformations Catalog {#instance-level-transformation-catalog}
+-------------------------------------------------------------------
 
 This endpoint is the instance-level extension on the public Transformation Catalog defined in [[#public-transformation-catalog]].
 Implementations MAY expose it at any URL, but the Aggregator Description MUST advertise the correct location via its `transformation_catalog` field (`aggr:transformationsEndpoint`).

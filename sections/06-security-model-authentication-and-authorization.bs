@@ -102,16 +102,18 @@ Content-Type: application/json
 ```
 </div>
 
+ISSUE: TODO `claim_tokens` actually doesn't exist in the UMA spec; we should use `claims` instead and do multiple posts. But in the normative section explain that any claim token pushing is fine.
+
 **2.1 Upstream Authorization Server validates the ID token**
 
 The Upstream Authorization Server validates the ID token with the Identity Provider that issued it.
 
 **2.2 Upstream Authorization Server returns access token and derivation resource identifier**
 
-Adding the derivation-creation scope signals to the Authorization Server that the Aggregator intends to create a derived resource based on the requested upstream resource.
-The Authorization Server MUST then include a `derivation_resource_id` in the response.
+Adding the derivation-creation scope signals to the Upstream Authorization Server that the Aggregator intends to create a derived resource based on the requested upstream resource.
+The Upstream Authorization Server MUST then include a `derivation_resource_id` in the response.
 The `derivation_resource_id` is a unique identifier that the Aggregator will use to reference this upstream resource when creating derived resources.
-The Authorization Server can link this identifier to the Aggregator's identity to manage and track derived resources.
+The Upstream Authorization Server can link this identifier to the Aggregator's identity to manage and track derived resources.
 
 <div class="example">
 ```http
@@ -154,7 +156,7 @@ Content-Type: application/json
 </div>
 
 If a resource isn't used anymore by the Aggregator Service, the Aggregator Service SHOULD update the resource registration to remove the `derivation_resource_id` from the `prov:wasDerivedFrom` relations, and MAY expire all previous access tokens for this resource.
-Also the Aggregator Service SHOULD delete the resource from its Upstream Resource Server, by following the Resource ID deletion procedure.
+Also the Aggregator Service SHOULD delete the `derivation_resource_id` from its Upstream Authorization Server, by following the Resource ID deletion procedure.
 
 Client Access (Serving) {#serving-flow}
 --------------------------------------
