@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="_ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_" rel="canonical">
-  <meta content="e5c392e3f485bb6bbd39e352b657e66343ea3bd6" name="revision">
+  <meta content="bc99a75ae2c909e3a0cdeb46f4b69b36e303d960" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2016,7 +2016,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Aggregator Specification</h1>
    <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-01-16">16 January 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-01-22">22 January 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2032,7 +2032,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 16 January 2026,
+In addition, as of 22 January 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2042,7 +2042,7 @@ Parts of this work may be from another specification document.  If so, those par
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments, registering aggregator instances, and managing services that execute data transformations. The protocol leverages OAuth 2.0 and User-Managed Access (UMA) for authentication and authorization, enabling secure access to protected derived resources.</p>
+   <p>The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments, registering aggregator instances, and managing services that execute data transformations. The protocol leverages OIDC and User-Managed Access (UMA) for authentication and authorization, enabling secure access to protected derived resources.</p>
   </div>
   <div data-fill-with="at-risk"></div>
   <nav data-fill-with="table-of-contents" id="toc">
@@ -2166,11 +2166,10 @@ Parts of this work may be from another specification document.  If so, those par
    <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
    <p>This specification defines the Aggregator Protocol, an HTTP-based interface that lets a client create and manage Aggregator Instances and configure Aggregator Services that execute data transformations.
 Transformations are described and discovered using the Function Ontology (FnO) <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>; a service is configured by referencing a transformation (a <code>fno:Execution</code>) and providing its parameters, after which the client can retrieve the derived result from the output defined by that function.</p>
-   <p class="issue" id="issue-fcae5e17"><a class="self-link" href="#issue-fcae5e17"></a> TODO clarify whether Aggregator Services may reference transformations not advertised in the server/instance transformation catalogs, and how servers validate and authorize execution of arbitrary FnO graphs.</p>
    <p>Clients start from the Aggregator Server Description at the server base URL to discover the registration endpoint, supported registration flows, and the server’s transformation catalog (<a href="#aggregator-server-metadata">§ 4 Aggregator Server Metadata</a>).
 Using the registration endpoint, a client creates (or manages) an Aggregator Instance (<a href="#aggregator-registration">§ 5.1 Aggregator Registration Endpoint</a>) and then follows the instance’s Aggregator Description to find the instance’s service collection and transformations endpoint (<a href="#aggregator-description">§ 7.1 Aggregator Description</a> and <a href="#aggregator-service-management">§ 8 Aggregator Service Management</a>).</p>
    <p>All management operations are authenticated and authorized.
-This protocol integrates with OAuth 2.0 / OpenID Connect <a data-link-type="biblio" href="#biblio-oidc-core" title="OpenID Connect Core 1.0">[OIDC-Core]</a> for identity and uses UMA-style authorization <a data-link-type="biblio" href="#biblio-uma" title="User-Managed Access (UMA) 2.0">[UMA]</a> for protected resources, scopes, and tickets as described in <a href="#aggregator-security-model">§ 6 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
+This protocol integrates with OpenID Connect <a data-link-type="biblio" href="#biblio-oidc-core" title="OpenID Connect Core 1.0">[OIDC-Core]</a> for identity and uses UMA-style authorization <a data-link-type="biblio" href="#biblio-uma" title="User-Managed Access (UMA) 2.0">[UMA]</a> for protected resources, scopes, and tickets as described in <a href="#aggregator-security-model">§ 6 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
    <p>Servers MUST support JSON (<code>application/json</code>) where specified and MAY additionally provide semantically annotated RDF representations (e.g., JSON-LD or Turtle) via HTTP content negotiation.
 The Aggregator vocabulary (<a href="#vocabulary">§ 9 Vocabulary</a>) provides stable IRIs for classes and predicates used throughout the specification.</p>
    <h2 class="heading settled" data-level="2" id="definitions"><span class="secno">2. </span><span class="content">Definitions</span><a class="self-link" href="#definitions"></a></h2>
@@ -2982,23 +2981,22 @@ The Upstream Authorization Server can link this identifier to the Aggregator’s
 This access token MAY be used multiple times until it expires or is revoked.</p>
    <p><strong>4. Resource registration of the Aggregator Service</strong></p>
    <p>Finally, the Aggregator Service MUST update the resource registration at its own Authorization Server to signal that it used this <code>derivation_resource_id</code> to create derived resources.
+The Aggregator MUST include a <code>derived_from</code> property in the resource registration request that is a JSON array of objects containing the <code>issuer</code> and <code>derivation_resource_id</code>.
 The Authorization Server MUST expire all previous access tokens for this resource.</p>
-   <div class="example" id="example-1654b4f1">
-    <a class="self-link" href="#example-1654b4f1"></a>
+   <div class="example" id="example-0eba4989">
+    <a class="self-link" href="#example-0eba4989"></a>
 
 <pre class="language-http highlight"><c- nf>PUT</c-> <c- nn>/resource-registration/agg-service-123</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>as.example.org</c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 {
-  <c- f>"resource_id"</c-><c- p>:</c-> <c- u>"agg-service-123"</c-><c- p>,</c->
-  <c- f>"resource_relations"</c-><c- p>:</c-> <c- p>{</c->
-    <c- f>"prov:wasDerivedFrom"</c-><c- p>:</c-> <c- p>[</c->
-      <c- p>{</c->
-        <c- f>"issuer"</c-><c- p>:</c-> <c- u>"https://as.example.org"</c-><c- p>,</c->
-        <c- f>"derivation_resource_id"</c-><c- p>:</c-> <c- u>"handle-id-1"</c->
-      <c- p>}</c->
-    <c- p>]</c->
-  <c- p>}</c->
+  ...
+  <c- f>"derived_from"</c-><c- p>:</c-> <c- p>[</c->
+    <c- p>{</c->
+      <c- f>"issuer"</c-><c- p>:</c-> <c- u>"https://as.example.org"</c-><c- p>,</c->
+      <c- f>"derivation_resource_id"</c-><c- p>:</c-> <c- u>"handle-id-1"</c->
+    <c- p>}</c->
+  <c- p>]</c->
 <c- p>}</c->
 </pre>
    </div>
@@ -3910,7 +3908,6 @@ References the Aggregator Server’s public transformation catalog.
   </dl>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> TODO clarify whether Aggregator Services may reference transformations not advertised in the server/instance transformation catalogs, and how servers validate and authorize execution of arbitrary FnO graphs. <a class="issue-return" href="#issue-fcae5e17" title="Jump to section">↵</a></div>
    <div class="issue"> TODO clarify the boundary between the Aggregator Instance (management API) and the Aggregator Service output resources referenced by execution output parameters (for example <code>trans:result</code>), including whether outputs are always protected by the same Authorization Server and UMA policies. <a class="issue-return" href="#issue-6db8865a" title="Jump to section">↵</a></div>
    <div class="issue"> TODO how do we allow an aggregator that can run any transformation? <a class="issue-return" href="#issue-3f97fec2" title="Jump to section">↵</a></div>
    <div class="issue"> TODO specify whether and how <code>IDP_client_token</code> can be sender-constrained (e.g., DPoP). <a class="issue-return" href="#issue-68621dd5" title="Jump to section">↵</a></div>

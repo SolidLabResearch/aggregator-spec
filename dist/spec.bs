@@ -4,7 +4,7 @@ Shortname: aggregator-spec
 Level: none
 Status: LD
 Editor: Maarten Vandenbrande, Ghent University - imec http://idlab.ugent.be/, maarten.vandenbrande@ugent.be
-Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments, registering aggregator instances, and managing services that execute data transformations. The protocol leverages OAuth 2.0 and User-Managed Access (UMA) for authentication and authorization, enabling secure access to protected derived resources.
+Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments, registering aggregator instances, and managing services that execute data transformations. The protocol leverages OIDC and User-Managed Access (UMA) for authentication and authorization, enabling secure access to protected derived resources.
 Markup Shorthands: markdown yes, css no
 Local Boilerplate: logo yes
 Canonical URL: _ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_
@@ -61,13 +61,11 @@ Introduction {#introduction}
 This specification defines the Aggregator Protocol, an HTTP-based interface that lets a client create and manage Aggregator Instances and configure Aggregator Services that execute data transformations.
 Transformations are described and discovered using the Function Ontology (FnO) [[!FNO]]; a service is configured by referencing a transformation (a `fno:Execution`) and providing its parameters, after which the client can retrieve the derived result from the output defined by that function.
 
-ISSUE: TODO clarify whether Aggregator Services may reference transformations not advertised in the server/instance transformation catalogs, and how servers validate and authorize execution of arbitrary FnO graphs.
-
 Clients start from the Aggregator Server Description at the server base URL to discover the registration endpoint, supported registration flows, and the server’s transformation catalog ([[#aggregator-server-metadata]]).
 Using the registration endpoint, a client creates (or manages) an Aggregator Instance ([[#aggregator-registration]]) and then follows the instance’s Aggregator Description to find the instance’s service collection and transformations endpoint ([[#aggregator-description]] and [[#aggregator-service-management]]).
 
 All management operations are authenticated and authorized.
-This protocol integrates with OAuth 2.0 / OpenID Connect [[!OIDC-Core]] for identity and uses UMA-style authorization [[!UMA]] for protected resources, scopes, and tickets as described in [[#aggregator-security-model]].
+This protocol integrates with OpenID Connect [[!OIDC-Core]] for identity and uses UMA-style authorization [[!UMA]] for protected resources, scopes, and tickets as described in [[#aggregator-security-model]].
 
 Servers MUST support JSON (`application/json`) where specified and MAY additionally provide semantically annotated RDF representations (e.g., JSON-LD or Turtle) via HTTP content negotiation.
 The Aggregator vocabulary ([[#vocabulary]]) provides stable IRIs for classes and predicates used throughout the specification.
@@ -895,6 +893,7 @@ This access token MAY be used multiple times until it expires or is revoked.
 **4. Resource registration of the Aggregator Service**
 
 Finally, the Aggregator Service MUST update the resource registration at its own Authorization Server to signal that it used this `derivation_resource_id` to create derived resources.
+The Aggregator MUST include a `derived_from` property in the resource registration request that is a JSON array of objects containing the `issuer` and `derivation_resource_id`.
 The Authorization Server MUST expire all previous access tokens for this resource.
 
 <div class="example">
@@ -903,15 +902,13 @@ PUT /resource-registration/agg-service-123 HTTP/1.1
 Host: as.example.org
 Content-Type: application/json
 {
-  "resource_id": "agg-service-123",
-  "resource_relations": {
-    "prov:wasDerivedFrom": [
-      {
-        "issuer": "https://as.example.org",
-        "derivation_resource_id": "handle-id-1"
-      }
-    ]
-  }
+  ...
+  "derived_from": [
+    {
+      "issuer": "https://as.example.org",
+      "derivation_resource_id": "handle-id-1"
+    }
+  ]
 }
 ```
 </div>

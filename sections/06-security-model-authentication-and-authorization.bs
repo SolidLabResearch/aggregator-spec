@@ -134,6 +134,7 @@ This access token MAY be used multiple times until it expires or is revoked.
 **4. Resource registration of the Aggregator Service**
 
 Finally, the Aggregator Service MUST update the resource registration at its own Authorization Server to signal that it used this `derivation_resource_id` to create derived resources.
+The Aggregator MUST include a `derived_from` property in the resource registration request that is a JSON array of objects containing the `issuer` and `derivation_resource_id`.
 The Authorization Server MUST expire all previous access tokens for this resource.
 
 <div class="example">
@@ -142,15 +143,13 @@ PUT /resource-registration/agg-service-123 HTTP/1.1
 Host: as.example.org
 Content-Type: application/json
 {
-  "resource_id": "agg-service-123",
-  "resource_relations": {
-    "prov:wasDerivedFrom": [
-      {
-        "issuer": "https://as.example.org",
-        "derivation_resource_id": "handle-id-1"
-      }
-    ]
-  }
+  ...
+  "derived_from": [
+    {
+      "issuer": "https://as.example.org",
+      "derivation_resource_id": "handle-id-1"
+    }
+  ]
 }
 ```
 </div>
