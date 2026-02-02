@@ -1,14 +1,21 @@
 Introduction {#introduction}
 ====================
 
-This specification defines the Aggregator Protocol, an HTTP-based interface that lets a client create and manage Aggregator Instances and configure Aggregator Services that execute data transformations.
-Transformations are described and discovered using the Function Ontology (FnO) [[!FNO]]; a service is configured by referencing a transformation (a `fno:Execution`) and providing its parameters, after which the client can retrieve the derived result from the output defined by that function.
+This specification defines the Aggregator Protocol, an HTTP-based interface that lets a client create and manage Aggregator 
+Instances and configure Aggregator Services that execute data transformations. Transformations are described and discovered 
+using the Function Ontology (FnO) [[!FNO]]; a service is configured by referencing a transformation (a `fno:Execution`) and 
+providing its parameters, after which the client can retrieve the derived result from the output defined by that function.
 
-Clients start from the Aggregator Server Description at the server base URL to discover the registration endpoint, supported registration flows, and the server’s transformation catalog ([[#aggregator-server-metadata]]).
-Using the registration endpoint, a client creates (or manages) an Aggregator Instance ([[#aggregator-registration]]) and then follows the instance’s Aggregator Description to find the instance’s service collection and transformations endpoint ([[#aggregator-description]] and [[#aggregator-service-management]]).
+Clients start from the Aggregator Server Description at the server base URL to discover the registration endpoint, supported 
+registration flows, and the server’s transformation catalog ([[#aggregator-server-metadata]]). Using the registration 
+endpoint, a client creates (or manages) an Aggregator Instance ([[#aggregator-registration]]) and then follows the 
+instance’s Aggregator Description to find the instance’s service collection and transformations endpoint 
+([[#aggregator-description]] and [[#aggregator-service-management]]).
 
-All management operations are authenticated and authorized.
-This protocol integrates with OpenID Connect [[!OIDC-Core]] for identity and uses UMA-style authorization [[!UMA]] for protected resources, scopes, and tickets as described in [[#aggregator-security-model]].
+All management operations are authenticated and authorized. This protocol integrates with OpenID Connect [[!OIDC-Core]] for 
+identity and uses UMA-style authorization [[!UMA]] for protected resources, scopes, and tickets as described in 
+[[#aggregator-security-model]].
 
-Servers MUST support JSON (`application/json`) where specified and MAY additionally provide semantically annotated RDF representations (e.g., JSON-LD or Turtle) via HTTP content negotiation.
-The Aggregator vocabulary ([[#vocabulary]]) provides stable IRIs for classes and predicates used throughout the specification.
+Servers MUST support JSON (`application/json`) where specified and MAY additionally provide semantically annotated RDF 
+representations (e.g., JSON-LD or Turtle) via HTTP content negotiation. The Aggregator vocabulary ([[#vocabulary]]) provides 
+stable IRIs for classes and predicates used throughout the specification.

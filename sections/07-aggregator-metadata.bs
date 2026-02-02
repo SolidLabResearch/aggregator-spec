@@ -1,39 +1,52 @@
 Aggregator Metadata {#aggregator-metadata}
 =================================================================
 
-This endpoint provides metadata about the Aggregator Instance.
-Except for the Aggregator Description (the instance base URL), deployments MAY choose arbitrary paths for other instance-level endpoints.
-The Aggregator Metadata representation MUST include absolute URLs for those resources (e.g., the `transformation_catalog` and `service_collection` fields) so clients can discover the deployment-specific layout.
+This endpoint provides metadata about the Aggregator Instance. Deployments MAY choose arbitrary paths for instance-level 
+endpoints. The Aggregator Metadata representation MUST include absolute URLs for those resources (e.g., the
+`transformation_catalog` and `service_collection_endpoint` fields) so clients can discover the deployment-specific layout.
 
 Aggregator Description {#aggregator-description}
 ----------------------------------------------------------
 
-The Aggregator Metadata resource (`{aggregator-url}`) allows clients to retrieve the current status of their aggregator.
-This endpoint MUST be guarded by the authentication and authorization mechanisms described in the [[#aggregator-security-model]].
+The Aggregator Metadata resource (`aggregator-url`) allows clients to retrieve the current status of their aggregator.
+This endpoint MUST be guarded by the authentication and authorization mechanisms described in the 
+[[#aggregator-security-model]]. It MUST be accessible as JSON using `application/json` and MAY additionally expose 
+semantically annotated RDF representations (for example JSON-LD or Turtle) using HTTP content negotiation based on 
+[[RFC9110]].
 
-It MUST be accessible as JSON using `application/json` and MAY additionally expose semantically annotated RDF representations (for example JSON-LD or Turtle) using HTTP content negotiation based on [[RFC9110]].
-
-The endpoint MUST return at least the following information about the aggregator, but additional fields MAY be included as needed.
-Each field SHOULD be expressed using the RDF properties defined in [[#vocabulary]] so the document MAY be served as JSON-LD or other RDF formats:
-
-In semantically annotated representations, the Aggregator Description MUST state that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-class]]) (e.g., via `@type` in JSON-LD or `a aggr:Aggregator` in Turtle).
-Clients MAY rely on this type statement when consuming semantic representations.
+The endpoint MUST return at least the following information about the aggregator, but additional fields MAY be
+included as needed. Each field SHOULD be expressed using the RDF properties defined in [[#vocabulary]] so the document MAY 
+be served as JSON-LD or other RDF formats. In semantically annotated representations, the Aggregator Description MUST state 
+that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-class]]) (e.g., via `@type` in JSON-LD or 
+`a aggr:Aggregator` in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
 
 : **id** (OPTIONAL):
-:: The value is a string containing the absolute URL that identifies the Aggregator Instance (typically the instance base URL itself); in the RDF representations, this is the RDF subject (i.e., `@id`) of the `aggr:Aggregator` resource ([[#aggr-aggregator-class]]).
+:: The value is a string containing the absolute URL that identifies the Aggregator Instance (typically the
+    instance base URL itself); in the RDF representations, this is the RDF subject (i.e., `@id`) of the
+    `aggr:Aggregator` resource ([[#aggr-aggregator-class]]).
 : **created_at** (REQUIRED):
-:: The value is a string timestamp (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in the RDF representations, this member maps to the predicate `aggr:createdAt` ([[#aggr-created-at-property]]).
+:: The value is a string timestamp (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in
+    the RDF representations, this member maps to the predicate `aggr:createdAt`
+    ([[#aggr-created-at-property]]).
 : **login_status** (REQUIRED):
-:: The value is a boolean that indicates whether the stored token set for the aggregator is currently valid; in the RDF representations, this member maps to the predicate `aggr:loginStatus` ([[#aggr-login-status-property]]).
+:: The value is a boolean that indicates whether the stored token set for the aggregator is currently valid;
+    in the RDF representations, this member maps to the predicate `aggr:loginStatus`
+    ([[#aggr-login-status-property]]).
 : **token_expiry** (OPTIONAL):
-:: The value is a string timestamp indicating when the aggregator's access token will expire (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in the RDF representations, this member maps to the predicate `aggr:tokenExpiry` ([[#aggr-token-expiry-property]]).
+:: The value is a string timestamp indicating when the aggregator's access token will expire (recommended:
+    `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in the RDF representations, this member maps to
+    the predicate `aggr:tokenExpiry` ([[#aggr-token-expiry-property]]).
 : **transformation_catalog** (REQUIRED):
-:: The value is a string containing the absolute URL of the instance’s Transformations Endpoint ([[#instance-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
-: **service_collection** (REQUIRED):
-:: The value is a string containing the absolute URL of the instance’s Service Collection ([[#service-collection]]); in the RDF representations, this member maps to the predicate `aggr:servicesEndpoint` ([[#aggr-services-endpoint-property]]).
+:: The value is a string containing the absolute URL of the instance’s Transformations Endpoint
+    ([[#instance-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
+    `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
+: **service_collection_endpoint** (REQUIRED):
+:: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
+    Services ([[#service-collection]]); in the RDF representations, this member maps to the predicate
+    `aggr:serviceCollectionEndpoint` ([[#aggr-service-collection-endpoint-property]]).
  
-This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used.
-In that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
+This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 
+that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
 
 <div class="example">
 ```json
@@ -41,7 +54,7 @@ In that case this document MUST be an RDF document that conforms to the WebID Pr
   "@context": {
     "id": "@id",
     "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
-    "solid": "http://www.w3.org/ns/solid/terms#",
+    "oidcIssuer": "http://www.w3.org/ns/solid/terms#oidcIssuer",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 
     "created_at": {
@@ -60,8 +73,8 @@ In that case this document MUST be an RDF document that conforms to the WebID Pr
       "@id": "aggr:transformationsEndpoint",
       "@type": "@id"
     },
-    "service_collection": {
-      "@id": "aggr:servicesEndpoint",
+    "service_collection_endpoint": {
+      "@id": "aggr:serviceCollectionEndpoint",
       "@type": "@id"
     }
   },
@@ -71,8 +84,8 @@ In that case this document MUST be an RDF document that conforms to the WebID Pr
   "login_status": true,
   "token_expiry": "2025-12-17T18:20:00Z",
   "transformation_catalog": "https://aggregator.example/aggregators/agg-7890/transformations",
-  "service_collection": "https://aggregator.example/aggregators/agg-7890/config/services",
-  "solid:oidcIssuer": "https://issuer.example/"
+  "service_collection_endpoint": "https://aggregator.example/aggregators/agg-7890/config/services",
+  "oidcIssuer": "https://issuer.example/"
 }
 ```
 </div>
@@ -80,10 +93,11 @@ In that case this document MUST be an RDF document that conforms to the WebID Pr
 Instance-level Transformations Catalog {#instance-level-transformation-catalog}
 -------------------------------------------------------------------
 
-This endpoint is the instance-level extension on the public Transformation Catalog defined in [[#public-transformation-catalog]].
-Implementations MAY expose it at any URL, but the Aggregator Description MUST advertise the correct location via its `transformation_catalog` field (`aggr:transformationsEndpoint`).
-It allows aggregator implementations to expose user-specific transformations, or protected/private transformations.
-This endpoint, contrasting to the public Transformation Catalog, MAY be user specific and MUST require authentication.
-The endpoint MAY return a 404 Not Found if no user-specific transformations are available.
-A client SHOULD combine the information from this endpoint with the public Transformation Catalog to get a complete view on the available transformations.
-The endpoint follows the same content negotiation rules and other requirements as the public Transformation Catalog.
+This endpoint is the instance-level extension on the public Transformation Catalog defined in
+[[#server-level-transformation-catalog]]. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
+advertise the correct location via its `transformation_catalog` field (`aggr:transformationsEndpoint`). It allows aggregator 
+implementations to expose user-specific transformations, or protected/private transformations. This endpoint, contrasting 
+to the public Transformation Catalog, MAY be user specific and MUST require authentication. The endpoint MAY return a 404 
+Not Found if no user-specific transformations are available. A client SHOULD combine the information from this endpoint 
+with the public Transformation Catalog to get a complete view on the available transformations. The endpoint follows the 
+same content negotiation rules and other requirements as the public Transformation Catalog.

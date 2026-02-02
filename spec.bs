@@ -4,7 +4,10 @@ Shortname: aggregator-spec
 Level: none
 Status: LD
 Editor: Maarten Vandenbrande, Ghent University - imec http://idlab.ugent.be/, maarten.vandenbrande@ugent.be
-Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments, registering aggregator instances, and managing services that execute data transformations. The protocol leverages OIDC and User-Managed Access (UMA) for authentication and authorization, enabling secure access to protected derived resources.
+Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments,
+  registering aggregator instances, and managing services that execute data transformations. The protocol
+  leverages OIDC and User-Managed Access (UMA) for authentication and authorization, enabling secure access
+  to protected derived resources.
 Markup Shorthands: markdown yes, css no
 Local Boilerplate: logo yes
 Canonical URL: _ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_
@@ -22,6 +25,16 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://spec.knows.idlab.ugent.be/A4DS/L1/latest/",
     "title": "Authorization for Data Spaces (A4DS)"
   },
+  "Client-ID": {
+    "href": "https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-metadata-document/",
+    "title": "OAuth Client ID Metadata Document",
+    "authors": [
+      "Aaron Parecki",
+      "Emelia Smith"
+    ],
+    "date": "10 January 2025",
+    "status": "Internet-Draft"
+  },
   "FNO": {
     "href": "https://w3id.org/function/spec/",
     "title": "Function Ontology (FnO)"
@@ -30,17 +43,13 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://openid.net/specs/openid-connect-core-1_0.html",
     "title": "OpenID Connect Core 1.0"
   },
-  "OIDC-Registration": {
-    "href": "https://openid.net/specs/openid-connect-registration-1_0.html",
-    "title": "OpenID Connect Dynamic Client Registration 1.0"
-  },
   "SA4DS": {
     "href": "https://solid.github.io/service-authorization-for-data-spaces/",
     "title": "Service Authorization for Data Spaces (SA4DS)"
   },
-  "SOLID-OIDC": {
-    "href": "https://solidproject.org/TR/oidc",
-    "title": "Solid OIDC"
+  "SEMVER": {
+    "href": "https://semver.org/",
+    "title": "Semantic Versioning 2.0.0"
   },
   "UMA": {
     "href": "https://docs.kantarainitiative.org/uma/rec-uma-core.html",

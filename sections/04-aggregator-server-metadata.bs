@@ -1,34 +1,53 @@
 Aggregator Server Metadata {#aggregator-server-metadata}
 ===============================================================
 
-This section describes the public endpoints exposed by the Aggregator Server for discovery and metadata retrieval.
-Except for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can discover them.
+This section describes the public endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except 
+for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at 
+deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can 
+discover them.
 
 Aggregator Server Description {#server-description}
 ----------------------------------------------------------
 
-The Aggregator Server Description is a public metadata document that allows clients to discover the Aggregator Server’s endpoints and capabilities.
-This document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MUST be accessible without authentication, and MUST provide at least the following information.
-Each JSON member is paired with an RDF predicate from [[#vocabulary]] so the document can also be served as JSON-LD or other RDF formats using content negotiation based on [[RFC9110]]:
+The Aggregator Server Description is a public document that allows clients to discover the Aggregator Server’s 
+endpoints and capabilities. This document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MUST 
+be accessible without authentication, and MUST provide at least the following information. Each JSON member is paired with 
+an RDF predicate from [[#vocabulary]] so the document can also be served as JSON-LD or other RDF formats using content 
+negotiation based on [[RFC9110]]:
 
-In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` in Turtle).
-Clients MAY rely on this type statement when consuming semantic representations.
+In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF 
+type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` 
+in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
 
 : **registration_endpoint** (REQUIRED):
-:: The value is a string containing the absolute URL of the Aggregator Registration Endpoint ([[#aggregator-registration]]); in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` ([[#aggr-registration-endpoint-property]]).
+:: The value is a string containing the absolute URL of the Aggregator Registration Endpoint ([[#aggregator-registration]]); 
+    in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` 
+    ([[#aggr-registration-endpoint-property]]).
 : **supported_registration_types** (REQUIRED):
-:: The value is a JSON array of strings identifying the supported registration flow tokens at `registration_endpoint`; in the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple ([[#aggr-supported-registration-type-property]]) whose object is the corresponding flow class IRI.
+:: The value is a JSON array of strings identifying the supported registration flow tokens at `registration_endpoint`; in 
+    the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
+    ([[#aggr-supported-registration-type-property]]) whose object is the corresponding flow class IRI.
 :: Each member MUST be one of the registration flow tokens defined in [[#aggregator-registration]]:
     - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]]))
     - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]]))
-    - `"client_credentials"` (RDF class `aggr:ClientCredentialsFlow` ([[#aggr-client-credentials-flow-class]]))
     - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]]))
+: **registration_request_formats_supported** (REQUIRED):
+:: The value is a JSON array of strings identifying the supported request formats for the
+    `registration_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
+    an `aggr:registrationRequestFormatSupported` triple ([[#aggr-registration-request-format-supported-property]]).
+    Servers MUST include either `application/json` or `application/x-www-form-urlencoded` or both.
 : **version** (REQUIRED):
-:: The value is a string containing the version of the Aggregator specification that the server adheres to; in the RDF representations, this member maps to the predicate `aggr:specVersion` ([[#aggr-spec-version-property]]).
+:: The value is a string containing the semantic version ([[!SEMVER]]) of the Aggregator specification that the server 
+    adheres to; in the RDF representations, this member maps to the predicate `aggr:specVersion` 
+    ([[#aggr-spec-version-property]]).
 : **client_identifier** (REQUIRED):
-:: The value is a string containing the absolute URL of the Client Identifier Document ([[#client-identifier-document]]); in the RDF representations, this member maps to the predicate `aggr:clientIdentifier` ([[#aggr-client-identifier-property]]).
+:: The value is a string containing the absolute URL of the Client ID Document ([[#client-id-document]]); in 
+    the RDF representations, this member maps to the predicate `aggr:clientIdentifier` 
+    ([[#aggr-client-id-property]]).
 : **transformation_catalog** (REQUIRED):
-:: The value is a string containing the absolute URL of the Public Transformation Catalog ([[#public-transformation-catalog]]); in the RDF representations, this member maps to the predicate `aggr:transformationCatalog` ([[#aggr-transformation-catalog-property]]).
+:: The value is a string containing the absolute URL of the Public Transformation Catalog 
+    ([[#server-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
+    `aggr:transformationCatalog` ([[#aggr-transformation-catalog-property]]).
 
 <div class="example">
 ```json
@@ -37,8 +56,7 @@ Clients MAY rely on this type statement when consuming semantic representations.
     "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
     "provision": "aggr:ProvisionFlow",
     "authorization_code": "aggr:AuthorizationCodeFlow",
-    "client_credentials": "aggr:ClientCredentialsFlow",
-    "device_code": "aggr:DeviceCodeFlow",
+    "registration_request_formats_supported": "aggr:registrationRequestFormatSupported",
     "registration_endpoint": {
       "@id": "aggr:registrationEndpoint",
       "@type": "@id"
@@ -66,6 +84,10 @@ Clients MAY rely on this type statement when consuming semantic representations.
     "provision",
     "authorization_code"
   ],
+  "registration_request_formats_supported": [
+    "application/json",
+    "application/x-www-form-urlencoded"
+  ],
   "version": "1.0.0",
   "client_identifier": "https://aggregator.example/client.json",
   "transformation_catalog": "https://aggregator.example/transformations"
@@ -74,22 +96,32 @@ Clients MAY rely on this type statement when consuming semantic representations.
 </div>
 
 
-Client Identifier Document {#client-identifier-document}
+Client ID Document {#client-id-document}
 --------------------------------------------------------
 
-Endpoint that exposes the client identifier of the aggregator used for authorization.
-Servers MAY host this document at any URL; the `client_identifier` property in the Aggregator Server Description MUST contain the authoritative absolute URL.
-The Client Identifier Document MUST conform to the Solid specification [[!SOLID-OIDC]] and uses the fields from the OpenID Connect Dynamic Client Registration specification [[!OIDC-Registration]].
-Only for the aggregator the `redirect_uris` property is OPTIONAL instead of required, as multiple clients can create an Aggregator on the same Aggregator Server.
-Adding this property can allow an Aggregator Server implementation to restrict which clients can create aggregators on the server.
+Endpoint that exposes the Client ID Document of the aggregator used for authorization. Servers MAY host this document at any 
+URL; the `client_identifier` property in the Aggregator Server Description MUST contain the authoritative absolute URL. The 
+Client ID Document MUST conform to the OAuth Client ID Metadata Document specification [[!Client-ID]]. In the case for the 
+aggregator, the `redirect_uris` property is OPTIONAL instead of REQUIRED, as multiple clients MAY create an Aggregator on 
+the same Aggregator Server (depending on the implementation). Adding this property allows an Aggregator Server 
+implementation to restrict which clients may create aggregators on the server.
 
-Public Transformation Catalog {#public-transformation-catalog}
+Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------
 
-This endpoint returns a RDF document describing the transformations supported by the aggregator server on a server level.
-Servers MAY publish this catalog at any deployment-specific URL; the Aggregator Server Description MUST advertise it via the `transformation_catalog` field.
-This RDF document SHOULD be exposed using content negotiation based on HTTP.
-The transformations MUST be described using FnO [[!FNO]].
+This endpoint returns a RDF document describing the transformations supported by the aggregator server on a server level. 
+Servers MAY publish this catalog at any deployment-specific URL; the Aggregator Server Description MUST advertise it via the 
+`transformation_catalog` field. This RDF document SHOULD be exposed using content negotiation based on HTTP. The 
+transformations MUST be described using FnO [[!FNO]]. The document MAY be protected using an OIDC ID Token.
+
+The types (`fno:type`) of the parameters and outputs of the functions SHOULD be a class (`owl:Class`) that is a subclass 
+(`rdfs:subClassOf`) of a Data Catalog entity like `dcat:DataService`. This entity SHOULD then be further described using 
+Data Catalog properties to indicate how to access the outputs of the transformations. Pre defined pipelines (using 
+`fno:Compositions`) MAY also be described in this document. Finally, the catalog MAY also include external entities using 
+`rdfs:seeAlso` to link to external functions, pipelines or Data Catalog entities.
+
+The specificity of the transformation is up to the server owner. The functions MAY have a link to an implementation with 
+`fno:Implementation` if needed.
 
 <div class="example">
 ```turtle
@@ -119,13 +151,11 @@ trans:Sources
 trans:Result
     a             fno:Output ;
     fno:predicate trans:result ;
-    fno:type      xsd:string .
+    fno:type      trans:SPARQLProtocol .
+
+trans:SPARQLProtocol
+    a owl:Class ;
+    rdfs:subClassOf dcat:DataService ;
+    dcterms:conformsTo <https://www.w3.org/TR/sparql12-protocol/> .
 ```
 </div>
-
-The specificity of the transformation is up to the server owner.
-The transformations CAN have a link to a implementation with `fno:Implementation` if needed.
-External FnO functions MAY be used using `rdfs:seeAlso`.
-Pre defined pipelines MAY be used using `fno:Compositions`.
-
-ISSUE: TODO how do we allow an aggregator that can run any transformation?
