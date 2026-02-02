@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+cd "$REPO_ROOT"
+
+echo "Building spec before commit..."
+
+if ! command -v make >/dev/null 2>&1; then
+  echo "Error: make not found; cannot build spec."
+  exit 1
+fi
+
+make build
