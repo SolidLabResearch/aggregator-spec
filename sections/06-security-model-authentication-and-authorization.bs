@@ -152,16 +152,8 @@ Content-Type: application/json
     "ticket": "tkt-URS",
     "scope": "urn:knows:uma:scopes:derivation-creation",
     "derivation_resource_id": "handle-id-1",
-    "claim_tokens": [
-      {
-        "claim_token": "<IDP_aggregator_token>",
-        "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
-      },
-      {
-        "claim_token": "<transformation_description>",
-        "claim_token_format": "http://www.w3.org/ns/formats/Turtle"
-      }
-    ]
+    "claim_token": "<transformation_description>",
+    "claim_token_format": "http://www.w3.org/ns/formats/Turtle"
 }
 ```
 </div>
@@ -343,12 +335,8 @@ The Client includes any claim tokens it already has (for example, its `IDP_clien
 {
   "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
   "ticket": "tkt-1",
-  "claim_tokens": [
-    {
-      "claim_token": "<IDP_client_token>",
-      "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
-    }
-  ]
+  "claim_token": "<IDP_client_token>",
+  "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 }
 ```
 </div>
@@ -398,12 +386,8 @@ The Client then requests access tokens from the UAS with the required permission
       "resource_scopes": [ "urn:knows:uma:scopes:derivation-read" ]
     }
   ],
-  "claim_token": [
-    {
-      "claim_token": "<IDP_aggregator_token>",
-      "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
-    }
-  ]
+  "claim_token": "<IDP_aggregator_token>",
+  "claim_token_format": "http://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 }
 ```
 </div>
@@ -430,12 +414,8 @@ Server, presenting the upstream access tokens (here only one) as claim tokens to
 {
   "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
   "ticket": "tkt-2",
-  "claim_token": [
-    {
-      "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
-      "claim_token": "<upstream_access_token>"
-    }
-  ]
+  "claim_token_format": "urn:ietf:params:oauth:token-type:access_token",
+  "claim_token": "<upstream_access_token>"
 }
 ```
 </div>
