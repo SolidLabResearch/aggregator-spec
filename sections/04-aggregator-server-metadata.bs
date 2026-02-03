@@ -115,10 +115,12 @@ Servers MAY publish this catalog at any deployment-specific URL; the Aggregator 
 transformations MUST be described using FnO [[!FNO]]. The document MAY be protected using an OIDC ID Token.
 
 The types (`fno:type`) of the parameters and outputs of the functions SHOULD be a class (`owl:Class`) that is a subclass 
-(`rdfs:subClassOf`) of a Data Catalog entity like `dcat:DataService`. This entity SHOULD then be further described using 
-Data Catalog properties to indicate how to access the outputs of the transformations. Pre defined pipelines (using 
-`fno:Compositions`) MAY also be described in this document. Finally, the catalog MAY also include external entities using 
-`rdfs:seeAlso` to link to external functions, pipelines or Data Catalog entities.
+(`rdfs:subClassOf`) of a Data Catalog ([[!Data-Catalog]]) entity like `dcat:DataService`. This entity SHOULD then be further 
+described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
+Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend ([[!FOAF]]) and Dublin Core 
+Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Compositions`) MAY also be described in this document. 
+Finally, the catalog MAY also include external entities using `rdfs:seeAlso` to link to external functions, pipelines or 
+Data Catalog entities.
 
 The specificity of the transformation is up to the server owner. The functions MAY have a link to an implementation with 
 `fno:Implementation` if needed.
@@ -133,20 +135,27 @@ The specificity of the transformation is up to the server owner. The functions M
 
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
-    aggr:hasTransformation trans:AggregateSources .
-    aggr:hasTransformation trans:AggregateSources2 .
+    aggr:hasTransformation trans:QuerySources .
+    aggr:hasTransformation <https://external.example.org/AggregateSources> .
+    rdfs:seeAlso <https://external.example.org/AggregateSources> .
 
-trans:AggregateSources
+trans:QuerySources
     a                   fno:Function ;
     fno:name            "A Aggregator Service that combines a list of sources"^^xsd:string ;
-    fno:expects         ( trans:Sources ) ;
+    fno:expects         ( trans:Sources trans:Query ) ;
     fno:returns         ( trans:Result ) .
 
 trans:Sources
     a             fno:Parameter ;
     fno:predicate trans:sources ;
     fno:type      rdf:List ;
-    fno:required  "true"^^xsd:boolean.
+    fno:required  "true"^^xsd:boolean .
+
+trans:Query
+    a             fno:Parameter ;
+    fno:predicate trans:query ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
 
 trans:Result
     a             fno:Output ;

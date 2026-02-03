@@ -58,6 +58,18 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
   "WEBID-PROFILE": {
     "href": "https://solid.github.io/webid-profile/",
     "title": "WebID Profile"
+  },
+  "Data-Catalog": {
+    "href": "https://www.w3.org/TR/vocab-dcat-3/",
+    "title": "Data Catalog Vocabulary"
+  },
+  "FOAF": {
+    "href": "http://xmlns.com/foaf/0.1/",
+    "title": "Friend of a Friend (FOAF)"
+  },
+  "DCTERMS": {
+    "href": "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
+    "title": "Dublin Core Metadata Terms"
   }
 }
 </pre>

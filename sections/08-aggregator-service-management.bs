@@ -163,7 +163,8 @@ Content-Type: text/turtle
 @prefix fno: <https://w3id.org/function/ontology#> .
 
 _:execution a fno:Execution ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
 ```
 </div>
@@ -218,7 +219,8 @@ Content-Type: text/turtle
 @prefix fno: <https://w3id.org/function/ontology#> .
 
 _:execution a fno:Execution ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
 ```
 </div>
@@ -242,9 +244,14 @@ Content-Type: text/turtle
     aggr:status "running" ;
     aggr:statusDetail "" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
-    trans:result ( <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> ) .
+    trans:result <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result> .
+
+<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result>
+    a trans:SPARQLProtocol ;
+    dcat:endpointURL <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> .
 ```
 </div>
 
@@ -285,19 +292,25 @@ Content-Type: text/turtle
     aggr:status "starting" ;
     aggr:statusDetail "" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
-    trans:result ( <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> ) .
+    trans:result <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result> .
+
+<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result>
+    a trans:SPARQLProtocol ;
+    dcat:endpointURL <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> .
 ```
 </div>
 
 ### Using a Simple Service ### {#using-a-service}
 
-After discovering the service, the client can use the transformation catalog to find out what `trans:AggregateSources` does,
+After discovering the service, the client can use the transformation catalog to find out what `trans:QuerySources` does,
 and how to use the output. In this example, the client sees that the function produces an output parameter `trans:result` 
-that contains a URL (`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/`) where the aggregated data can 
-be accessed. The client can then do a `GET` request to that URL, again authenticating using the mechanisms defined in 
+that is a `trans:SPARQLProtocol` conforming to the SPARQL protocol with an endpointURL at 
+`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` where the query results can be accessed. The client 
+can then do a `GET` request to that URL, again authenticating using the mechanisms defined in 
 [[#aggregator-security-model]]. This time the client might need to gather multiple access claims from the AS's of 
 `http://example.org/source/1` and `http://example.org/source/2`. After receiving an access token from the Aggregator 
 Authorization Server, the client can redo the `GET` request to 
-`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` to get the result of the aggregation.
+`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` to get the query results.

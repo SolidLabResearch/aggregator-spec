@@ -2015,7 +2015,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Aggregator Specification</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-02-02">2 February 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-02-03">3 February 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2030,7 +2030,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 2 February 2026,
+In addition, as of 3 February 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2482,14 +2482,16 @@ Servers MAY publish this catalog at any deployment-specific URL; the Aggregator 
 <code>transformation_catalog</code> field. This RDF document SHOULD be exposed using content negotiation based on HTTP. The 
 transformations MUST be described using FnO <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>. The document MAY be protected using an OIDC ID Token.</p>
    <p>The types (<code>fno:type</code>) of the parameters and outputs of the functions SHOULD be a class (<code>owl:Class</code>) that is a subclass
-(<code>rdfs:subClassOf</code>) of a Data Catalog entity like <code>dcat:DataService</code>. This entity SHOULD then be further described using 
-Data Catalog properties to indicate how to access the outputs of the transformations. Pre defined pipelines (using 
-<code>fno:Compositions</code>) MAY also be described in this document. Finally, the catalog MAY also include external entities using 
-<code>rdfs:seeAlso</code> to link to external functions, pipelines or Data Catalog entities.</p>
+(<code>rdfs:subClassOf</code>) of a Data Catalog (<a data-link-type="biblio" href="#biblio-data-catalog" title="Data Catalog Vocabulary">[Data-Catalog]</a>) entity like <code>dcat:DataService</code>. This entity SHOULD then be further 
+described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
+Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend (<a data-link-type="biblio" href="#biblio-foaf" title="Friend of a Friend (FOAF)">[FOAF]</a>) and Dublin Core 
+Metadata Terms (<a data-link-type="biblio" href="#biblio-dcterms" title="Dublin Core Metadata Terms">[DCTERMS]</a>). Pre defined pipelines (using <code>fno:Compositions</code>) MAY also be described in this document. 
+Finally, the catalog MAY also include external entities using <code>rdfs:seeAlso</code> to link to external functions, pipelines or 
+Data Catalog entities.</p>
    <p>The specificity of the transformation is up to the server owner. The functions MAY have a link to an implementation with
 <code>fno:Implementation</code> if needed.</p>
-   <div class="example" id="example-9bcebc38">
-    <a class="self-link" href="#example-9bcebc38"></a>
+   <div class="example" id="example-71c80b7a">
+    <a class="self-link" href="#example-71c80b7a"></a>
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>trans:</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
@@ -2499,20 +2501,27 @@ Data Catalog properties to indicate how to access the outputs of the transformat
 
 <c- g>&lt;></c-> <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>TransformationCollection</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>title</c-> <c- s>"Aggregator transformations"</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- nn>trans</c-><c- p>:</c-><c- f>AggregateSources</c-> <c- p>.</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- nn>trans</c-><c- p>:</c-><c- f>AggregateSources2</c-> <c- p>.</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- nn>trans</c-><c- p>:</c-><c- f>QuerySources</c-> <c- p>.</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;https://external.example.org/AggregateSources></c-> <c- p>.</c->
+    <c- nn>rdfs</c-><c- p>:</c-><c- f>seeAlso</c-> <c- g>&lt;https://external.example.org/AggregateSources></c-> <c- p>.</c->
 
-<c- nn>trans</c-><c- p>:</c-><c- f>AggregateSources</c->
+<c- nn>trans</c-><c- p>:</c-><c- f>QuerySources</c->
     <c- b>a</c->                   <c- nn>fno</c-><c- p>:</c-><c- f>Function</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>name</c->            <c- s>"A Aggregator Service that combines a list of sources"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>expects</c->         <c- p>(</c-> <c- nn>trans</c-><c- p>:</c-><c- f>Sources</c-> <c- p>)</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>expects</c->         <c- p>(</c-> <c- nn>trans</c-><c- p>:</c-><c- f>Sources</c-> <c- nn>trans</c-><c- p>:</c-><c- f>Query</c-> <c- p>)</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>returns</c->         <c- p>(</c-> <c- nn>trans</c-><c- p>:</c-><c- f>Result</c-> <c- p>)</c-> <c- p>.</c->
 
 <c- nn>trans</c-><c- p>:</c-><c- f>Sources</c->
     <c- b>a</c->             <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- nn>trans</c-><c- p>:</c-><c- f>sources</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>type</c->      <c- nn>rdf</c-><c- p>:</c-><c- f>List</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>required</c->  <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-><c- p>.</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>required</c->  <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
+
+<c- nn>trans</c-><c- p>:</c-><c- f>Query</c->
+    <c- b>a</c->             <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- nn>trans</c-><c- p>:</c-><c- f>query</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>type</c->      <c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>required</c->  <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
 
 <c- nn>trans</c-><c- p>:</c-><c- f>Result</c->
     <c- b>a</c->             <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
@@ -3773,8 +3782,8 @@ section assumes the client has already created an Aggregator using the Aggregato
    <p>To create a new Aggregator Service, a client starts by doing a <code>POST</code> request to the Service Collection endpoint (i.e., the
 URL advertised via <code>service_collection_endpoint</code> in the Aggregator Description; this section uses <code>/services</code> as an 
 example). The body of the post is an execution of an FnO function <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>.</p>
-   <div class="example" id="example-ed98930a">
-    <a class="self-link" href="#example-ed98930a"></a>
+   <div class="example" id="example-7a7e128b">
+    <a class="self-link" href="#example-7a7e128b"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
@@ -3784,7 +3793,8 @@ example). The body of the post is an execution of an FnO function <a data-link-t
 <c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 
 <c- nn>_</c-><c- p>:</c-><c- f>execution</c-> <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Execution</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>AggregateSources</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>QuerySources</c-> <c- p>;</c->
+    <c- nn>trans</c-><c- p>:</c-><c- f>query</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c-> <c- p>;</c->
     <c- nn>trans</c-><c- p>:</c-><c- f>sources</c-> <c- p>(</c-> <c- g>&lt;http://example.org/source/1></c-> <c- g>&lt;http://example.org/source/2></c-> <c- p>)</c-> <c- p>.</c->
 </pre>
    </div>
@@ -3823,8 +3833,8 @@ Content-Type: application/json
    </div>
    <p>The client then requests an RPT from the AS using the ticket, as defined in <a href="#aggregator-security-model">§ 6 Aggregator Security Model (Authentication &amp; Authorization)</a>.
 The original request can then be retried, this time including the RPT in the <code>Authorization</code> header.</p>
-   <div class="example" id="example-680ac188">
-    <a class="self-link" href="#example-680ac188"></a>
+   <div class="example" id="example-96a85109">
+    <a class="self-link" href="#example-96a85109"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
@@ -3835,14 +3845,15 @@ The original request can then be retried, this time including the RPT in the <co
 <c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 
 <c- nn>_</c-><c- p>:</c-><c- f>execution</c-> <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Execution</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>AggregateSources</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>QuerySources</c-> <c- p>;</c->
+    <c- nn>trans</c-><c- p>:</c-><c- f>query</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c-> <c- p>;</c->
     <c- nn>trans</c-><c- p>:</c-><c- f>sources</c-> <c- p>(</c-> <c- g>&lt;http://example.org/source/1></c-> <c- g>&lt;http://example.org/source/2></c-> <c- p>)</c-> <c- p>.</c->
 </pre>
    </div>
    <p>If the request is valid, the Aggregator will create a new service, register the appropriate UMA resource, and
 return a <code>201 Created</code> response with the service representation in the body.</p>
-   <div class="example" id="example-a35f968d">
-    <a class="self-link" href="#example-a35f968d"></a>
+   <div class="example" id="example-773defe9">
+    <a class="self-link" href="#example-773defe9"></a>
 
 <pre class="highlight language-http"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>201</c-> <c- ne>Created</c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>text/turtle</c->
@@ -3858,9 +3869,14 @@ return a <code>201 Created</code> response with the service representation in th
     <c- nn>aggr</c-><c- p>:</c-><c- f>status</c-> <c- s>"running"</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>statusDetail</c-> <c- s>""</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>createdAt</c-> <c- s>"2024-01-01T12:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>AggregateSources</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>QuerySources</c-> <c- p>;</c->
+    <c- nn>trans</c-><c- p>:</c-><c- f>query</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c-> <c- p>;</c->
     <c- nn>trans</c-><c- p>:</c-><c- f>sources</c-> <c- p>(</c-> <c- g>&lt;http://example.org/source/1></c-> <c- g>&lt;http://example.org/source/2></c-> <c- p>)</c-> <c- p>;</c->
-    <c- nn>trans</c-><c- p>:</c-><c- f>result</c-> <c- p>(</c-> <c- g>&lt;https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/></c-> <c- p>)</c-> <c- p>.</c->
+    <c- nn>trans</c-><c- p>:</c-><c- f>result</c-> <c- g>&lt;https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result></c-> <c- p>.</c->
+
+<c- g>&lt;https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result></c->
+    <c- b>a</c-> <c- nn>trans</c-><c- p>:</c-><c- f>SPARQLProtocol</c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>endpointURL</c-> <c- g>&lt;https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/></c-> <c- p>.</c->
 </pre>
    </div>
    <h4 class="heading settled" data-level="8.3.2" id="discovering-services"><span class="secno">8.3.2. </span><span class="content">Discovering Services</span><a class="self-link" href="#discovering-services"></a></h4>
@@ -3881,8 +3897,8 @@ return a list with the registered service from <a href="#creating-a-service">§�
 </pre>
    </div>
    <p>Dereferencing this URL will return the full service representation.</p>
-   <div class="example" id="example-87c2d276">
-    <a class="self-link" href="#example-87c2d276"></a>
+   <div class="example" id="example-050a4bc6">
+    <a class="self-link" href="#example-050a4bc6"></a>
 
 <pre class="highlight language-http"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>201</c-> <c- ne>Created</c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>text/turtle</c->
@@ -3898,20 +3914,26 @@ return a list with the registered service from <a href="#creating-a-service">§�
     <c- nn>aggr</c-><c- p>:</c-><c- f>status</c-> <c- s>"starting"</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>statusDetail</c-> <c- s>""</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>createdAt</c-> <c- s>"2024-01-01T12:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>AggregateSources</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>trans</c-><c- p>:</c-><c- f>QuerySources</c-> <c- p>;</c->
+    <c- nn>trans</c-><c- p>:</c-><c- f>query</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c-> <c- p>;</c->
     <c- nn>trans</c-><c- p>:</c-><c- f>sources</c-> <c- p>(</c-> <c- g>&lt;http://example.org/source/1></c-> <c- g>&lt;http://example.org/source/2></c-> <c- p>)</c-> <c- p>;</c->
-    <c- nn>trans</c-><c- p>:</c-><c- f>result</c-> <c- p>(</c-> <c- g>&lt;https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/></c-> <c- p>)</c-> <c- p>.</c->
+    <c- nn>trans</c-><c- p>:</c-><c- f>result</c-> <c- g>&lt;https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result></c-> <c- p>.</c->
+
+<c- g>&lt;https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result></c->
+    <c- b>a</c-> <c- nn>trans</c-><c- p>:</c-><c- f>SPARQLProtocol</c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>endpointURL</c-> <c- g>&lt;https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/></c-> <c- p>.</c->
 </pre>
    </div>
    <h4 class="heading settled" data-level="8.3.3" id="using-a-service"><span class="secno">8.3.3. </span><span class="content">Using a Simple Service</span><a class="self-link" href="#using-a-service"></a></h4>
-   <p>After discovering the service, the client can use the transformation catalog to find out what <code>trans:AggregateSources</code> does,
+   <p>After discovering the service, the client can use the transformation catalog to find out what <code>trans:QuerySources</code> does,
 and how to use the output. In this example, the client sees that the function produces an output parameter <code>trans:result</code> 
-that contains a URL (<code>https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/</code>) where the aggregated data can 
-be accessed. The client can then do a <code>GET</code> request to that URL, again authenticating using the mechanisms defined in 
+that is a <code>trans:SPARQLProtocol</code> conforming to the SPARQL protocol with an endpointURL at 
+<code>https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/</code> where the query results can be accessed. The client 
+can then do a <code>GET</code> request to that URL, again authenticating using the mechanisms defined in 
 <a href="#aggregator-security-model">§ 6 Aggregator Security Model (Authentication &amp; Authorization)</a>. This time the client might need to gather multiple access claims from the AS’s of 
 <code>http://example.org/source/1</code> and <code>http://example.org/source/2</code>. After receiving an access token from the Aggregator 
 Authorization Server, the client can redo the <code>GET</code> request to 
-<code>https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/</code> to get the result of the aggregation.</p>
+<code>https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/</code> to get the query results.</p>
    <h2 class="heading settled" data-level="9" id="vocabulary"><span class="secno">9. </span><span class="content">Vocabulary</span><a class="self-link" href="#vocabulary"></a></h2>
    <p>The Aggregator vocabulary is defined in the <code>aggr:</code> namespace
 (<code>https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#</code>). The following classes and properties are used 
@@ -4306,8 +4328,14 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
    <dd><a href="https://spec.knows.idlab.ugent.be/A4DS/L1/latest/"><cite>Authorization for Data Spaces (A4DS)</cite></a>. URL: <a href="https://spec.knows.idlab.ugent.be/A4DS/L1/latest/">https://spec.knows.idlab.ugent.be/A4DS/L1/latest/</a>
    <dt id="biblio-client-id">[Client-ID]
    <dd>Aaron Parecki; Emelia Smith. <a href="https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-metadata-document/"><cite>OAuth Client ID Metadata Document</cite></a>. 10 January 2025. Internet-Draft. URL: <a href="https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-metadata-document/">https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-metadata-document/</a>
+   <dt id="biblio-data-catalog">[Data-Catalog]
+   <dd><a href="https://www.w3.org/TR/vocab-dcat-3/"><cite>Data Catalog Vocabulary</cite></a>. URL: <a href="https://www.w3.org/TR/vocab-dcat-3/">https://www.w3.org/TR/vocab-dcat-3/</a>
+   <dt id="biblio-dcterms">[DCTERMS]
+   <dd><a href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/"><cite>Dublin Core Metadata Terms</cite></a>. URL: <a href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/">https://www.dublincore.org/specifications/dublin-core/dcmi-terms/</a>
    <dt id="biblio-fno">[FNO]
    <dd><a href="https://w3id.org/function/spec/"><cite>Function Ontology (FnO)</cite></a>. URL: <a href="https://w3id.org/function/spec/">https://w3id.org/function/spec/</a>
+   <dt id="biblio-foaf">[FOAF]
+   <dd><a href="http://xmlns.com/foaf/0.1/"><cite>Friend of a Friend (FOAF)</cite></a>. URL: <a href="http://xmlns.com/foaf/0.1/">http://xmlns.com/foaf/0.1/</a>
    <dt id="biblio-oidc-core">[OIDC-Core]
    <dd><a href="https://openid.net/specs/openid-connect-core-1_0.html"><cite>OpenID Connect Core 1.0</cite></a>. URL: <a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a>
    <dt id="biblio-rfc2119">[RFC2119]

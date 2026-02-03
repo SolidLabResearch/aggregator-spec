@@ -58,6 +58,18 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
   "WEBID-PROFILE": {
     "href": "https://solid.github.io/webid-profile/",
     "title": "WebID Profile"
+  },
+  "Data-Catalog": {
+    "href": "https://www.w3.org/TR/vocab-dcat-3/",
+    "title": "Data Catalog Vocabulary"
+  },
+  "FOAF": {
+    "href": "http://xmlns.com/foaf/0.1/",
+    "title": "Friend of a Friend (FOAF)"
+  },
+  "DCTERMS": {
+    "href": "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
+    "title": "Dublin Core Metadata Terms"
   }
 }
 </pre>
@@ -376,10 +388,12 @@ Servers MAY publish this catalog at any deployment-specific URL; the Aggregator 
 transformations MUST be described using FnO [[!FNO]]. The document MAY be protected using an OIDC ID Token.
 
 The types (`fno:type`) of the parameters and outputs of the functions SHOULD be a class (`owl:Class`) that is a subclass 
-(`rdfs:subClassOf`) of a Data Catalog entity like `dcat:DataService`. This entity SHOULD then be further described using 
-Data Catalog properties to indicate how to access the outputs of the transformations. Pre defined pipelines (using 
-`fno:Compositions`) MAY also be described in this document. Finally, the catalog MAY also include external entities using 
-`rdfs:seeAlso` to link to external functions, pipelines or Data Catalog entities.
+(`rdfs:subClassOf`) of a Data Catalog ([[!Data-Catalog]]) entity like `dcat:DataService`. This entity SHOULD then be further 
+described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
+Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend ([[!FOAF]]) and Dublin Core 
+Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Compositions`) MAY also be described in this document. 
+Finally, the catalog MAY also include external entities using `rdfs:seeAlso` to link to external functions, pipelines or 
+Data Catalog entities.
 
 The specificity of the transformation is up to the server owner. The functions MAY have a link to an implementation with 
 `fno:Implementation` if needed.
@@ -394,20 +408,27 @@ The specificity of the transformation is up to the server owner. The functions M
 
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
-    aggr:hasTransformation trans:AggregateSources .
-    aggr:hasTransformation trans:AggregateSources2 .
+    aggr:hasTransformation trans:QuerySources .
+    aggr:hasTransformation <https://external.example.org/AggregateSources> .
+    rdfs:seeAlso <https://external.example.org/AggregateSources> .
 
-trans:AggregateSources
+trans:QuerySources
     a                   fno:Function ;
     fno:name            "A Aggregator Service that combines a list of sources"^^xsd:string ;
-    fno:expects         ( trans:Sources ) ;
+    fno:expects         ( trans:Sources trans:Query ) ;
     fno:returns         ( trans:Result ) .
 
 trans:Sources
     a             fno:Parameter ;
     fno:predicate trans:sources ;
     fno:type      rdf:List ;
-    fno:required  "true"^^xsd:boolean.
+    fno:required  "true"^^xsd:boolean .
+
+trans:Query
+    a             fno:Parameter ;
+    fno:predicate trans:query ;
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
 
 trans:Result
     a             fno:Output ;
@@ -1749,7 +1770,8 @@ Content-Type: text/turtle
 @prefix fno: <https://w3id.org/function/ontology#> .
 
 _:execution a fno:Execution ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
 ```
 </div>
@@ -1804,7 +1826,8 @@ Content-Type: text/turtle
 @prefix fno: <https://w3id.org/function/ontology#> .
 
 _:execution a fno:Execution ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
 ```
 </div>
@@ -1828,9 +1851,14 @@ Content-Type: text/turtle
     aggr:status "running" ;
     aggr:statusDetail "" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
-    trans:result ( <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> ) .
+    trans:result <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result> .
+
+<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result>
+    a trans:SPARQLProtocol ;
+    dcat:endpointURL <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> .
 ```
 </div>
 
@@ -1871,22 +1899,28 @@ Content-Type: text/turtle
     aggr:status "starting" ;
     aggr:statusDetail "" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    fno:executes trans:AggregateSources ;
+    fno:executes trans:QuerySources ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
     trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
-    trans:result ( <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> ) .
+    trans:result <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result> .
+
+<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result>
+    a trans:SPARQLProtocol ;
+    dcat:endpointURL <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> .
 ```
 </div>
 
 ### Using a Simple Service ### {#using-a-service}
 
-After discovering the service, the client can use the transformation catalog to find out what `trans:AggregateSources` does,
+After discovering the service, the client can use the transformation catalog to find out what `trans:QuerySources` does,
 and how to use the output. In this example, the client sees that the function produces an output parameter `trans:result` 
-that contains a URL (`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/`) where the aggregated data can 
-be accessed. The client can then do a `GET` request to that URL, again authenticating using the mechanisms defined in 
+that is a `trans:SPARQLProtocol` conforming to the SPARQL protocol with an endpointURL at 
+`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` where the query results can be accessed. The client 
+can then do a `GET` request to that URL, again authenticating using the mechanisms defined in 
 [[#aggregator-security-model]]. This time the client might need to gather multiple access claims from the AS's of 
 `http://example.org/source/1` and `http://example.org/source/2`. After receiving an access token from the Aggregator 
 Authorization Server, the client can redo the `GET` request to 
-`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` to get the result of the aggregation.
+`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` to get the query results.
 
 
 
