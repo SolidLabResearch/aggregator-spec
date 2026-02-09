@@ -118,7 +118,7 @@ The types (`fno:type`) of the parameters and outputs of the functions SHOULD be 
 (`rdfs:subClassOf`) of a Data Catalog ([[!Data-Catalog]]) entity like `dcat:DataService`. This entity SHOULD then be further 
 described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
 Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend ([[!FOAF]]) and Dublin Core 
-Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Compositions`) MAY also be described in this document. 
+Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Composition`) MAY also be described in this document.
 Finally, the catalog MAY also include external entities using `rdfs:seeAlso` to link to external functions, pipelines or 
 Data Catalog entities.
 

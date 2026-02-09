@@ -2485,7 +2485,7 @@ transformations MUST be described using FnO <a data-link-type="biblio" href="#bi
 (<code>rdfs:subClassOf</code>) of a Data Catalog (<a data-link-type="biblio" href="#biblio-data-catalog" title="Data Catalog Vocabulary">[Data-Catalog]</a>) entity like <code>dcat:DataService</code>. This entity SHOULD then be further 
 described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
 Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend (<a data-link-type="biblio" href="#biblio-foaf" title="Friend of a Friend (FOAF)">[FOAF]</a>) and Dublin Core 
-Metadata Terms (<a data-link-type="biblio" href="#biblio-dcterms" title="Dublin Core Metadata Terms">[DCTERMS]</a>). Pre defined pipelines (using <code>fno:Compositions</code>) MAY also be described in this document. 
+Metadata Terms (<a data-link-type="biblio" href="#biblio-dcterms" title="Dublin Core Metadata Terms">[DCTERMS]</a>). Pre defined pipelines (using <code>fno:Composition</code>) MAY also be described in this document.
 Finally, the catalog MAY also include external entities using <code>rdfs:seeAlso</code> to link to external functions, pipelines or 
 Data Catalog entities.</p>
    <p>The specificity of the transformation is up to the server owner. The functions MAY have a link to an implementation with
@@ -3706,7 +3706,9 @@ implementations to expose user-specific transformations, or protected/private tr
 to the public Transformation Catalog, MAY be user specific and MUST require authentication. The endpoint MAY return a 404 
 Not Found if no user-specific transformations are available. A client SHOULD combine the information from this endpoint 
 with the public Transformation Catalog to get a complete view on the available transformations. The endpoint follows the 
-same content negotiation rules and other requirements as the public Transformation Catalog.</p>
+same content negotiation rules and other requirements as the public Transformation Catalog. The Aggregator MAY put the
+transformations in different resources so different policies can be added, and link to them using <code>rdfs:seeAlso</code>. The
+endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.</p>
    <h2 class="heading settled" data-level="8" id="aggregator-service-management"><span class="secno">8. </span><span class="content">Aggregator Service Management</span><a class="self-link" href="#aggregator-service-management"></a></h2>
    <p>The Aggregator Service Management endpoint gives an authenticated client a complete view on the Aggregator Services.
 It lets an authenticated client see all the running Aggregator Services and create, inspect, and remove individual 
@@ -3779,7 +3781,7 @@ service. Servers MAY honor this suggested identifier; if they do, the created se
 Servers that do not honor client-suggested identifiers MUST ignore the suggestion and generate their own identifier.
 If <code>fno:executes</code> references a <code>fno:Composition</code> provided by the client, the server MUST either reject the
 request with <code>400 Bad Request</code> or accept it and publish the composition in the instance-level transformation catalog.
-On success, the server MUST:</p>
+The server SHOULD then also add a <code>rdfs:seeAlso</code> to the this <code>fno:Composition</code>. On success, the server MUST:</p>
      <ol>
       <li data-md>
        <p>Persist the new service and change the collection <code>ETag</code>.</p>

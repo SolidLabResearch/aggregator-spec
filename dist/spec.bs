@@ -391,7 +391,7 @@ The types (`fno:type`) of the parameters and outputs of the functions SHOULD be 
 (`rdfs:subClassOf`) of a Data Catalog ([[!Data-Catalog]]) entity like `dcat:DataService`. This entity SHOULD then be further 
 described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
 Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend ([[!FOAF]]) and Dublin Core 
-Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Compositions`) MAY also be described in this document. 
+Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Composition`) MAY also be described in this document.
 Finally, the catalog MAY also include external entities using `rdfs:seeAlso` to link to external functions, pipelines or 
 Data Catalog entities.
 
@@ -1681,7 +1681,9 @@ implementations to expose user-specific transformations, or protected/private tr
 to the public Transformation Catalog, MAY be user specific and MUST require authentication. The endpoint MAY return a 404 
 Not Found if no user-specific transformations are available. A client SHOULD combine the information from this endpoint 
 with the public Transformation Catalog to get a complete view on the available transformations. The endpoint follows the 
-same content negotiation rules and other requirements as the public Transformation Catalog.
+same content negotiation rules and other requirements as the public Transformation Catalog. The Aggregator MAY put the
+transformations in different resources so different policies can be added, and link to them using `rdfs:seeAlso`. The
+endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.
 
 
 
@@ -1759,7 +1761,7 @@ advertise the `read` and `create` scopes so that clients can both inspect and ad
     Servers that do not honor client-suggested identifiers MUST ignore the suggestion and generate their own identifier.
     If `fno:executes` references a `fno:Composition` provided by the client, the server MUST either reject the
     request with `400 Bad Request` or accept it and publish the composition in the instance-level transformation catalog.
-    On success, the server MUST:
+    The server SHOULD then also add a `rdfs:seeAlso` to the this `fno:Composition`. On success, the server MUST:
       1. Persist the new service and change the collection `ETag`.
       2. Register a new UMA resource for the created Service Resource URL (e.g., `/services/{service_id}`) with the `read` 
         and `delete` scopes so the creator—or any other party with an RPT containing those scopes—can manage the service.

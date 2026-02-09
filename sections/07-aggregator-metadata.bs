@@ -100,4 +100,6 @@ implementations to expose user-specific transformations, or protected/private tr
 to the public Transformation Catalog, MAY be user specific and MUST require authentication. The endpoint MAY return a 404 
 Not Found if no user-specific transformations are available. A client SHOULD combine the information from this endpoint 
 with the public Transformation Catalog to get a complete view on the available transformations. The endpoint follows the 
-same content negotiation rules and other requirements as the public Transformation Catalog.
+same content negotiation rules and other requirements as the public Transformation Catalog. The Aggregator MAY put the
+transformations in different resources so different policies can be added, and link to them using `rdfs:seeAlso`. The
+endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.
