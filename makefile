@@ -1,4 +1,4 @@
-IMAGE ?= maartyman/bikeshed-image:v1.0.0
+IMAGE ?= maartyman/bikeshed-image:v1.0.1
 SPEC ?= spec.bs
 DIST ?= dist
 PORT ?= 59754
