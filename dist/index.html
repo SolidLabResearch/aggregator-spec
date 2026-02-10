@@ -3224,7 +3224,7 @@ successful resource registration update at the AAS. When a derived resource is n
 SHOULD remove the <code>derived_from</code> entry, MAY expire previous access tokens, and SHOULD delete the <code>derivation_resource_id</code>
 at the UAS trough the resource registration endpoint.</p>
    <p><strong>Non-normative flow and examples</strong></p>
-   <p><img alt="PlantUML Diagram" src="uml/3b8ada3c99c5f33fd33b5ab26d3a6ca08a9cc653.svg"></p>
+   <p><img alt="PlantUML Diagram" src="uml/19e42b7b4f0031c94d751aa72a67a2bbf572b627.svg"></p>
    <p><strong>1. Requesting the upstream resource without token</strong></p>
    <p>The Aggregator Service requests the upstream resource without an access token.</p>
    <div class="example" id="example-ed9c0e3b">
@@ -3339,41 +3339,30 @@ the derived resource is no longer offered by the Aggregator.</p>
    <p>The Aggregator Service then requests the resource from the Upstream Resource Server using the access token obtained from
 the Upstream Authorization Server. This access token MAY be used multiple times until it expires or is revoked as described
 in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>.</p>
-   <p><strong>4. Getting the derivation_resource_id</strong></p>
-   <p>The UAS determines most of the metadata of the derived resource during the access token request except for the scopes. To
-update the scopes at the UAS, the Aggregator Service first needs to get the current metadata of the
-<code>derivation_resource_id</code> resource from the UAS using the <code>management_access_token</code>.</p>
-   <div class="example" id="example-16feec91">
-    <a class="self-link" href="#example-16feec91"></a>
-
-<pre class="highlight language-http"><c- nf>GET</c-> <c- nn>/derivation-resources/handle-id-1</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
-<c- e>Host</c-><c- o>:</c-> <c- l>upstream.as.example.org</c->
-<c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;management_access_token></c->
-</pre>
-   </div>
-   <p><strong>4.1 Update the scopes of the derived resource at the UAS</strong></p>
-   <p>After getting the current metadata of the <code>derivation_resource_id</code> resource, the Aggregator Service can update it to add
-the scopes of the derived resource. This way, when a client requests access to the derived resource and needs to get
-claims from the UAS, the UAS can check if the requested scopes are valid for that <code>derivation_resource_id</code> and include
-them in the <code>required_claims</code> of the UMA <code>need_info</code> response. Furthermore, the UAS can set policies based on these scopes
-to determine whether to grant access to the derivation resource.</p>
-   <div class="example" id="example-b8404bf1">
-    <a class="self-link" href="#example-b8404bf1"></a>
+   <p><strong>4. Update the metadata of the derived resource on the UAS</strong></p>
+   <p>The Aggregator Service needs to update the metadata on the resource identified by <code>derivation_resource_id</code> at the UAS to
+at least include the scopes of the derived resource. This way, when a client requests access to the derived resource and
+needs to get claims from the UAS, the UAS can check if the requested scopes are valid for that <code>derivation_resource_id</code> and
+include them in the <code>required_claims</code> of the UMA <code>need_info</code> response. Furthermore, the UAS can set policies based on these
+scopes to determine whether to grant access to the derivation resource.</p>
+   <div class="example" id="example-a57d7fed">
+    <a class="self-link" href="#example-a57d7fed"></a>
 
 <pre class="highlight language-http"><c- nf>PUT</c-> <c- nn>/derivation-resources/handle-id-1</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>upstream.as.example.org</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;management_access_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 {
-  ...
+  <c- f>"type"</c-><c- p>:</c-> <c- u>"https://agg.example.org/derivation-result"</c-><c- p>,</c->
+  <c- f>"name"</c-><c- p>:</c-> <c- u>"Derived Resource 123"</c-><c- p>,</c->
+  <c- f>"description"</c-><c- p>:</c-> <c- u>"&lt;transformation_description>"</c-><c- p>,</c->
+  <c- f>"icon_uri"</c-><c- p>:</c-> <c- u>"https://agg.example.org/icons/derived-resource-123.png"</c-><c- p>,</c->
   <c- f>"resource_scopes"</c-><c- p>:</c-> <c- p>[</c->
     <c- u>"urn:knows:uma:scopes:read"</c->
   <c- p>]</c->
 <c- p>}</c->
 </pre>
    </div>
-   <p class="issue" id="issue-a0de394d"><a class="self-link" href="#issue-a0de394d"></a> As the UAS doesn’t allow the Aggregator to modify the metadata of the <code>derivation_resource_id</code> resource (except for
-the scopes), the Aggregator might either want to only send the scopes in the request or instead of PUT use a PATCH request.</p>
    <p><strong>5. Resource registration of the Aggregator Service</strong></p>
    <p>Finally, the Aggregator Service updates the resource registration at its own Authorization Server (the AAS) to signal that
 it used this <code>derivation_resource_id</code> to create derived resources.</p>
@@ -4444,7 +4433,5 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
   <h2 class="heading no-num no-ref settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
    <div class="issue"> should we allow a name field for the aggregator during creation? <a class="issue-return" href="#issue-7876f244" title="Jump to section">↵</a></div>
-   <div class="issue"> As the UAS doesn’t allow the Aggregator to modify the metadata of the <code>derivation_resource_id</code> resource (except for
-the scopes), the Aggregator might either want to only send the scopes in the request or instead of PUT use a PATCH request. <a class="issue-return" href="#issue-a0de394d" title="Jump to section">↵</a></div>
    <div class="issue"> Do we define the exact scopes here? <a class="issue-return" href="#issue-e6c8b095" title="Jump to section">↵</a></div>
   </div>

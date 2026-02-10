@@ -83,10 +83,9 @@ UAS --> A: 2.4 access_token + derivation_resource_id + management_access_token
 
 A -> URS: 3. Request resource with access token
 
-A -> UAS: 4. Get derivation_resource_id
-A -> UAS: 4.1 Update derivation_resource_id scopes
+A -> UAS: 4. Update derivation_resource_id metadata on UAS
 
-A -> AAS: 5. Update resource registration
+A -> AAS: 5. Update resource registration at AAS
 
 @enduml
 </pre>
@@ -223,27 +222,13 @@ The Aggregator Service then requests the resource from the Upstream Resource Ser
 the Upstream Authorization Server. This access token MAY be used multiple times until it expires or is revoked as described
 in [[!A4DS]].
 
-**4. Getting the derivation_resource_id**
+**4. Update the metadata of the derived resource on the UAS**
 
-The UAS determines most of the metadata of the derived resource during the access token request except for the scopes. To
-update the scopes at the UAS, the Aggregator Service first needs to get the current metadata of the
-`derivation_resource_id` resource from the UAS using the `management_access_token`.
-
-<div class="example">
-```http
-GET /derivation-resources/handle-id-1 HTTP/1.1
-Host: upstream.as.example.org
-Authorization: Bearer <management_access_token>
-```
-</div>
-
-**4.1 Update the scopes of the derived resource at the UAS**
-
-After getting the current metadata of the `derivation_resource_id` resource, the Aggregator Service can update it to add
-the scopes of the derived resource. This way, when a client requests access to the derived resource and needs to get
-claims from the UAS, the UAS can check if the requested scopes are valid for that `derivation_resource_id` and include
-them in the `required_claims` of the UMA `need_info` response. Furthermore, the UAS can set policies based on these scopes
-to determine whether to grant access to the derivation resource.
+The Aggregator Service needs to update the metadata on the resource identified by `derivation_resource_id` at the UAS to
+at least include the scopes of the derived resource. This way, when a client requests access to the derived resource and
+needs to get claims from the UAS, the UAS can check if the requested scopes are valid for that `derivation_resource_id` and
+include them in the `required_claims` of the UMA `need_info` response. Furthermore, the UAS can set policies based on these
+scopes to determine whether to grant access to the derivation resource.
 
 <div class="example">
 ```http
@@ -252,16 +237,16 @@ Host: upstream.as.example.org
 Authorization: Bearer <management_access_token>
 Content-Type: application/json
 {
-  ...
+  "type": "https://agg.example.org/derivation-result",
+  "name": "Derived Resource 123",
+  "description": "<transformation_description>",
+  "icon_uri": "https://agg.example.org/icons/derived-resource-123.png",
   "resource_scopes": [
     "urn:knows:uma:scopes:read"
   ]
 }
 ```
 </div>
-
-ISSUE: As the UAS doesn't allow the Aggregator to modify the metadata of the `derivation_resource_id` resource (except for
-the scopes), the Aggregator might either want to only send the scopes in the request or instead of PUT use a PATCH request.
 
 **5. Resource registration of the Aggregator Service**
 
