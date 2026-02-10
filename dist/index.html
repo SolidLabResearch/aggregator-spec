@@ -2015,7 +2015,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Aggregator Specification</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-02-09">9 February 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-02-10">10 February 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2030,7 +2030,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 9 February 2026,
+In addition, as of 10 February 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3213,12 +3213,10 @@ if provided, is an object with <code>access_token</code>, <code>token_type</code
 lifecycle of the <code>derivation_resource_id</code> at the UAS trough the resource registration endpoint defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>.
 Authorization Servers MUST only allow a <code>management_access_token</code> to be used for inspecting or modifying the
 <code>derivation_resource_id</code> resource linked to it and MUST NOT allow them to create new resources. The Aggregator SHOULD
-modify the <code>derivation_resource_id</code> resource on the UAS to add the scopes of the derived resource. if the
-<code>management_access_token</code> is not valid anymore the Aggregator can request a new one by repeating the access token request
-including the same <code>derivation_resource_id</code>. The UAS SHOULD add the metadata of the registered derived resource
-(e.g., name, description, or icon_uri,ect.) and SHOULD prevent the Aggregator from modifying these. If access to the
-upstream resource is revoked for the Aggregator, the UAS MUST also revoke all associated <code>derivation_resource_id</code>
-identifiers and their access tokens.</p>
+modify the <code>derivation_resource_id</code> resource on the UAS to add the scopes, name, description, and icon_uri of the derived
+resource. If the <code>management_access_token</code> is not valid anymore the Aggregator can request a new one by repeating the access
+token request including the same <code>derivation_resource_id</code>. If access to the upstream resource is revoked for the Aggregator,
+the UAS MUST also revoke all associated <code>derivation_resource_id</code> identifiers and their access tokens.</p>
    <p>The Aggregator Service MUST modify the asset representing the derived resource on the AAS with a <code>derived_from</code>
 entry containing the <code>issuer</code> (the UAS) and <code>derivation_resource_id</code> as described by <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. The AAS MUST expire
 previous access tokens for that derived resource. The Aggregator Service SHOULD only use the data from resource after a

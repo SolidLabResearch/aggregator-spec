@@ -1132,12 +1132,10 @@ if provided, is an object with `access_token`, `token_type` fields that allows t
 lifecycle of the `derivation_resource_id` at the UAS trough the resource registration endpoint defined in [[!A4DS]].
 Authorization Servers MUST only allow a `management_access_token` to be used for inspecting or modifying the
 `derivation_resource_id` resource linked to it and MUST NOT allow them to create new resources. The Aggregator SHOULD
-modify the `derivation_resource_id` resource on the UAS to add the scopes of the derived resource. if the
-`management_access_token` is not valid anymore the Aggregator can request a new one by repeating the access token request
-including the same `derivation_resource_id`. The UAS SHOULD add the metadata of the registered derived resource
-(e.g., name, description, or icon_uri,ect.) and SHOULD prevent the Aggregator from modifying these. If access to the
-upstream resource is revoked for the Aggregator, the UAS MUST also revoke all associated `derivation_resource_id`
-identifiers and their access tokens.
+modify the `derivation_resource_id` resource on the UAS to add the scopes, name, description, and icon_uri of the derived
+resource. If the `management_access_token` is not valid anymore the Aggregator can request a new one by repeating the access
+token request including the same `derivation_resource_id`. If access to the upstream resource is revoked for the Aggregator,
+the UAS MUST also revoke all associated `derivation_resource_id` identifiers and their access tokens.
 
 The Aggregator Service MUST modify the asset representing the derived resource on the AAS with a `derived_from`
 entry containing the `issuer` (the UAS) and `derivation_resource_id` as described by [[!A4DS]]. The AAS MUST expire
