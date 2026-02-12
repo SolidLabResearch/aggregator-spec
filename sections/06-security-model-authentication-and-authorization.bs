@@ -25,13 +25,15 @@ Upstream Access (Requesting) {#requesting-flow}
 
 The Aggregator Service MUST obtain upstream access tokens according to A4DS and UMA and if asked for a proof of identity MUST
 present the ID token (`IDP_aggregator_token`) obtained during aggregator registration ([[#aggregator-registration]]). When
-the Aggregator Service intends to create derived resources, it MUST request a global scope
+the Aggregator Service intends to create derived resources, it MUST request a global scope of
 `urn:knows:uma:scopes:derivation-creation`. The Aggregator Service MAY include a transformation description claim token
 ([[!A4DS]]). The `claim_type` for this description MUST be
 `https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#transformation-description`. The `claim_token_format` values
 identify acceptable RDF serializations as URIs (e.g., `http://www.w3.org/ns/formats/Turtle`). The Upstream Authorization
 Server MAY require transformation description claims; if it does, it MUST respond with a UMA `need_info` error and
-`required_claims` as defined by [[!A4DS]].
+`required_claims` as defined by [[!A4DS]]. Furthermore, the URS can also be an Aggregator Service, in which case the UAS
+can require claims about the `derivation_resource_id` as described below. If this is the case, the Aggregator Service MUST
+add the global scope of `urn:knows:uma:scopes:derivation-creation` in that access token request as well.
 
 If the UAS grants access to the upstream resource to create the derived resource it MUST include a `derivation_resource_id`
 and a `management_access_token` field in the access-token response body, as top-level members alongside the standard OAuth

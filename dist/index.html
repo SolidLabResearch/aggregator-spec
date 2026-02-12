@@ -2015,7 +2015,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Aggregator Specification</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-02-10">10 February 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-02-12">12 February 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2030,7 +2030,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 10 February 2026,
+In addition, as of 12 February 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -3192,13 +3192,15 @@ Server that protects the Aggregator itself and issues tokens (e.g., UMA RPTs) fo
    <p><strong>Normative requirements</strong></p>
    <p>The Aggregator Service MUST obtain upstream access tokens according to A4DS and UMA and if asked for a proof of identity MUST
 present the ID token (<code>IDP_aggregator_token</code>) obtained during aggregator registration (<a href="#aggregator-registration">§ 5.1 Aggregator Registration Endpoint</a>). When
-the Aggregator Service intends to create derived resources, it MUST request a global scope
+the Aggregator Service intends to create derived resources, it MUST request a global scope of
 <code>urn:knows:uma:scopes:derivation-creation</code>. The Aggregator Service MAY include a transformation description claim token
 (<a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>). The <code>claim_type</code> for this description MUST be
 <code>https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#transformation-description</code>. The <code>claim_token_format</code> values
 identify acceptable RDF serializations as URIs (e.g., <code>http://www.w3.org/ns/formats/Turtle</code>). The Upstream Authorization
 Server MAY require transformation description claims; if it does, it MUST respond with a UMA <code>need_info</code> error and
-<code>required_claims</code> as defined by <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>.</p>
+<code>required_claims</code> as defined by <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. Furthermore, the URS can also be an Aggregator Service, in which case the UAS
+can require claims about the <code>derivation_resource_id</code> as described below. If this is the case, the Aggregator Service MUST
+add the global scope of <code>urn:knows:uma:scopes:derivation-creation</code> in that access token request as well.</p>
    <p>If the UAS grants access to the upstream resource to create the derived resource it MUST include a <code>derivation_resource_id</code>
 and a <code>management_access_token</code> field in the access-token response body, as top-level members alongside the standard OAuth
 2.0 token response parameters (e.g., <code>access_token</code>, <code>refresh_token</code>, <code>expires_in</code>). The <code>derivation_resource_id</code> is a unique
