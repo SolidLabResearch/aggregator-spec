@@ -1,0 +1,326 @@
+Aggregator Data Model {#aggregator-data-model}
+==============================================
+
+This section specifies the data model used to describe the aggregator components like running aggregator services
+and the transformations they implement as well as the outputs they generate. By describing them as linked data the 
+model enables interoperable publication, discovery, execution, and provenance tracking of aggregator services.
+
+Transformation {#aggregator-transformation}
+-------------------------------------------
+
+An aggregator transformation defines a well-described functional interface using the Function Ontology [[!FNO]].
+Each transformation **MUST** be described as an `fno:Function` that:
+  - **MUST** define exactly one output
+  - **MAY** define zero or more parameters
+  - **MAY** use `fno:type`:
+    - on inputs, to describe the semantic meaning of the expected format
+    - on the output, to describe the semantic meaning of the produced dataset its contents
+
+<div class="example">
+```turtle
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:query-view
+    a                   fno:Function ;
+    fno:name            "The QueryView function"^^xsd:string ;
+    dct:description     "A maintained view of a query over a list of sources"^^xsd:string ;
+    fno:expects         ( :sources-parameter :query-parameter ) ;
+    fno:returns         ( :query-output ) .
+
+:sources-parameter
+    a             fno:Parameter ;
+    fno:predicate :sources ;
+    fno:list      "true"^^xsd:boolean ;
+    fno:type      xsd:anyURI ;
+    fno:required  "true"^^xsd:boolean .
+
+:query-parameter
+    a             fno:Parameter ;
+    fno:predicate :query ; 
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+:query-output
+    a             fno:Output ;
+    fno:predicate :view .
+
+:weight-loss-graph
+  a fno:Function ;
+  fno:name "The WeightLoss Function"^^xsd:string
+  dct:description "A weight loss graph calculated on a dataset of observed weight values"^^xsd:string ;
+  fno:expects ( :dataset-parameter ) ;
+  fno:returns ( :weight-loss-ouptut ) .
+
+:dataset-parameter 
+  a fno:Parameter ;
+  fno:type xsd:anyURI ;
+  fno:predicate :dataset ;
+  fno:required "true"^^xsd:boolean .
+
+:weight-loss-output
+  a fno:Output ;
+  fno:predicate :view .
+```
+</div>
+
+Service Implementation {#aggregator-service-implementation}
+-----------------------------------------------------------
+
+A transformation description **MUST** be linked to at least one `aggr:ServiceImplementation` (a subclass of `fno:Implementation`) 
+using an `fno:Mapping`.
+
+The `aggr:ServiceImplementation` describes how the transformation is technically realized and how a corresponding running 
+service will be exposed. It provides additional implementation-level metadata, including:
+  - `dct:conformsTo` — a specification (e.g., a protocol or standard) that the service implementation adheres to.
+  - `dct:accrualPeriodicity` — indicating at what interval the service will perform the transformation.
+  - `dct:format` or `dcat:mediaType` — specify a supported output format
+    - This link **MAY** occur multiple times to indicate support for multiple formats (e.g., to enable content negotiation).
+
+ISSUE: how to advertise supported input formats without referencing parameters? Replace format to fno:Mapping?
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:sparql-service-implementation
+    a                 aggr:ServiceImplementation ;
+    a                 prov:Entity ;
+    dct:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
+    dct:format <http://www.w3.org/ns/formats/SPARQL_Results_JSON> ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> .
+
+:csv-table-implementation
+  a aggr:ServiceImplementation ;
+  a prov:Entity ;
+  dcat:mediaType <http://www.iana.org/assignments/media-types/text/csv> ;
+  dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
+
+:sparql-service-mapping
+  a fno:Mapping ;
+  fno:function :query-view ;
+  fno:implementation :sparql-service-implementation .
+
+:csv-table-mapping
+  a fno:Mapping ;
+  fno:function :weight-loss-graph ;
+  fno:implementation :weight-loss-implementation .
+```
+</div>
+
+Further requirements on how a server **MUST** expose and maintain the set of available and supported transformations, 
+as well as the concrete service implementations that execute them, are specified in [[#server-level-transformation-catalog]].
+
+Service {#aggregator-service}
+------------------------------------------------
+
+A deployed aggregator service is modeled as:
+  - an `aggr:Service`
+  - a `dcat:DataService` ([[!Data-Catalog]])
+  - a `prov:SoftwareAgent` ([[!PROV-O]])
+
+The running service:
+  - **MUST** expose exactly one dataset
+  - **MUST** declare conformance via `dct:conformsTo` ([[!DCTERMS]]) if `aggr:conformsTo` was declared
+  - **MUST** provide a `dcat:Distribution` for each declared `aggr:outputFormat`
+  - **MUST** link each `dcat:Distribution` to the output URL  using `dcat:accessURL`.
+  - **MUST** link to a `aggr:ServiceImplementation` using `aggr:implements`
+  - **MUST** link to a `fno:Function` using `aggr:performs`
+  - **SHOULD** declare operational metadata such as status and creation time
+
+The dataset **MUST** include the period between updates using `dct:accrualPeriodicity`
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:weight-loss-service
+    a aggr:Service ;
+    a dcat:DataService ;
+    a prov:SoftwareAgent ;
+    aggr:status "running" ;
+    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
+    aggr:implements :sparql-service-implementation ;
+    aggr:performs :query-view ;
+    dcat:servesDataset :weight-loss-service-dataset .
+
+:weight-loss-service-dataset
+    a dcat:Dataset ;
+    dcat:distribution :weight-loss-service-distribution ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
+
+:weight-loss-service-distribution
+    a dcat:Distribution ;
+    dcat:mediaType <http://www.iana.org/assignments/media-types/text/csv> ;
+    dcat:accessURL <http://example.com/result> ;
+    dcat:accessService :weight-loss-service .
+```
+</div>
+
+Further requirements on how an Aggregator Server **MUST** manage services — including how clients can create, 
+configure, and delete service instances — are specified in [[#aggregator-service-management]].
+
+Enriching Services with Semantic Mappings {#aggregator-service-mappings}
+------------------------------------------------------------------------
+
+An `aggr:ServiceImplementation` **MAY** further specify:
+  - `aggr:dataServiceMapping`
+  - `aggr:datasetMapping`
+  - `aggr:distributionMapping`
+
+These mappings automatically enrich the generated service, dataset and distribution descriptions with additional RDF statements.
+
+An implementation may declare:
+  - an additional type (`agg:ServiceTypeMapping`)
+  - predicates mapped to the service ouput endpoint (`agg:ServiceOutputMapping`)
+  - predicates mapped to an `rdfs:Resource` (`agg:ServiceValueMapping`)
+
+For example, if a transformation is implemented as a SPARQL endpoint, the implementation can:
+  - set service type to `sd:Service`
+  - map the service output to `sd:endpoint`
+  - map output formats
+  - include dataset-level metadata such as update frequency
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:sparql-service-implementation
+    a aggr:ServiceImplementation ;
+    a prov:Entity ;
+    dct:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> ;
+    aggr:dataServiceMapping [
+      a aggr:ServiceTypeMapping ;
+      aggr:type sd:Service .
+    ],[
+      a aggr:ServiceOutputMapping ;
+      aggr:predicate sd:endpoint .
+    ],[
+      a aggr:ServiceValueMapping ;
+      aggr:predicate sd:resultFormat ;
+      aggr:value <http://www.w3.org/ns/formats/SPARQL_Results_JSON> .
+    ] ;
+```
+</div>
+
+The resulting service description automatically reflects these mappings:
+
+<div class="example">
+```turtle
+@prefix ex: <http://example.org/> .
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:query-view-service
+    a aggr:Service
+    a dcat:DataService ;
+    a sd:Service ;
+    a prov:SoftwareAgent ;
+    aggr:status "running" ;
+    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
+    aggr:implements :sparql-service-implementation ;
+    aggr:performs :query-view ;
+    dcat:servesDataset :query-view-service-dataset ;
+    sd:endpoint <http://example.com/result> ;
+    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_JSON> ;
+    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> .
+    
+:query-view-service-dataset
+    a dcat:Dataset ;
+    a prov:Entity ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> ;
+    dcat:distribution :query-view-service-distribution ;
+    prov:wasGeneratedAtTime "2024-01-01T12:00:00Z"^^xsd:dateTime .
+ 
+:query-view-service-distribution ;
+    a dcat:Distribution ;
+    dcat:accessURL <http://example.com/result> ;
+    dcat:accessService :query-view-service .
+```
+</div> 
+
+Provenance {#aggregator-provenance}
+-----------------------------------
+
+This section specifies how to describe provenance information of running Aggregator Services.
+
+A running service **MUST** be described as a `prov:SoftwareAgent`. This Agent is responsible for executing the transformation
+that results in a new distribution of its dataset.
+
+This execution **MUST** be typed as:
+  - an `fno:Execution` detailing:
+    - what function was executed with `fno:executes` 
+    - what input values were used with the parameter predicates. 
+    - the newly created distribution with the output predicate.
+  - a `prov:Activity` that:
+    - generated the new destribution
+    - includes start and end time with `prov:startedAtTime` and `prov:endedAtTime`
+
+The resulting distribution:
+  - **MUST** be typed as `prov:Entity`
+  - **MUST** link to the execution using `prov:wasGeneratedBy`
+  - **SHOULD** include `prov:wasGeneratedAtTime`
+  - **MAY** include its exact value if possible using `prov:value`
+
+If previous distributions remain accessible (e.g., versioned history), no special invalidation is required.
+However, if a new distribution fully replaces a previous distribution (i.e., the previous version is no longer available):
+  - The execution **MUST** invalidate the old distribution using `prov:invalidated`
+  - The invalidated distribution **MUST** reference the execution using `prov:wasInvalidatedBy`
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix tfc: <http://aggregator.example.org/transformations#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:execution-1
+  a fno:Execution ;
+  a prov:Activity ;
+  fno:executes :query-view ;
+  :query "SELECT * WHERE { ?s ?p ?o }" ;
+  :sources (
+    "http://example.org/source1",
+    "http://example.org/source2",
+  ) ;
+  :result :new-distribution ;
+  prov:associatedWith :query-view-service ;
+  prov:quallifiedAssociation [
+    a prov:Association ;
+    prov:agent :query-view-service ;
+    prov:hadPlan :query-view .
+  ] ;
+  prov:used :query-view ;
+  prov:invalidated :old-distribution ;
+  prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
+  prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:new-distribution ;
+  a prov:Entity ;
+  prov:wasGeneratedBy :execution-1 ;
+  prov:wasGeneratedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:old-distribution ;
+  a prov:Entity ;
+  prov:wasGeneratedBy :execution-0 ;
+  prov:wasGeneratedAtTime "2025-01-01T12:01:00Z"^^xsd:dateTime ;
+  prov:wasInvalidated :execution-1 .
+```
+</div>
+
+Further requirements on how an Aggregator Server **MUST** expose provenance data are specified in [[#aggregator-provenance-management]].

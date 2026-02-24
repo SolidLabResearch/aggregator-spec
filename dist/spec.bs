@@ -70,6 +70,22 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
   "DCTERMS": {
     "href": "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
     "title": "Dublin Core Metadata Terms"
+  },
+  "OCI-Image-Spec": {
+    "href": "https://github.com/opencontainers/image-spec",
+    "title": "Open Container Initiative Image Specification"
+  },
+  "DockerPedia": {
+    "href": "https://cbuil.github.io/dockerpedia-ontology/release/0.1.0/index-en.html",
+    "title": "DockerPedia Ontology"
+  },
+  "LDP": {
+    "href": "https://www.w3.org/TR/ldp/",
+    "title": "Linked Data Platform"
+  },
+  "PROV-O": {
+    "href": "https://www.w3.org/TR/prov-o/",
+    "title": "The Provenance Ontology"
   }
 }
 </pre>
@@ -120,10 +136,10 @@ Core Roles and Components {#definitions-core}
     endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
 
 - **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service is 
-    represented as an FnO execution (`fno:Execution`) that identifies the executed function and its inputs; outputs are 
-    described by the function's output parameters (see [[#aggregator-service-management]]).
+    represented as an FnO Implementation (`fno:Implementation`) that implements an FnO AppliedFunction (`fno:AppliedFunction`), 
+    which defines inputs and outputs (see [[#aggregator-service-management]]).
 
-- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator 
+- **Transformation Catalog:** A catalog that describes the FnO Functions supported by the Aggregator Server and the FnO AppliedFunctions hosted on an Aggregator 
     Instance (see [[#server-level-transformation-catalog]] and [[#instance-level-transformation-catalog]]).
 
 Identity, Authorization, and Tokens {#definitions-security}
@@ -172,6 +188,7 @@ The following namespace prefixes are used throughout this specification and SHOU
 - `rdf:` → `http://www.w3.org/1999/02/22-rdf-syntax-ns#`
 - `rdfs:` → `http://www.w3.org/2000/01/rdf-schema#`
 - `xsd:` → `http://www.w3.org/2001/XMLSchema#`
+- `prov:` → `http://www.w3.org/ns/prov#`
 
 
 
@@ -209,7 +226,7 @@ This specification defines HTTP resources at three levels:
 - **Aggregator Instance resources:** instance metadata and service management (see [[#aggregator-metadata]] and
     [[#aggregator-service-management]]).
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
-    [[#service-collection]] and [[#service-resource]]).
+    [[#service-collection]] and TODO).
 
 Base URLs and Addressing {#base-urls-and-addressing}
 ---------------------------------------------------
@@ -233,8 +250,8 @@ Discovery and Entry Points {#discovery-and-entry-points}
 
 - The Aggregator Server exposes a public discovery resource at its server base URL (see [[#server-description]]).
 - Clients create (or obtain access to) an Aggregator Instance via the registration API (see [[#aggregator-registration]]).
-- The resulting instance base URL is the entry point for instance metadata (see [[#aggregator-metadata]]) and instance 
-    management (see [[#aggregator-service-management]]).
+- The resulting instance base URL is the entry point for instance metadata (see [[#aggregator-metadata]]) 
+    and instance service management (see [[#aggregator-service-management]]).
 
 Security Boundaries {#security-boundaries}
 -----------------------------------------
@@ -249,7 +266,7 @@ All security requirements are defined in [[#aggregator-security-model]]. At a hi
 - Protected (UMA): the instance metadata resource (see [[#aggregator-metadata]]) and all resources under the service 
     management API (see [[#aggregator-service-management]]).
 
-The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP tokens
+The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP or Bearer tokens
 wherever possible to bind tokens to the client. Aggregator endpoints intended for browser-based clients MUST support CORS. 
 Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST answer `OPTIONS` 
 preflight requests and include appropriate `Access-Control-Allow-*` headers for the methods and headers used by this 
@@ -266,8 +283,337 @@ Given an Aggregator Server at `https://aggregator.example/` and a path-based Agg
 - Registration: `https://aggregator.example/registration`
 - Transformation catalog: `https://aggregator.example/transformations`
 - Instance description: `https://aggregator.example/abc123/`
-- Instance Transformation catalog: `https://aggregator.example/abc123/config/transformations`
-- Service collection: `https://aggregator.example/abc123/config/services`
+- Instance Transformation catalog: `https://aggregator.example/abc123/transformations`
+- Service collection: `https://aggregator.example/abc123/services`
+
+
+
+Aggregator Data Model {#aggregator-data-model}
+==============================================
+
+This section specifies the data model used to describe the aggregator components like running aggregator services
+and the transformations they implement as well as the outputs they generate. By describing them as linked data the 
+model enables interoperable publication, discovery, execution, and provenance tracking of aggregator services.
+
+Transformation {#aggregator-transformation}
+-------------------------------------------
+
+An aggregator transformation defines a well-described functional interface using the Function Ontology [[!FNO]].
+Each transformation **MUST** be described as an `fno:Function` that:
+  - **MUST** define exactly one output
+  - **MAY** define zero or more parameters
+  - **MAY** use `fno:type`:
+    - on inputs, to describe the semantic meaning of the expected format
+    - on the output, to describe the semantic meaning of the produced dataset its contents
+
+<div class="example">
+```turtle
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:query-view
+    a                   fno:Function ;
+    fno:name            "The QueryView function"^^xsd:string ;
+    dct:description     "A maintained view of a query over a list of sources"^^xsd:string ;
+    fno:expects         ( :sources-parameter :query-parameter ) ;
+    fno:returns         ( :query-output ) .
+
+:sources-parameter
+    a             fno:Parameter ;
+    fno:predicate :sources ;
+    fno:list      "true"^^xsd:boolean ;
+    fno:type      xsd:anyURI ;
+    fno:required  "true"^^xsd:boolean .
+
+:query-parameter
+    a             fno:Parameter ;
+    fno:predicate :query ; 
+    fno:type      xsd:string ;
+    fno:required  "true"^^xsd:boolean .
+
+:query-output
+    a             fno:Output ;
+    fno:predicate :view .
+
+:weight-loss-graph
+  a fno:Function ;
+  fno:name "The WeightLoss Function"^^xsd:string
+  dct:description "A weight loss graph calculated on a dataset of observed weight values"^^xsd:string ;
+  fno:expects ( :dataset-parameter ) ;
+  fno:returns ( :weight-loss-ouptut ) .
+
+:dataset-parameter 
+  a fno:Parameter ;
+  fno:type xsd:anyURI ;
+  fno:predicate :dataset ;
+  fno:required "true"^^xsd:boolean .
+
+:weight-loss-output
+  a fno:Output ;
+  fno:predicate :view .
+```
+</div>
+
+Service Implementation {#aggregator-service-implementation}
+-----------------------------------------------------------
+
+A transformation description **MUST** be linked to at least one `aggr:ServiceImplementation` (a subclass of `fno:Implementation`) 
+using an `fno:Mapping`.
+
+The `aggr:ServiceImplementation` describes how the transformation is technically realized and how a corresponding running 
+service will be exposed. It provides additional implementation-level metadata, including:
+  - `dct:conformsTo` — a specification (e.g., a protocol or standard) that the service implementation adheres to.
+  - `dct:accrualPeriodicity` — indicating at what interval the service will perform the transformation.
+  - `dct:format` or `dcat:mediaType` — specify a supported output format
+    - This link **MAY** occur multiple times to indicate support for multiple formats (e.g., to enable content negotiation).
+
+ISSUE: how to advertise supported input formats without referencing parameters? Replace format to fno:Mapping?
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:sparql-service-implementation
+    a                 aggr:ServiceImplementation ;
+    a                 prov:Entity ;
+    dct:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
+    dct:format <http://www.w3.org/ns/formats/SPARQL_Results_JSON> ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> .
+
+:csv-table-implementation
+  a aggr:ServiceImplementation ;
+  a prov:Entity ;
+  dcat:mediaType <http://www.iana.org/assignments/media-types/text/csv> ;
+  dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
+
+:sparql-service-mapping
+  a fno:Mapping ;
+  fno:function :query-view ;
+  fno:implementation :sparql-service-implementation .
+
+:csv-table-mapping
+  a fno:Mapping ;
+  fno:function :weight-loss-graph ;
+  fno:implementation :weight-loss-implementation .
+```
+</div>
+
+Further requirements on how a server **MUST** expose and maintain the set of available and supported transformations, 
+as well as the concrete service implementations that execute them, are specified in [[#server-level-transformation-catalog]].
+
+Service {#aggregator-service}
+------------------------------------------------
+
+A deployed aggregator service is modeled as:
+  - an `aggr:Service`
+  - a `dcat:DataService` ([[!Data-Catalog]])
+  - a `prov:SoftwareAgent` ([[!PROV-O]])
+
+The running service:
+  - **MUST** expose exactly one dataset
+  - **MUST** declare conformance via `dct:conformsTo` ([[!DCTERMS]]) if `aggr:conformsTo` was declared
+  - **MUST** provide a `dcat:Distribution` for each declared `aggr:outputFormat`
+  - **MUST** link each `dcat:Distribution` to the output URL  using `dcat:accessURL`.
+  - **MUST** link to a `aggr:ServiceImplementation` using `aggr:implements`
+  - **MUST** link to a `fno:Function` using `aggr:performs`
+  - **SHOULD** declare operational metadata such as status and creation time
+
+The dataset **MUST** include the period between updates using `dct:accrualPeriodicity`
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:weight-loss-service
+    a aggr:Service ;
+    a dcat:DataService ;
+    a prov:SoftwareAgent ;
+    aggr:status "running" ;
+    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
+    aggr:implements :sparql-service-implementation ;
+    aggr:performs :query-view ;
+    dcat:servesDataset :weight-loss-service-dataset .
+
+:weight-loss-service-dataset
+    a dcat:Dataset ;
+    dcat:distribution :weight-loss-service-distribution ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
+
+:weight-loss-service-distribution
+    a dcat:Distribution ;
+    dcat:mediaType <http://www.iana.org/assignments/media-types/text/csv> ;
+    dcat:accessURL <http://example.com/result> ;
+    dcat:accessService :weight-loss-service .
+```
+</div>
+
+Further requirements on how an Aggregator Server **MUST** manage services — including how clients can create, 
+configure, and delete service instances — are specified in [[#aggregator-service-management]].
+
+Enriching Services with Semantic Mappings {#aggregator-service-mappings}
+------------------------------------------------------------------------
+
+An `aggr:ServiceImplementation` **MAY** further specify:
+  - `aggr:dataServiceMapping`
+  - `aggr:datasetMapping`
+  - `aggr:distributionMapping`
+
+These mappings automatically enrich the generated service, dataset and distribution descriptions with additional RDF statements.
+
+An implementation may declare:
+  - an additional type (`agg:ServiceTypeMapping`)
+  - predicates mapped to the service ouput endpoint (`agg:ServiceOutputMapping`)
+  - predicates mapped to an `rdfs:Resource` (`agg:ServiceValueMapping`)
+
+For example, if a transformation is implemented as a SPARQL endpoint, the implementation can:
+  - set service type to `sd:Service`
+  - map the service output to `sd:endpoint`
+  - map output formats
+  - include dataset-level metadata such as update frequency
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:sparql-service-implementation
+    a aggr:ServiceImplementation ;
+    a prov:Entity ;
+    dct:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> ;
+    aggr:dataServiceMapping [
+      a aggr:ServiceTypeMapping ;
+      aggr:type sd:Service .
+    ],[
+      a aggr:ServiceOutputMapping ;
+      aggr:predicate sd:endpoint .
+    ],[
+      a aggr:ServiceValueMapping ;
+      aggr:predicate sd:resultFormat ;
+      aggr:value <http://www.w3.org/ns/formats/SPARQL_Results_JSON> .
+    ] ;
+```
+</div>
+
+The resulting service description automatically reflects these mappings:
+
+<div class="example">
+```turtle
+@prefix ex: <http://example.org/> .
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:query-view-service
+    a aggr:Service
+    a dcat:DataService ;
+    a sd:Service ;
+    a prov:SoftwareAgent ;
+    aggr:status "running" ;
+    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
+    aggr:implements :sparql-service-implementation ;
+    aggr:performs :query-view ;
+    dcat:servesDataset :query-view-service-dataset ;
+    sd:endpoint <http://example.com/result> ;
+    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_JSON> ;
+    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> .
+    
+:query-view-service-dataset
+    a dcat:Dataset ;
+    a prov:Entity ;
+    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> ;
+    dcat:distribution :query-view-service-distribution ;
+    prov:wasGeneratedAtTime "2024-01-01T12:00:00Z"^^xsd:dateTime .
+ 
+:query-view-service-distribution ;
+    a dcat:Distribution ;
+    dcat:accessURL <http://example.com/result> ;
+    dcat:accessService :query-view-service .
+```
+</div> 
+
+Provenance {#aggregator-provenance}
+-----------------------------------
+
+This section specifies how to describe provenance information of running Aggregator Services.
+
+A running service **MUST** be described as a `prov:SoftwareAgent`. This Agent is responsible for executing the transformation
+that results in a new distribution of its dataset.
+
+This execution **MUST** be typed as:
+  - an `fno:Execution` detailing:
+    - what function was executed with `fno:executes` 
+    - what input values were used with the parameter predicates. 
+    - the newly created distribution with the output predicate.
+  - a `prov:Activity` that:
+    - generated the new destribution
+    - includes start and end time with `prov:startedAtTime` and `prov:endedAtTime`
+
+The resulting distribution:
+  - **MUST** be typed as `prov:Entity`
+  - **MUST** link to the execution using `prov:wasGeneratedBy`
+  - **SHOULD** include `prov:wasGeneratedAtTime`
+  - **MAY** include its exact value if possible using `prov:value`
+
+If previous distributions remain accessible (e.g., versioned history), no special invalidation is required.
+However, if a new distribution fully replaces a previous distribution (i.e., the previous version is no longer available):
+  - The execution **MUST** invalidate the old distribution using `prov:invalidated`
+  - The invalidated distribution **MUST** reference the execution using `prov:wasInvalidatedBy`
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix tfc: <http://aggregator.example.org/transformations#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:execution-1
+  a fno:Execution ;
+  a prov:Activity ;
+  fno:executes :query-view ;
+  :query "SELECT * WHERE { ?s ?p ?o }" ;
+  :sources (
+    "http://example.org/source1",
+    "http://example.org/source2",
+  ) ;
+  :result :new-distribution ;
+  prov:associatedWith :query-view-service ;
+  prov:quallifiedAssociation [
+    a prov:Association ;
+    prov:agent :query-view-service ;
+    prov:hadPlan :query-view .
+  ] ;
+  prov:used :query-view ;
+  prov:invalidated :old-distribution ;
+  prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
+  prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:new-distribution ;
+  a prov:Entity ;
+  prov:wasGeneratedBy :execution-1 ;
+  prov:wasGeneratedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:old-distribution ;
+  a prov:Entity ;
+  prov:wasGeneratedBy :execution-0 ;
+  prov:wasGeneratedAtTime "2025-01-01T12:01:00Z"^^xsd:dateTime ;
+  prov:wasInvalidated :execution-1 .
+```
+</div>
+
+Further requirements on how an Aggregator Server **MUST** expose provenance data are specified in [[#aggregator-provenance-management]].
 
 
 
@@ -362,7 +708,7 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
     "application/x-www-form-urlencoded"
   ],
   "version": "1.0.0",
-  "client_identifier": "https://aggregator.example/client.json",
+  "client_identifier": "https://aggregator.example/client.jsonld",
   "transformation_catalog": "https://aggregator.example/transformations"
 }
 ```
@@ -380,65 +726,180 @@ the same Aggregator Server (depending on the implementation). Adding this proper
 implementation to restrict which clients may create aggregators on the server.
 
 Server-level Transformation Catalog {#server-level-transformation-catalog}
---------------------------------------------------------------
+--------------------------------------------------------------------------
 
-This endpoint returns a RDF document describing the transformations supported by the aggregator server on a server level. 
-Servers MAY publish this catalog at any deployment-specific URL; the Aggregator Server Description MUST advertise it via the 
-`transformation_catalog` field. This RDF document SHOULD be exposed using content negotiation based on HTTP. The 
-transformations MUST be described using FnO [[!FNO]]. The document MAY be protected using an OIDC ID Token.
+The Transformation Catalog is an RDF document describing all aggregator transformations ([[#aggregator-data-model]]) 
+that can be deployed as services by the aggregator server.
 
-The types (`fno:type`) of the parameters and outputs of the functions SHOULD be a class (`owl:Class`) that is a subclass 
-(`rdfs:subClassOf`) of a Data Catalog ([[!Data-Catalog]]) entity like `dcat:DataService`. This entity SHOULD then be further 
-described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
-Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend ([[!FOAF]]) and Dublin Core 
-Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Composition`) MAY also be described in this document.
-Finally, the catalog MAY also include external entities using `rdfs:seeAlso` to link to external functions, pipelines or 
-Data Catalog entities.
+### Catalog Publication ###
 
-The specificity of the transformation is up to the server owner. The functions MAY have a link to an implementation with 
-`fno:Implementation` if needed.
+  - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
+
+  - The URL **MUST** be advertised in the Aggregator Server Description via the transformation_catalog field.
+
+  - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
+
+  - Access **MAY** be protected using an OpenID Connect (OIDC) ID Token for authentication.
+
+  - A catalog **MAY** reference resources defined in other catalogs using `rdfs:seeAlso`.
+
+### Linking Transformations to deployable artifacts ###
+
+The aggregator server is responsible for mapping each `aggr:ServiceImplementation` to a deployable artifact (e.g., an OCI image). 
+This mapping can be:
+  - **Internal** – stored inside the server for deployment purposes
+  - **Cataloged** – included in the transformation catalog as an RDF Resource using `prov:SpecializationOf`
+
+NOTE: Server capabilities for resolving `aggr:ServiceImplementation` specializations to create deployable units are 
+implementation-specific and are not defined by this specification. Such details should be included in the 
+aggregator server’s documentation.
+
+### Example ###
+
+This example illustrates a catalog containing a local transformation and an external reference, 
+linking a `aggr:ServiceImplementation` to an  OCI image:
 
 <div class="example">
 ```turtle
+@base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix trans: <http://aggregator.example.org/transformations#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
 @prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
-    aggr:hasTransformation trans:QuerySources .
-    aggr:hasTransformation <https://external.example.org/AggregateSources> .
-    rdfs:seeAlso <https://external.example.org/AggregateSources> .
+    aggr:hasMapping <QueryViewMapping> .
+    aggr:hasMapping <ExternalTransformationMapping> ;
+    rdfs:seeAlso <http://example.org/external/ExternalTransformation>,
+      <http://example.org/external/CsvServiceImplementation>,
+      <http://example.org/registry/example-image:latest> .
 
-trans:QuerySources
+
+<QueryView>
     a                   fno:Function ;
-    fno:name            "A Aggregator Service that combines a list of sources"^^xsd:string ;
-    fno:expects         ( trans:Sources trans:Query ) ;
-    fno:returns         ( trans:Result ) .
+    fno:name            "An Aggregator Service that performs a Query on a list of sources"^^xsd:string ;
+    fno:expects         ( <Sources> <Query> ) ;
+    fno:returns         ( <Result> ) .
 
-trans:Sources
+<Sources>
     a             fno:Parameter ;
-    fno:predicate trans:sources ;
-    fno:type      rdf:List ;
+    fno:predicate <sources> ;
+    fno:type      xsd:anyURI ;
+    fno:list      "true"^^xsd:boolean ;
     fno:required  "true"^^xsd:boolean .
 
-trans:Query
+<Query>
     a             fno:Parameter ;
-    fno:predicate trans:query ;
+    fno:predicate <query> ;
     fno:type      xsd:string ;
     fno:required  "true"^^xsd:boolean .
 
-trans:Result
+<Result>
     a             fno:Output ;
-    fno:predicate trans:result ;
-    fno:type      trans:SPARQLProtocol .
+    fno:predicate <result> ;
 
-trans:SPARQLProtocol
-    a owl:Class ;
-    rdfs:subClassOf dcat:DataService ;
-    dcterms:conformsTo <https://www.w3.org/TR/sparql12-protocol/> .
+<SPARQLServiceImplementation>
+    a                 aggr:ServiceImplementation ;
+    aggr:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
+    prov:specializationOf <http://example.org/registry/example-image:latest> .
+
+<QueryViewMapping>
+    a                  fno:Mapping ;
+    fno:function       <QueryView> ;
+    fno:implementation 
+      <SPARQLServiceImplementation>,
+      <http://example.org/external/CsvTableImplementation> .
+
+<ExternalTransformationMapping>
+  a fno:Mapping ;
+  fno:function <http://example.org/external/ExternalTransformation> ;
+  fno:implementation <SPARQLServiceImplementation> .
+```
+</div>
+
+### Compositions ###
+
+A Transformation Catalog can also include `fno:Composition` which detail a set of services where there inputs and outputs are 
+linked together to create a pipeline. More on how to request a pipeline deployment in 
+
+<div class="example">
+```turtle
+@base <http://aggregator.example.org/transformations#> .
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<> a aggr:TransformationCollection ;
+    dct:title "Aggregator transformations" ;
+    aggr:hasMapping <WLP-QueryViewMapping> ;
+    aggr:hasMapping <WLP-WeightLossMapping> ;
+    aggr:hasComposition <WeightLossPipeline> .
+
+<WeightLossPipeline>
+  a fno:Function ;
+  fno:expects ( <Query> <Sources> ) ;
+  fno:returns ( <WeightLossOutput> ) ;
+  fno:composition [
+    fnoc:composedOf [
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:functionParameter <Query> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:functionParameter <Query> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:functionParameter <Sources> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:functionParameter <Sources> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:functionOutput <Result> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WLP-WeightLossGraph> ;
+        fnoc:functionParameter <Dataset> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WLP-WeightLossGraph> ;
+        fnoc:functionParameter <WeightLossOutput> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:functionParameter <WeightLossOutput> .
+      ] .
+    ] .
+  ] .
+
+<WLP-QueryViewMapping>
+  a fno:Mapping ;
+  fno:function <WLP-QueryView> ;
+  fno:implementation <SPARQLServiceImplementation> .
+
+<WLP-WeightLossMapping>
+  a fno:Mapping ;
+  fno:function <WLP-WeightLossGraph> ;
+  fno:implementation <CsvTableImplementation> .
+
+<WLP-QueryView>
+  fnoc:applies <QueryView> .
+
+<WLP-WeightLossGraph>
+  fnoc:applies <WeightLossGraph> .
 ```
 </div>
 
@@ -1674,321 +2135,416 @@ endpoint MUST at least return a list of transformations that are directly availa
 
 
 Aggregator Service Management {#aggregator-service-management}
-==================================================================
+==============================================================
 
-The Aggregator Service Management endpoint gives an authenticated client a complete view on the Aggregator Services.
-It lets an authenticated client see all the running Aggregator Services and create, inspect, and remove individual 
-Aggregator Services. Implementations MAY use different URLs as long as the Aggregator Description document (described in
-[[#aggregator-description]]) links to the concrete entry points. All described endpoints in this section MUST be protected 
-by the authentication and authorization mechanisms defined in [[#aggregator-security-model]].
+This section describes how users manage services deployed on an aggregator.
 
-Service Collection Endpoint {#service-collection}
----------------------------------------------------------
+Service management is performed through the service collection endpoint ([[#service-collection-endpoint]]), 
+which provides access to the set of deployed services.
 
-ISSUE: Do we define the exact scopes here?
+Each deployed service **MUST** expose its own service endpoint ([[#service-endpoint]]), which allows clients to:
+    - Inspect the service metadata (e.g. status)
+    - Discover its capabilities
+    - Delete the service
 
-This endpoint allows to create and fetch the collection of configured Aggregator Services. The location of this resource is 
-advertised in the Aggregator Description ([[#aggregator-description]]) via the `service_collection_endpoint` field.
-Clients MUST treat that advertised URL as authoritative and MUST NOT assume a fixed path (the examples in this section use 
-`/services` purely for illustration). The Aggregator MUST register this UMA resource with the Authorization Server and 
-advertise the `read` and `create` scopes so that clients can both inspect and add members.
+All endpoints described in this section **MUST** be protected using the authentication and authorization mechanisms defined in 
+[[#aggregator-security-model]].
+
+Service Collection Endpoint {#service-collection-endpoint}
+----------------------------------------------------------
+
+This endpoint supports management of aggregator services. It enables clients to:
+    - Discover all deployed services and the transformations they implement
+    - Create new services
+
+The location of this endpoint **MUST** be advertised in the Aggregator Description ([[#aggregator-description]]) 
+using the `service_collection_endpoint` field. Clients **MUST** treat the advertised URL as authoritative and **MUST NOT**
+assume a fixed path. Examples shown in this section use `/agg1/services` for illustation purposes only.
+
+The Aggregator **MUST** register this endpoint as an UMA resource with the Authorization Server and **MUST** advertise 
+atleast the `read` and `create` scopes.
+
+This endpoint **SHOULD** support content-negotiation as defined in [[RFC9110]], and advertise supported content types for 
+`POST` requests via the `Accept-Post` header defined in [[!LDP]].
 
 : `HEAD`
-:: If the Service Collection exists, the server MUST respond with `200 OK`, `Content-Type: application/json`, and an `ETag` 
-    header whose value changes whenever a service is added or removed. The `ETag` allows clients to detect collection 
-    changes without re-downloading it. This request MUST be authorized with a `read` scope on the Service Collection 
-    resource.
+:: Enables clients to detect changes to the collection without retrieving the full representation. 
+    This request **MUST** be authorized with a `read` scope on the Service Collection resource.
+
+    The server **MUST** respond with:
+        - `200 OK`
+        - An `ETag` header whose value changes whenever a service is added to or removed from the collection.
 
 : `GET`
-:: Returns the list of Aggregator Service resources ([[#service-resource]]). The server MUST set the same `ETag` value as 
-    the `HEAD` response. This request MUST be authorized with a `read` scope on the Service Collection resource. The server 
-    MUST support JSON and MAY additionally expose semantically annotated RDF representations (for example JSON-LD or Turtle) 
-    using HTTP content negotiation based on [[RFC9110]]. The payload MUST include at least the following fields:
+:: Returns the service collection RDF Document ([[#service-collection]]). 
+    This request **MUST** be authorized with a `read` scope on the Service Collection endpoint.
 
-    : **services** (REQUIRED):
-    :: The value is a JSON array of strings where each member MUST be an absolute URL of a Service Resource that can be 
-        dereferenced by the client. In semantically annotated representations, this member maps to the predicate 
-        `aggr:service` ([[#aggr-service-property]]).
-    : **id** (OPTIONAL):
-    :: The value is a string containing the absolute URL that identifies this Service Collection. This MUST be the same URL 
-        as the request target. In semantically annotated representations, this is the RDF subject (i.e., `@id`) of the
-        `aggr:ServiceCollection` resource ([[#aggr-service-collection-class]]).
-
-    <div class="example">
-    ```json
-    {
-      "@context": {
-        "id": "@id",
-        "services": {
-          "@id": "aggr:service",
-          "@container": "@set",
-          "@type": "@id"
-        },
-        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#"
-      },
-      "id": "https://aggregator.example.org/services",
-      "services": [
-        "https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5",
-        "https://aggregator.example.org/services/42"
-      ]
-    }
-    ```
-    </div>
+    The server **MUST** respond with:
+        - `200 OK`
+        - The same `ETag` value that would be returned in response to a `HEAD` request
+    
+    The server **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
 
 : `POST`
-:: This request allows a client to create a new Aggregator Service. The request MUST be authorized with a `create` scope 
-    on the Service Collection resource. The request body MUST contain an `fno:Execution` that references a transformation 
-    from the public or instance-level transformation catalog, unless it references a client-provided `fno:Composition` 
-    handled as described below (implementations MAY decide on the exact semantic media type using HTTP content negotiation 
-    based on [[RFC9110]]). This execution description MUST conform to the FnO specification [[!FNO]] and MUST include 
-    exactly one `fno:executes` with the IRI of the function to execute. The client SHOULD either use a blank node or an IRI 
-    as the subject of the `fno:Execution`, using an IRI allows the client to suggest a specific identifier for the created 
-    service. Servers MAY honor this suggested identifier; if they do, the created service URL MUST equal the suggested IRI.
-    Servers that do not honor client-suggested identifiers MUST ignore the suggestion and generate their own identifier.
-    If `fno:executes` references a `fno:Composition` provided by the client, the server MUST either reject the
-    request with `400 Bad Request` or accept it and publish the composition in the instance-level transformation catalog.
-    The server SHOULD then also add a `rdfs:seeAlso` to the this `fno:Composition`. On success, the server MUST:
-      1. Persist the new service and change the collection `ETag`.
-      2. Register a new UMA resource for the created Service Resource URL (e.g., `/services/{service_id}`) with the `read` 
-        and `delete` scopes so the creator—or any other party with an RPT containing those scopes—can manage the service.
-      3. Return `201 Created`, with the Aggregator Service resource representation (as defined in [[#service-resource]]) 
-        in the response body.
+:: Deploys Aggregator Service(s) based on a service request. (see [[#service-request]])
+    
+: `OPTION`
+:: Advertise:
+    - the supported RDF serializations for the Service Collection ( as defined in [[RFC9110]]).
+    - the supported content types for POST requests via the `Accept-Post` header defined in [[!LDP]].
 
-    If the request body is invalid the server MUST respond with `400 Bad Request`. Failures while instantiating
-    the service MUST result in `500 Internal Server Error`. If the server honors a suggested identifier and the suggested 
-    identifier is not available, the server MUST respond with `409 Conflict`.
+Service Request {#service-request}
+----------------------------------
 
-Service Resource {#service-resource}
--------------------------------------------------------------------------------
+### Deploying services ### {#deploying-services}
 
-Operations on the service resource MUST require the `read` scope for `HEAD` and `GET` requests and the `delete` scope for 
-`DELETE` requests. The service resource URL MUST be one of the URLs returned by the collection resource; a request for a 
-non-existent service MUST return `404 Not Found`, while malformed service URLs MUST yield `400 Bad Request`. In 
-semantically annotated representations, the service resource MUST also be typed as `fno:Execution`.
+The request **MUST** be authorized with the `create` scope on the Service Collection resource.
 
-: `HEAD`
-:: If the Service Resource exists, the server MUST respond with `200 OK` and `ETag`, and `Content-Type` headers
-    whose value MUST change whenever the service state changes.
+The request **MUST** be an RDF Document containing `aggr:Service` descriptions that:
+    - declare `aggr:performs` with an `fno:AppliedFunction` that:
+        - **MUST** apply a transformation from the server-level or instance-level transformation catalog.
+        - bounds a value to **AT LEAST** each required parameter.
+        - **MUST** be a blank node. Any IRI value **MUST** be ignored.
+    - declare `aggr:implements` with an `aggr:ServiceImplementation` that:
+        - If the performed transformation only has one mapped `aggr:ServiceImplementation` the aggregator
+            **MAY** treat this link as optional.
+    - **MAY** specify a URI indicating the requested service endpoint location.
+        - The Aggregator **MAY** ignore the requested URI and assign its own.
+        - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
+        - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
 
-: `GET`
-:: If no `Accept` header was set by the user, a JSON representation of the service MUST be returned with `200 OK` and 
-    with a `Content-Type: application/json`. The user MAY request semantic representations using HTTP content negotiation 
-    based on [[RFC9110]]. The representation MUST include at least the following fields:
+<div class="example">
+```http
+POST http://aggregator.example.org/agg1/services HTTP/1.1
+Host: aggregator.example.org
+Content-Type: application/ld+json
 
-    : **id** (REQUIRED):
-    :: The value is a string containing the absolute URL of this Service Resource. In semantically annotated 
-        representations, this is the RDF subject (i.e., `@id`) of the `aggr:Service` class ([[#aggr-service-class]]).
+{
+    "@context": {
+        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
+        "fno": "https://w3id.org/function/ontology#",
+        "fnoc": "https://w3id.org/function/vocabulary/composition#",
+        "prov": "http://www.w3.org/ns/prov#"
+    },
+    "@type": "aggr:Service",
+    "@id": "http://aggregator.example.org/agg1/query-service",
+    "aggr:performs": {
+        "@type": "fno:AppliedFunction",
+        "fnoc:applies": {
+            "@id": "http://aggregator.example.org/transformations#QueryView"
+        },
+        "fnoc:parameterBindings": [
+            {
+                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Query",
+                "fnoc:boundToTerm": "SELECT * WHERE { ?s ?p ?o }"
+            },
+            {
+                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Sources",
+                "fnoc:boundToTerm": [
+                    "http://example.com/source1",
+                    "http://example.com/source2"
+                ]
+            }
+        ]
+    },
+    "aggr:implements": {
+        "@id": "http://aggregator.example.org/transformations#SPARQLServiceImplementation"
+    }
+}
+```
+</div>
 
-    : **type** (REQUIRED):
-    :: The value is a array of strings indicating the RDF types of this service. This array MUST include `aggr:Service` and 
-        `fno:Execution`. In semantically annotated representations, this represents the type (`@type` in JSON-LD) of the 
-        service.
+Upon successful processing of a valid request, the server **MUST**:
+    1. Add the applied function to the instance-level Transformation Catalog if no applied function
+        with the same parameter bindings exists.
+    2. Deploy the new service on the aggregator and expose its service endpoint [[#service-endpoint]].
+        - `aggr:performs` **MUST** link to the fno:AppliedFunction IRI that either:
+            - Was created as part of the service deployment request, or
+            - Already exists in the Transformation Catalog.
+    3. Update the Service Collection and its associated `ETag`.
+    4. Register the service endpoint as a UMA resource at the Authorization Server, 
+        advertising at least the `read` and `delete` scopes.
+    5. Register the service output endpoint as a UMA resource, advertising at least the `read` scope.
+    6. Respond with:
+        - `201 Created`
+        - The service description (as defined in [[#aggregator-service]]) in the response body, and
+        - A `Location` header identifying the Service Endpoint URI.
 
-    : **status** (REQUIRED):
-    :: The value is a string indicating the current status of the service (e.g., `"starting"`, `"running"`, `"stopped"`, or 
-        `"errored"`). In semantically annotated representations, this member maps to the predicate `aggr:status`
-        ([[#aggr-status-property]]).
+If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
+referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`.
 
-    : **status_detail** (OPTIONAL):
-    :: The value is a string providing a human-readable detail about the current status (for example, a stop reason or 
-        error message). When `status` is `"errored"`, the server SHOULD include this field. In semantically annotated 
-        representations, this member maps to the predicate `aggr:statusDetail` ([[#aggr-status-detail-property]]).
+If the request is valid but the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
 
-    : **created_at** (REQUIRED):
-    :: The value is a string timestamp (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]). In 
-        semantically annotated representations, this member maps to the predicate `aggr:createdAt` 
-        ([[#aggr-created-at-property]]).
+### Re-using services ### {#re-using-services}
 
-    : **executes** (REQUIRED):
-    :: The value is a string containing the IRI of the FnO function being executed. In semantically annotated 
-        representations, this member maps to the predicate `fno:executes`.
+Services can be mapped to other service outputs using `fnoc:boundTo` instead of `fnoc:boundToTerm`. If there is no valid service running 
+that performs the transformation, the server **MUST** respond with `400 Bad Request`.
 
-    The representation MUST also include any required input and output parameters for the executed FnO function, using the 
-    FnO parameters and outputs predicates defined in the function's FnO description. The representation MAY include 
-    additional fields (e.g., `fno:name`, `fno:solves`, etc.) as needed. The specification does not mandate a specific
-    serialization for these additional fields; clients MUST be prepared to handle arbitrary RDF properties in semantically 
-    annotated representations.
+<div class="example">
+```http
+POST http://aggregator.example.org/agg1/services HTTP/1.1
+Host: aggregator.example.org
+Content-Type: application/ld+json
 
-: `DELETE`
-:: Stops and removes the service. The Aggregator MUST stop the running transformation, delete the persisted service entry, 
-    change the collection `ETag`, unregister the service’s UMA resource, and respond with `204 No Content`. Clients that 
-    held the service identifier MUST treat it as invalid after receiving the success response.
+{
+    "@context": {
+        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
+        "fno": "https://w3id.org/function/ontology#",
+        "fnoc": "https://w3id.org/function/vocabulary/composition#",
+        "prov": "http://www.w3.org/ns/prov#"
+    },
+    "@type": "aggr:Service",
+    "@id": "http://aggregator.example.org/agg1/query-service",
+    "aggr:performs": {
+        "@type": "fno:AppliedFunction",
+        "fnoc:applies": {
+            "@id": "http://aggregator.example.org/transformations#QueryView"
+        },
+        "fnoc:parameterBindings": [
+            {
+                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Query",
+                "fnoc:boundToTerm": "SELECT * WHERE { ?s ?p ?o }"
+            },
+            {
+                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Sources",
+                "fnoc:boundTo": {
+                    "fnoc:constituentFunction": "http://aggregator.example.org/transformations#FetchSources",
+                    "fnoc:functionOutput": "http://aggregator.example.org/transformations#FetchedSources",
+                }
+            }
+        ]
+    },
+    "aggr:implements": {
+        "@id": "http://aggregator.example.org/transformations#SPARQLServiceImplementation"
+    }
+}
+```
+</div>
 
-Service Management Flows (Non-normative) {#service-management-flows}
+ISSUE: If multiple services perform the transformation with a different service implementation, what service must be chosen?
+ISSUE: What if you want to connect to a specific service?
+ISSUE: What if you want to connect to a service running on an other aggregator?
+
+### Deploying compositions ### {#deploying-compositions}
+
+ISSUE: How to deploy compositions?
+ISSUE: How does an aggregator know what service implementation to choose for each service inside the composition?
+ISSUE: Create one service that represents the whole composition? Or a new service for each component?
+
+<div class="example">
+```http
+POST http://aggregator.example.org/agg1/services HTTP/1.1
+Host: aggregator.example.org
+Content-Type: application/ld+json
+
+{
+    "@context": {
+        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
+        "fno": "https://w3id.org/function/ontology#",
+        "fnoc": "https://w3id.org/function/vocabulary/composition#",
+        "prov": "http://www.w3.org/ns/prov#"
+    },
+    "@type": "aggr:Service",
+    "@id": "http://aggregator.example.org/agg1/query-service",
+    "aggr:performs": {
+        "@type": "fno:AppliedFunction",
+        "fnoc:applies": {
+            "@id": "http://aggregator.example.org/transformations#WeightLossPipeline"
+        },
+        "fnoc:parameterBindings": [
+            {
+                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Query",
+                "fnoc:boundToTerm": "SELECT * WHERE { ?s ?p ?o }"
+            },
+            {
+                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Sources",
+                "fnoc:boundToTerm": [
+                    "http://example.com/source1",
+                    "http://example.com/source2"
+                ]
+            }
+        ]
+    }
+}
+```
+</div>
+
+Service Collection {#service-collection}
 ----------------------------------------
 
-This section gives some examples on how a client can create, find, use and delete services on the Aggregator. This section 
-is non-normative, and is only meant to illustrate the usage of the various endpoints defined in this specification. This 
-section assumes the client has already created an Aggregator using the Aggregator Registration API 
-([[#aggregator-registration]]) and is able to authenticate using the mechanisms defined in [[#aggregator-security-model]].
+The Service Collection is an RDF document including all deployed service URIs.
 
-### Creating a Service ### {#creating-a-service}
+### Collection Publication ###
 
-To create a new Aggregator Service, a client starts by doing a `POST` request to the Service Collection endpoint (i.e., the 
-URL advertised via `service_collection_endpoint` in the Aggregator Description; this section uses `/services` as an 
-example). The body of the post is an execution of an FnO function [[!FNO]].
+    - Aggregator servers **MAY** publish the Service Collection at any deployment-specific URL.
 
-<div class="example">
-```http
-POST /services HTTP/1.1
-Host: aggregator.example.org
-Content-Type: text/turtle
+    - The collection **MUST** be retrievable via `HTTP GET` at the URL advertised in the Aggregator Description 
+        through the `service_collection_endpoint` field.
 
-@prefix trans: <http://aggregator.example.org/transformations#> .
-@prefix fno: <https://w3id.org/function/ontology#> .
+    - The collection **SHOULD** support HTTP content negotiation, 
+        allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
 
-_:execution a fno:Execution ;
-    fno:executes trans:QuerySources ;
-    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
-    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
-```
-</div>
+### Grouping Services ### {#grouping-services}
 
-The Aggregator fetches a ticket from the Authorization Server with the resource_id `1a2b-creation-endpoint` it got during 
-asset creation (see [[!A4DS]]).
+Services that implement the same transformation with identical input bindings **MUST** be mapped to the same `fno:AppliedFunction`
+within the collection. For example, two services may maintain the same query over the same sources, 
+while exposing the result through different interfaces (e.g., a SPARQL endpoint or an event stream).
+
+This achieves the following:
+    - Multiple services can share the same applied transformation.
+    - Clients can discover services based on:
+        - The transformation being executed
+        - The bound input parameters
+    - Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.
+
+### Example
 
 <div class="example">
-```http
-HTTP/1.1 /ticket
-Host: as.example.org
-Content-Type: application/json
-{
-    "resource_id": "1a2b-creation-endpoint",
-    "resource_scopes": ["https://example.org/modes/create"]
-}
-```
-</div>
-
-This returns a ticket that represents the permissions needed for this request to the RS (the Aggregator in this case).
-
-<div class="example">
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-{
-    "ticket": "service-creation-ticket-xyz"
-}
-```
-</div>
-
-This ticket is then returned to the client in a `401 Unauthorized` response.
-
-<div class="example">
-```http
-HTTP/1.1 401 Unauthorized
-WWW-Authenticate: UMA as_uri="https://as.example.org", ticket="service-creation-ticket-xyz"
-```
-</div>
-
-The client then requests an RPT from the AS using the ticket, as defined in [[#aggregator-security-model]].
-The original request can then be retried, this time including the RPT in the `Authorization` header.
-
-<div class="example">
-```http
-POST /services HTTP/1.1
-Host: aggregator.example.org
-Authorization: Bearer ey...
-Content-Type: text/turtle
-
-@prefix trans: <http://aggregator.example.org/transformations#> .
-@prefix fno: <https://w3id.org/function/ontology#> .
-
-_:execution a fno:Execution ;
-    fno:executes trans:QuerySources ;
-    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
-    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) .
-```
-</div>
-
-If the request is valid, the Aggregator will create a new service, register the appropriate UMA resource, and
-return a `201 Created` response with the service representation in the body.
-
-<div class="example">
-```http
-HTTP/1.1 201 Created
-Content-Type: text/turtle
-
+```turtle
+@base <http://aggregator.example.com/agg1/services#>
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix trans: <http://aggregator.example.org/transformations#> .
+@prefix tfc: <http://aggregator.example.org/transformations#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5>
-    a aggr:Service ;
-    a fno:Execution ;
-    aggr:status "running" ;
-    aggr:statusDetail "" ;
-    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    fno:executes trans:QuerySources ;
-    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
-    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
-    trans:result <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result> .
-
-<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result>
-    a trans:SPARQLProtocol ;
-    dcat:endpointURL <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> .
+<>
+    a aggr:ServiceCollection ;
+    aggr:service (
+        <http://aggregator.example.com/agg1/my-sparql-service>
+        <http://aggregator.example.com/agg1/my-events-service>
+    )
 ```
 </div>
 
-### Discovering Services ### {#discovering-services}
+Service Endpoint {#service-endpoint}
+------------------------------------
 
-To discover the services currently registered on the Aggregator, a client can do a `GET` request to the
-Service Collection endpoint (this section uses `/services` as an example).
-After authenticating using the mechanisms defined in [[#aggregator-security-model]], the Aggregator will
-return a list with the registered service from [[#creating-a-service]].
+The aggregator **MUST** expose a Service Endpoint for each deployed service.
+
+This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
+
+: GET
+:: Retrieves the service description (as defined in [[#aggregator-service]]).
+    - The request **MUST** be authorized with the read `scope` on the service resource.
+    - The server **MUST** respond with `200 OK`.
+
+: DELETE
+:: Deletes a running Aggregator Service.
+    - The request **MUST** be authorized with the `delete` scope on the service resources.
+    - Upon successful processing, the server **MUST**:
+        1. Stop and remove the running service from the aggregator.
+        2. Update the Service Collection and its associated `ETag`.
+        3. Delete the corresponding UMA resources at the Authorization Server.
+        4. Respond with either `200 OK` or `204 No Content`.
+    - If the service does not exist, the server **SHOULD** respond with `404 Not Found`.
+
+
+
+Aggregator Provenance Managment {#aggregator-provenance-management}
+===================================================================
+
+This section describes how an aggregator should store, expose and maintain the provenance metadata detailing
+service executions.
+
+Service Provenance Log {#provenance-log}
+----------------------------------------
+
+A services' provenance log is an RDF Document referencing all executions performed by the service along with
+all (invalidated) distributions generated as a result. The actual execution and distribution resources **MAY** be included
+in this document or hosted on their own endpoint in a seperate RDF Document.
+
+All endpoints exposing any provenance informations **MUST** be registered as an UMA resource with the Authorization Server and **MUST**
+advertise atleast the `read` scope.
+
+### Log Publication ###
+
+Aggregator servers **MAY** publish a services' Provenance Log at any deployment-specific URL using the `GET` method:
+
+    - The endpoint **MUST** be advertised in the Service Description through the `aggr:provenanceLog` predicate.
+
+    - The endpoint **SHOULD** support HTTP content negotiation, 
+        allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
+
+### Example ###
 
 <div class="example">
-```http
-HTTP/1.1 200 OK
-Content-Type: text/turtle
-
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-<> a aggr:ServiceCollection ;
-    aggr:service <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5> .
-```
-</div>
-
-Dereferencing this URL will return the full service representation.
-
-<div class="example">
-```http
-HTTP/1.1 201 Created
-Content-Type: text/turtle
-
+```turtle
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix trans: <http://aggregator.example.org/transformations#> .
+@prefix tfc: <http://aggregator.example.org/transformations#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5>
-    a aggr:Service ;
-    a fno:Execution ;
-    aggr:status "starting" ;
-    aggr:statusDetail "" ;
-    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    fno:executes trans:QuerySources ;
-    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
-    trans:sources ( <http://example.org/source/1> <http://example.org/source/2> ) ;
-    trans:result <https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result> .
+<>
+  a aggr:provenanceLog ;
+  aggr:execution :execution .
 
-<https://aggregator.example.org/services/410b093c-04b3-4fac-87be-4d393f40b2e5#result>
-    a trans:SPARQLProtocol ;
-    dcat:endpointURL <https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/> .
+:execution
+  a fno:Execution ;
+  a prov:Activity ;
+  fno:executes :query-view ;
+  :query "SELECT * WHERE { ?s ?p ?o }" ;
+  :sources (
+    "http://example.org/source1",
+    "http://example.org/source2",
+  ) ;
+  :result :distribution-1 ;
+  prov:associatedWith :example-service ;
+  prov:quallifiedAssociation [
+    a prov:Association ;
+    prov:agent :example-service ;
+    prov:hadPlan :query-view .
+  ] ;
+  prov:used :query-view ;
+  prov:invalidated :distribution-0 ;
+  prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
+  prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:distribution-1 ;
+  a prov:Entity ;
+  prov:wasGeneratedBy :execution ;
+  prov:wasGeneratedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:distribution-0 ;
+  a prov:Entity ;
+  prov:wasGeneratedBy :execution ;
+  prov:wasGeneratedAtTime "2025-01-01T12:01:00Z"^^xsd:dateTime ;
+  prov:wasInvalidated :execution .
 ```
 </div>
 
-### Using a Simple Service ### {#using-a-service}
+### Periodic vs. Continous updates ###
 
-After discovering the service, the client can use the transformation catalog to find out what `trans:QuerySources` does,
-and how to use the output. In this example, the client sees that the function produces an output parameter `trans:result` 
-that is a `trans:SPARQLProtocol` conforming to the SPARQL protocol with an endpointURL at 
-`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` where the query results can be accessed. The client 
-can then do a `GET` request to that URL, again authenticating using the mechanisms defined in 
-[[#aggregator-security-model]]. This time the client might need to gather multiple access claims from the AS's of 
-`http://example.org/source/1` and `http://example.org/source/2`. After receiving an access token from the Aggregator 
-Authorization Server, the client can redo the `GET` request to 
-`https://aggregator.example.org/410b093c-04b3-4fac-87be-4d393f40b2e5/` to get the query results.
+When a service executes a transformation periodically (e.g., daily batch processing), a new activity should be created
+each time and added to its provenance log.
+
+For services that continuously update their data (e.g., event-driven or streaming updates):
+  - The transformation activity **SHOULD NOT** include `prov:endedAtTime`
+  - All newly generated distributions **SHOULD** reference the same ongoing `prov:Activity`
+
+Creating a new `prov:Entity` for every minor change may lead to excessive provenance granularity and operational overhead. 
+Therefore, an Aggregator Server **SHOULD** determine an appropriate provenance granularity level based on its use case, 
+performance constraints, and retention policy.
+
+The server **MAY** choose, for example, to:
+
+  - Apply time-based grouping (e.g., hourly or daily snapshots)
+
+  - Only materialize provenance for externally visible distributions (e.g., when used by another service provenance log)
+
+The chosen strategy **SHOULD** be documented and consistently applied to ensure predictable provenance semantics.
+
+### Connecting Provenance ###
+
+When a service performs a transformation that consumes the output of one or more other services, 
+the resulting output distribution **MUST** reference each used input distribution using `prov:derivedFrom`.
+Collectively, these relationships form a provenance tree representing the interconnected executions performed by aggregator services that
+led to the creation of a service output.
+
+### Versioned History ###
+
+An aggregator **MAY** choose to keep previous distributions available. A seperate endpoint for each distribution access URL **MUST** be made.
+These distributions **MAY** also be included in the service descriptions. Every new distribution access URL MUST be 
+registered as a seperate UMA Resource.
 
 
 
@@ -2009,13 +2565,19 @@ Describes an Aggregator Instance (its base URL is the Aggregator Description res
 **subClassOf:** [schema:Service](https://schema.org/Service)<br>
 **subClassOf:** [foaf:Agent](https://xmlns.com/foaf/0.1/Agent)
 
+### aggr:ServiceImplementation ### {#aggr-service-implementation}
+Represents an implementation that can run inside an aggregator
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+**subClassOf:** [fno:Implementation](https://w3id.org/function/spec/#Implementation)
+
 ### aggr:Service ### {#aggr-service-class}
 Represents a configured Aggregator pipeline that can be created, inspected, and removed via the Service
 Management API (e.g., `/config/services/{service_id}`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity),
-[fno:Execution](https://w3id.org/function/spec/#Execution)
+**subClassOf:** [prov:SoftwareAgent](https://www.w3.org/TR/prov-o/#SoftwareAgent),
+[dcat:DataService](https://www.w3.org/TR/vocab-dcat-3/#DataService)
 
 ### aggr:AggregatorServer ### {#aggr-aggregator-server-class}
 Describes the Aggregator Server Description document that advertises discovery metadata.
@@ -2033,6 +2595,13 @@ Describes the service collection resource (e.g., `/config/services`).
 ### aggr:TransformationCollection ### {#aggr-transformation-collection-class}
 Describes a transformation catalog resource that lists the transformations supported by an Aggregator Server
 (and optionally instance-specific transformations).
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+**subClassOf:** [schema:Collection](https://schema.org/Collection),
+[hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
+
+### aggr:ProvenanceLog ### {#aggr-provenance-log-class}
+Describes the provenance of generated entities and performed executions of a running Aggregator Service
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
@@ -2117,8 +2686,15 @@ Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 **domain:** `aggr:ServiceCollection`<br>
 **range:** `aggr:Service`
 
-### aggr:hasTransformation ### {#aggr-has-transformation-property}
-Links an `aggr:TransformationCollection` to the transformations it advertises.
+### aggr:hasMapping ### {#aggr-has-mapping-property}
+Links an `aggr:TransformationCollection` to the transformation mappings it advertises.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:TransformationCollection`<br>
+**range:** [fno:Mapping](https://w3id.org/function/spec/#Mapping)
+
+### aggr:hasComposition ### {#aggr-has-composition-property}
+Links an `aggr:TransformationCollection` to the transformation mappings it advertises.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:TransformationCollection`<br>
@@ -2137,6 +2713,42 @@ Provides a human-readable explanation of the current `aggr:Service` status (for 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
+
+### aggr:performs ### {#aggr-performs-property}
+Provides the applied transformation an `aggr:Service` performs.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:Service`<br>
+**range:** [fno:Function](https://w3id.org/function/spec/#Function),
+  [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
+
+### aggr:implements ### {#aggr-implements-property}
+Provides the service implementation an `aggr:Service` uses to execute its transformation.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:Service`<br>
+**range:** `aggr:ServiceImplementation`
+
+### aggr:provenanceLog ### {#aggr-provlog-property}
+Provides the endpoint to `aggr:Service` its provenance log.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:Service`<br>
+**range:** `aggr:ProvenanceLog`
+
+### aggr:provenanceLog ### {#aggr-provlog-property}
+Provides the endpoint to `aggr:Service` its provenance log.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:Service`<br>
+**range:** `aggr:ProvenanceLog`
+
+### aggr:execution ### {#aggr-execution-property}
+Links an `aggr:ProvenanceLog` to the executions it includes.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:ProvenanceLog`<br>
+**range:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity)
 
 ### aggr:registrationEndpoint ### {#aggr-registration-endpoint-property}
 Links an `aggr:AggregatorServer` to its registration endpoint.

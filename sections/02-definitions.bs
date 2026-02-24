@@ -18,10 +18,10 @@ Core Roles and Components {#definitions-core}
     endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
 
 - **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service is 
-    represented as an FnO execution (`fno:Execution`) that identifies the executed function and its inputs; outputs are 
-    described by the function's output parameters (see [[#aggregator-service-management]]).
+    represented as an FnO Implementation (`fno:Implementation`) that implements an FnO AppliedFunction (`fno:AppliedFunction`), 
+    which defines inputs and outputs (see [[#aggregator-service-management]]).
 
-- **Transformation Catalog:** A catalog that describes the transformations supported by the Aggregator Server or Aggregator 
+- **Transformation Catalog:** A catalog that describes the FnO Functions supported by the Aggregator Server and the FnO AppliedFunctions hosted on an Aggregator 
     Instance (see [[#server-level-transformation-catalog]] and [[#instance-level-transformation-catalog]]).
 
 Identity, Authorization, and Tokens {#definitions-security}
@@ -70,3 +70,4 @@ The following namespace prefixes are used throughout this specification and SHOU
 - `rdf:` → `http://www.w3.org/1999/02/22-rdf-syntax-ns#`
 - `rdfs:` → `http://www.w3.org/2000/01/rdf-schema#`
 - `xsd:` → `http://www.w3.org/2001/XMLSchema#`
+- `prov:` → `http://www.w3.org/ns/prov#`

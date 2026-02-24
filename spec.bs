@@ -70,6 +70,22 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
   "DCTERMS": {
     "href": "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
     "title": "Dublin Core Metadata Terms"
+  },
+  "OCI-Image-Spec": {
+    "href": "https://github.com/opencontainers/image-spec",
+    "title": "Open Container Initiative Image Specification"
+  },
+  "DockerPedia": {
+    "href": "https://cbuil.github.io/dockerpedia-ontology/release/0.1.0/index-en.html",
+    "title": "DockerPedia Ontology"
+  },
+  "LDP": {
+    "href": "https://www.w3.org/TR/ldp/",
+    "title": "Linked Data Platform"
+  },
+  "PROV-O": {
+    "href": "https://www.w3.org/TR/prov-o/",
+    "title": "The Provenance Ontology"
   }
 }
 </pre>
@@ -81,14 +97,18 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 
 <pre class="include" path="sections/03-architecture-and-resource-model.bs"></pre>
 
-<pre class="include" path="sections/04-aggregator-server-metadata.bs"></pre>
+<pre class="include" path="sections/04-aggregator-data-model.bs"></pre>
 
-<pre class="include" path="sections/05-aggregator-management.bs"></pre>
+<pre class="include" path="sections/05-aggregator-server-metadata.bs"></pre>
 
-<pre class="include" path="sections/06-security-model-authentication-and-authorization.bs"></pre>
+<pre class="include" path="sections/06-aggregator-management.bs"></pre>
 
-<pre class="include" path="sections/07-aggregator-metadata.bs"></pre>
+<pre class="include" path="sections/07-security-model-authentication-and-authorization.bs"></pre>
 
-<pre class="include" path="sections/08-aggregator-service-management.bs"></pre>
+<pre class="include" path="sections/08-aggregator-metadata.bs"></pre>
 
-<pre class="include" path="sections/09-vocabulary.bs"></pre>
+<pre class="include" path="sections/09-aggregator-service-management.bs"></pre>
+
+<pre class="include" path="sections/10-aggregator-provenance-management.bs"></pre>
+
+<pre class="include" path="sections/11-vocabulary.bs"></pre>

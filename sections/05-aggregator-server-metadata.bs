@@ -89,7 +89,7 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
     "application/x-www-form-urlencoded"
   ],
   "version": "1.0.0",
-  "client_identifier": "https://aggregator.example/client.json",
+  "client_identifier": "https://aggregator.example/client.jsonld",
   "transformation_catalog": "https://aggregator.example/transformations"
 }
 ```
@@ -107,64 +107,179 @@ the same Aggregator Server (depending on the implementation). Adding this proper
 implementation to restrict which clients may create aggregators on the server.
 
 Server-level Transformation Catalog {#server-level-transformation-catalog}
---------------------------------------------------------------
+--------------------------------------------------------------------------
 
-This endpoint returns a RDF document describing the transformations supported by the aggregator server on a server level. 
-Servers MAY publish this catalog at any deployment-specific URL; the Aggregator Server Description MUST advertise it via the 
-`transformation_catalog` field. This RDF document SHOULD be exposed using content negotiation based on HTTP. The 
-transformations MUST be described using FnO [[!FNO]]. The document MAY be protected using an OIDC ID Token.
+The Transformation Catalog is an RDF document describing all aggregator transformations ([[#aggregator-data-model]]) 
+that can be deployed as services by the aggregator server.
 
-The types (`fno:type`) of the parameters and outputs of the functions SHOULD be a class (`owl:Class`) that is a subclass 
-(`rdfs:subClassOf`) of a Data Catalog ([[!Data-Catalog]]) entity like `dcat:DataService`. This entity SHOULD then be further 
-described using Data Catalog properties to indicate the supported endpoints for the parameters and outputs. The Data 
-Catalog Vocabulary recommends using entities from other vocabularies like Friend of a Friend ([[!FOAF]]) and Dublin Core 
-Metadata Terms ([[!DCTERMS]]). Pre defined pipelines (using `fno:Composition`) MAY also be described in this document.
-Finally, the catalog MAY also include external entities using `rdfs:seeAlso` to link to external functions, pipelines or 
-Data Catalog entities.
+### Catalog Publication ###
 
-The specificity of the transformation is up to the server owner. The functions MAY have a link to an implementation with 
-`fno:Implementation` if needed.
+  - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
+
+  - The URL **MUST** be advertised in the Aggregator Server Description via the transformation_catalog field.
+
+  - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
+
+  - Access **MAY** be protected using an OpenID Connect (OIDC) ID Token for authentication.
+
+  - A catalog **MAY** reference resources defined in other catalogs using `rdfs:seeAlso`.
+
+### Linking Transformations to deployable artifacts ###
+
+The aggregator server is responsible for mapping each `aggr:ServiceImplementation` to a deployable artifact (e.g., an OCI image). 
+This mapping can be:
+  - **Internal** – stored inside the server for deployment purposes
+  - **Cataloged** – included in the transformation catalog as an RDF Resource using `prov:SpecializationOf`
+
+NOTE: Server capabilities for resolving `aggr:ServiceImplementation` specializations to create deployable units are 
+implementation-specific and are not defined by this specification. Such details should be included in the 
+aggregator server’s documentation.
+
+### Example ###
+
+This example illustrates a catalog containing a local transformation and an external reference, 
+linking a `aggr:ServiceImplementation` to an  OCI image:
 
 <div class="example">
 ```turtle
+@base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix trans: <http://aggregator.example.org/transformations#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
 @prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
-    aggr:hasTransformation trans:QuerySources .
-    aggr:hasTransformation <https://external.example.org/AggregateSources> .
-    rdfs:seeAlso <https://external.example.org/AggregateSources> .
+    aggr:hasMapping <QueryViewMapping> .
+    aggr:hasMapping <ExternalTransformationMapping> ;
+    rdfs:seeAlso <http://example.org/external/ExternalTransformation>,
+      <http://example.org/external/CsvServiceImplementation>,
+      <http://example.org/registry/example-image:latest> .
 
-trans:QuerySources
+
+<QueryView>
     a                   fno:Function ;
-    fno:name            "A Aggregator Service that combines a list of sources"^^xsd:string ;
-    fno:expects         ( trans:Sources trans:Query ) ;
-    fno:returns         ( trans:Result ) .
+    fno:name            "An Aggregator Service that performs a Query on a list of sources"^^xsd:string ;
+    fno:expects         ( <Sources> <Query> ) ;
+    fno:returns         ( <Result> ) .
 
-trans:Sources
+<Sources>
     a             fno:Parameter ;
-    fno:predicate trans:sources ;
-    fno:type      rdf:List ;
+    fno:predicate <sources> ;
+    fno:type      xsd:anyURI ;
+    fno:list      "true"^^xsd:boolean ;
     fno:required  "true"^^xsd:boolean .
 
-trans:Query
+<Query>
     a             fno:Parameter ;
-    fno:predicate trans:query ;
+    fno:predicate <query> ;
     fno:type      xsd:string ;
     fno:required  "true"^^xsd:boolean .
 
-trans:Result
+<Result>
     a             fno:Output ;
-    fno:predicate trans:result ;
-    fno:type      trans:SPARQLProtocol .
+    fno:predicate <result> ;
 
-trans:SPARQLProtocol
-    a owl:Class ;
-    rdfs:subClassOf dcat:DataService ;
-    dcterms:conformsTo <https://www.w3.org/TR/sparql12-protocol/> .
+<SPARQLServiceImplementation>
+    a                 aggr:ServiceImplementation ;
+    aggr:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
+    prov:specializationOf <http://example.org/registry/example-image:latest> .
+
+<QueryViewMapping>
+    a                  fno:Mapping ;
+    fno:function       <QueryView> ;
+    fno:implementation 
+      <SPARQLServiceImplementation>,
+      <http://example.org/external/CsvTableImplementation> .
+
+<ExternalTransformationMapping>
+  a fno:Mapping ;
+  fno:function <http://example.org/external/ExternalTransformation> ;
+  fno:implementation <SPARQLServiceImplementation> .
+```
+</div>
+
+### Compositions ###
+
+A Transformation Catalog can also include `fno:Composition` which detail a set of services where there inputs and outputs are 
+linked together to create a pipeline. More on how to request a pipeline deployment in 
+
+<div class="example">
+```turtle
+@base <http://aggregator.example.org/transformations#> .
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<> a aggr:TransformationCollection ;
+    dct:title "Aggregator transformations" ;
+    aggr:hasMapping <WLP-QueryViewMapping> ;
+    aggr:hasMapping <WLP-WeightLossMapping> ;
+    aggr:hasComposition <WeightLossPipeline> .
+
+<WeightLossPipeline>
+  a fno:Function ;
+  fno:expects ( <Query> <Sources> ) ;
+  fno:returns ( <WeightLossOutput> ) ;
+  fno:composition [
+    fnoc:composedOf [
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:functionParameter <Query> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:functionParameter <Query> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:functionParameter <Sources> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:functionParameter <Sources> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:functionOutput <Result> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WLP-WeightLossGraph> ;
+        fnoc:functionParameter <Dataset> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <WLP-WeightLossGraph> ;
+        fnoc:functionParameter <WeightLossOutput> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:functionParameter <WeightLossOutput> .
+      ] .
+    ] .
+  ] .
+
+<WLP-QueryViewMapping>
+  a fno:Mapping ;
+  fno:function <WLP-QueryView> ;
+  fno:implementation <SPARQLServiceImplementation> .
+
+<WLP-WeightLossMapping>
+  a fno:Mapping ;
+  fno:function <WLP-WeightLossGraph> ;
+  fno:implementation <CsvTableImplementation> .
+
+<WLP-QueryView>
+  fnoc:applies <QueryView> .
+
+<WLP-WeightLossGraph>
+  fnoc:applies <WeightLossGraph> .
 ```
 </div>
