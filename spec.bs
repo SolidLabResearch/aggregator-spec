@@ -4,6 +4,7 @@ Shortname: aggregator-spec
 Level: none
 Status: LD
 Editor: Maarten Vandenbrande, Ghent University - imec http://idlab.ugent.be/, maarten.vandenbrande@ugent.be
+Editor: Pol Nachtergaele, Ghent University - imec http://idlab.ugent.be/, pol.nachtergaele@ugent.be
 Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments,
   registering aggregator instances, and managing services that execute data transformations. The protocol
   leverages OIDC and User-Managed Access (UMA) for authentication and authorization, enabling secure access
@@ -63,21 +64,9 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://www.w3.org/TR/vocab-dcat-3/",
     "title": "Data Catalog Vocabulary"
   },
-  "FOAF": {
-    "href": "http://xmlns.com/foaf/0.1/",
-    "title": "Friend of a Friend (FOAF)"
-  },
   "DCTERMS": {
     "href": "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
     "title": "Dublin Core Metadata Terms"
-  },
-  "OCI-Image-Spec": {
-    "href": "https://github.com/opencontainers/image-spec",
-    "title": "Open Container Initiative Image Specification"
-  },
-  "DockerPedia": {
-    "href": "https://cbuil.github.io/dockerpedia-ontology/release/0.1.0/index-en.html",
-    "title": "DockerPedia Ontology"
   },
   "LDP": {
     "href": "https://www.w3.org/TR/ldp/",

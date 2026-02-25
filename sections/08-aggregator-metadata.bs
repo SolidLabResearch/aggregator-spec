@@ -84,7 +84,7 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
   "login_status": true,
   "token_expiry": "2025-12-17T18:20:00Z",
   "transformation_catalog": "https://aggregator.example/aggregators/agg-7890/transformations",
-  "service_collection_endpoint": "https://aggregator.example/aggregators/agg-7890/config/services",
+  "service_collection_endpoint": "https://aggregator.example/aggregators/agg-7890/services",
   "oidcIssuer": "https://issuer.example/"
 }
 ```

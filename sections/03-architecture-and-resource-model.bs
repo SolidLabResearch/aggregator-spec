@@ -32,7 +32,7 @@ This specification defines HTTP resources at three levels:
 - **Aggregator Instance resources:** instance metadata and service management (see [[#aggregator-metadata]] and
     [[#aggregator-service-management]]).
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
-    [[#service-collection]] and TODO).
+    [[#service-collection]] and service resource and provenance).
 
 Base URLs and Addressing {#base-urls-and-addressing}
 ---------------------------------------------------
@@ -72,7 +72,7 @@ All security requirements are defined in [[#aggregator-security-model]]. At a hi
 - Protected (UMA): the instance metadata resource (see [[#aggregator-metadata]]) and all resources under the service 
     management API (see [[#aggregator-service-management]]).
 
-The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP or Bearer tokens
+The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP tokens
 wherever possible to bind tokens to the client. Aggregator endpoints intended for browser-based clients MUST support CORS. 
 Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST answer `OPTIONS` 
 preflight requests and include appropriate `Access-Control-Allow-*` headers for the methods and headers used by this 

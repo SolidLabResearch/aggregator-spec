@@ -23,7 +23,7 @@ Represents an implementation that can run inside an aggregator
 
 ### aggr:Service ### {#aggr-service-class}
 Represents a configured Aggregator pipeline that can be created, inspected, and removed via the Service
-Management API (e.g., `/config/services/{service_id}`).
+Management API (e.g., `/services/{service_id}`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [prov:SoftwareAgent](https://www.w3.org/TR/prov-o/#SoftwareAgent),
@@ -36,7 +36,7 @@ Describes the Aggregator Server Description document that advertises discovery m
 **subClassOf:** [schema:Service](https://schema.org/Service)
 
 ### aggr:ServiceCollection ### {#aggr-service-collection-class}
-Describes the service collection resource (e.g., `/config/services`).
+Describes the service collection resource (e.g., `/services`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
