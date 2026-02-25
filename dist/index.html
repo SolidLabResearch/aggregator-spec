@@ -2022,8 +2022,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <dd><a href="_ORCHESTRATOR_PREVIOUS_BUILD_FULL_LINK_" rel="prev">_ORCHESTRATOR_PREVIOUS_BUILD_FULL_LINK_</a>
      <dt>Issue Tracking:
      <dd><a href="#issues-index">Inline In Spec</a>
-     <dt class="editor">Editor:
+     <dt class="editor">Editors:
      <dd class="editor h-card p-author vcard"><a class="email fn p-name u-email" href="mailto:maarten.vandenbrande@ugent.be">Maarten Vandenbrande</a> (<a class="org p-org" href="http://idlab.ugent.be/">Ghent University - imec</a>)
+     <dd class="editor h-card p-author vcard"><a class="email fn p-name u-email" href="mailto:pol.nachtergaele@ugent.be">Pol Nachtergaele</a> (<a class="org p-org" href="http://idlab.ugent.be/">Ghent University - imec</a>)
     </dl>
    </div>
    <div data-fill-with="warning"></div>
@@ -2349,7 +2350,7 @@ user.</p>
 <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
     <li data-md>
      <p><strong>Aggregator Service resources:</strong> a service collection and individual services managed under the instance (see
-<a href="#service-collection">§ 9.3 Service Collection</a> and TODO).</p>
+<a href="#service-collection">§ 9.3 Service Collection</a> and service resource and provenance).</p>
    </ul>
    <h3 class="heading settled" data-level="3.3" id="base-urls-and-addressing"><span class="secno">3.3. </span><span class="content">Base URLs and Addressing</span><a class="self-link" href="#base-urls-and-addressing"></a></h3>
    <p>An implementation MUST define a stable base URL for:</p>
@@ -2393,7 +2394,7 @@ server level transformation catalog depending on the implementation.</p>
      <p>Protected (UMA): the instance metadata resource (see <a href="#aggregator-metadata">§ 8 Aggregator Metadata</a>) and all resources under the service
 management API (see <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
    </ul>
-   <p>The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP or Bearer tokens
+   <p>The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP tokens
 wherever possible to bind tokens to the client. Aggregator endpoints intended for browser-based clients MUST support CORS. 
 Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST answer <code>OPTIONS</code> 
 preflight requests and include appropriate <code>Access-Control-Allow-*</code> headers for the methods and headers used by this 
@@ -4228,8 +4229,8 @@ Services (<a href="#service-collection">§ 9.3 Service Collection</a>); in the
    </dl>
    <p>This document MAY be the WebID of the Aggregator Instance when the <code>provision</code> flow <a href="#creation-provision">§ 6.2.1 Creation provision Flow</a> was used. In
 that case this document MUST be an RDF document that conforms to the WebID Profile specification <a data-link-type="biblio" href="#biblio-webid-profile" title="WebID Profile">[WEBID-PROFILE]</a>.</p>
-   <div class="example" id="example-5d28864e">
-    <a class="self-link" href="#example-5d28864e"></a>
+   <div class="example" id="example-6ea6f50c">
+    <a class="self-link" href="#example-6ea6f50c"></a>
 
 <pre class="highlight language-json"><c- p>{</c->
   <c- f>"@context"</c-><c- p>:</c-> <c- p>{</c->
@@ -4265,7 +4266,7 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
   <c- f>"login_status"</c-><c- p>:</c-> <c- kc>true</c-><c- p>,</c->
   <c- f>"token_expiry"</c-><c- p>:</c-> <c- u>"2025-12-17T18:20:00Z"</c-><c- p>,</c->
   <c- f>"transformation_catalog"</c-><c- p>:</c-> <c- u>"https://aggregator.example/aggregators/agg-7890/transformations"</c-><c- p>,</c->
-  <c- f>"service_collection_endpoint"</c-><c- p>:</c-> <c- u>"https://aggregator.example/aggregators/agg-7890/config/services"</c-><c- p>,</c->
+  <c- f>"service_collection_endpoint"</c-><c- p>:</c-> <c- u>"https://aggregator.example/aggregators/agg-7890/services"</c-><c- p>,</c->
   <c- f>"oidcIssuer"</c-><c- p>:</c-> <c- u>"https://issuer.example/"</c->
 <c- p>}</c->
 </pre>
@@ -4751,7 +4752,7 @@ Represents an implementation that can run inside an aggregator
    <h4 class="heading settled" data-level="11.1.3" id="aggr-service-class"><span class="secno">11.1.3. </span><span class="content">aggr:Service</span><a class="self-link" href="#aggr-service-class"></a></h4>
    
 Represents a configured Aggregator pipeline that can be created, inspected, and removed via the Service
-Management API (e.g., <code>/config/services/{service_id}</code>).
+Management API (e.g., <code>/services/{service_id}</code>).
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
@@ -4766,7 +4767,7 @@ Describes the Aggregator Server Description document that advertises discovery m
 <strong>subClassOf:</strong> <a href="https://schema.org/Service">schema:Service</a></p>
    <h4 class="heading settled" data-level="11.1.5" id="aggr-service-collection-class"><span class="secno">11.1.5. </span><span class="content">aggr:ServiceCollection</span><a class="self-link" href="#aggr-service-collection-class"></a></h4>
    
-Describes the service collection resource (e.g., <code>/config/services</code>).
+Describes the service collection resource (e.g., <code>/services</code>).
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
