@@ -1,5 +1,5 @@
 <!doctype html><html lang="en">
- <head>
+ <head><script type="text/javascript">(function(){var s=document.createElement("script");var port=59754;s.src="//"+window.location.hostname+":"+port+"/livereload.js?port="+port;document.head.appendChild(s);})();</script>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <title>Aggregator Specification</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
@@ -2015,7 +2015,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Aggregator Specification</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-02-24">24 February 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-02-25">25 February 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2030,7 +2030,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 24 February 2026,
+In addition, as of 25 February 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2071,9 +2071,13 @@ to protected derived resources.</p>
      <a href="#aggregator-data-model"><span class="secno">4</span> <span class="content">Aggregator Data Model</span></a>
      <ol class="toc">
       <li><a href="#aggregator-transformation"><span class="secno">4.1</span> <span class="content">Transformation</span></a>
-      <li><a href="#aggregator-service-implementation"><span class="secno">4.2</span> <span class="content">Service Implementation</span></a>
+      <li><a href="#aggregator-mapping"><span class="secno">4.2</span> <span class="content">Mapping</span></a>
       <li><a href="#aggregator-service"><span class="secno">4.3</span> <span class="content">Service</span></a>
-      <li><a href="#aggregator-service-mappings"><span class="secno">4.4</span> <span class="content">Enriching Services with Semantic Mappings</span></a>
+      <li>
+       <a href="#aggregator-semantic-mappings"><span class="secno">4.4</span> <span class="content">Enriching Services with Semantic Mappings</span></a>
+       <ol class="toc">
+        <li><a href="#aggregator-service-implementation"><span class="secno">4.4.1</span> <span class="content">Aggregator Service Implementation</span></a>
+       </ol>
       <li><a href="#aggregator-provenance"><span class="secno">4.5</span> <span class="content">Provenance</span></a>
      </ol>
     <li>
@@ -2421,20 +2425,14 @@ model enables interoperable publication, discovery, execution, and provenance tr
 Each transformation <strong>MUST</strong> be described as an <code>fno:Function</code> that:</p>
    <ul>
     <li data-md>
-     <p><strong>MUST</strong> define exactly one output</p>
+     <p><strong>MAY</strong> define zero or more outputs</p>
     <li data-md>
      <p><strong>MAY</strong> define zero or more parameters</p>
     <li data-md>
-     <p><strong>MAY</strong> use <code>fno:type</code>:</p>
-     <ul>
-      <li data-md>
-       <p>on inputs, to describe the semantic meaning of the expected format</p>
-      <li data-md>
-       <p>on the output, to describe the semantic meaning of the produced dataset its contents</p>
-     </ul>
+     <p><strong>MAY</strong> use <code>fno:type</code>to describe the semantic meaning of a parameter or output value.</p>
    </ul>
-   <div class="example" id="example-d67d00d8">
-    <a class="self-link" href="#example-d67d00d8"></a>
+   <div class="example" id="example-b803bfac">
+    <a class="self-link" href="#example-b803bfac"></a>
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
@@ -2463,42 +2461,164 @@ Each transformation <strong>MUST</strong> be described as an <code>fno:Function<
     <c- b>a</c->             <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>view</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>weight-loss-graph</c->
+<c- p>:</c-><c- f>merge-tables</c->
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Function</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>name</c-> <c- s>"The WeightLoss Function"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c->
-  <c- nn>dct</c-><c- p>:</c-><c- f>description</c-> <c- s>"A weight loss graph calculated on a dataset of observed weight values"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>expects</c-> <c- p>(</c-> <c- p>:</c-><c- f>dataset-parameter</c-> <c- p>)</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>returns</c-> <c- p>(</c-> <c- p>:</c-><c- f>weight-loss-ouptut</c-> <c- p>)</c-> <c- p>.</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>name</c-> <c- s>"The Merge-CSV Function"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c->
+  <c- nn>dct</c-><c- p>:</c-><c- f>description</c-> <c- s>"A function that merges multiple source tables into one table"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>expects</c-> <c- p>(</c-> <c- p>:</c-><c- f>tables-parameter</c-> <c- p>)</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>returns</c-> <c- p>(</c-> <c- p>:</c-><c- f>table-output</c-> <c- p>)</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>dataset-parameter</c-> 
+<c- p>:</c-><c- f>tables-parameter</c-> 
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>type</c-> <c- nn>xsd</c-><c- p>:</c-><c- f>anyURI</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>dataset</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>list</c-> <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>table</c-> <c- p>;</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>required</c-> <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>weight-loss-output</c->
+<c- p>:</c-><c- f>table-output</c->
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>view</c-> <c- p>.</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>type</c-> <c- nn>csvw</c-><c- p>:</c-><c- f>Table</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>table</c-> <c- p>.</c->
 </pre>
    </div>
-   <h3 class="heading settled" data-level="4.2" id="aggregator-service-implementation"><span class="secno">4.2. </span><span class="content">Service Implementation</span><a class="self-link" href="#aggregator-service-implementation"></a></h3>
-   <p>A transformation description <strong>MUST</strong> be linked to at least one <code>aggr:ServiceImplementation</code> (a subclass of <code>fno:Implementation</code>)
-using an <code>fno:Mapping</code>.</p>
-   <p>The <code>aggr:ServiceImplementation</code> describes how the transformation is technically realized and how a corresponding running
-service will be exposed. It provides additional implementation-level metadata, including:</p>
+   <h3 class="heading settled" data-level="4.2" id="aggregator-mapping"><span class="secno">4.2. </span><span class="content">Mapping</span><a class="self-link" href="#aggregator-mapping"></a></h3>
+   <p>Every transformation description <strong>MUST</strong> be associated with at least one <code>fno:Mapping</code>.</p>
+   <p>A <code>fno:Mapping</code> specifies how a transformation function is connected to a concrete implementation. It describes:</p>
    <ul>
     <li data-md>
-     <p><code>dct:conformsTo</code> — a specification (e.g., a protocol or standard) that the service implementation adheres to.</p>
+     <p>how input parameters are provided to the implementation, and</p>
     <li data-md>
-     <p><code>dct:accrualPeriodicity</code> — indicating at what interval the service will perform the transformation.</p>
+     <p>how output values are obtained from it.</p>
+   </ul>
+   <p>In other words, the mapping defines the contract between the abstract function description and its executable form.</p>
+   <p>A mapping <strong>SHOULD</strong> declare the supported input and output formats using <code>fnom:FormatMapping</code>. This makes explicit which format
+an implementation can consume and produce.</p>
+   <p>For example, <code>:merge-tables-csv-mapping</code> defines a mapping for implementations that merge multiple CSV tables into a single CSV table:</p>
+   <div class="example" id="example-1bae96f2">
+    <a class="self-link" href="#example-1bae96f2"></a>
+
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>fnom:</c-> <c- g>&lt;https://w3id.org/function/vocabulary/mapping#></c->
+<c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
+
+<c- p>:</c-><c- f>merge-tables-csv-mapping</c->
+  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Mapping</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>function</c-> <c- p>:</c-><c- f>merge-tables</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>parameterMapping</c-> <c- p>[</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>FormatMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameter</c-> <c- p>:</c-><c- f>tables-parameter</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>.</c->
+  <c- p>]</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>outputMapping</c-> <c- p>[</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>FormatMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameter</c-> <c- p>:</c-><c- f>table-output</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>.</c->
+  <c- p>]</c-> <c- p>.</c->
+</pre>
+   </div>
+   <p>A mapping <strong>MAY</strong> associate one or more concrete implementations using <code>fno:implementation</code>.</p>
+   <p>The linked <code>fno:Implementation</code> resource <strong>SHOULD</strong> be a semantic description of the deployable artifact that will be
+executed inside the aggregator (e.g., a container image, script, or binary).</p>
+   <h3 class="heading settled" data-level="4.3" id="aggregator-service"><span class="secno">4.3. </span><span class="content">Service</span><a class="self-link" href="#aggregator-service"></a></h3>
+   <p class="issue" id="issue-f5b61520"><a class="self-link" href="#issue-f5b61520"></a> <code>aggr:usesMapping</code> OK as a predicate?</p>
+   <p>A deployed aggregator service is modeled as:</p>
+   <ul>
     <li data-md>
-     <p><code>dct:format</code> or <code>dcat:mediaType</code> — specify a supported output format</p>
+     <p>an <code>aggr:Service</code></p>
+    <li data-md>
+     <p>a <code>dcat:DataService</code> (<a data-link-type="biblio" href="#biblio-data-catalog" title="Data Catalog Vocabulary">[Data-Catalog]</a>)</p>
+    <li data-md>
+     <p>a <code>prov:SoftwareAgent</code> (<a data-link-type="biblio" href="#biblio-prov-o" title="The Provenance Ontology">[PROV-O]</a>)</p>
+   </ul>
+   <p>The service:</p>
+   <ul>
+    <li data-md>
+     <p><strong>MUST</strong> serve one dataset for each transformation output</p>
+    <li data-md>
+     <p><strong>MUST</strong> link to an <code>fno:Mapping</code> using <code>aggr:usesMapping</code></p>
+    <li data-md>
+     <p><strong>SHOULD</strong> declare operational metadata such as status and creation time</p>
+   </ul>
+   <p>Outputs generated by a running service <strong>MUST</strong> be described as a <code>dcat:Distribution</code>. Each <code>dcat:Distribution</code>:</p>
+   <ul>
+    <li data-md>
+     <p><strong>MUST</strong> reference the corresponding output endpoint using <code>dcat:accessURL</code>.</p>
+    <li data-md>
+     <p><strong>MUST</strong> reference the service via <code>dcat:accessService</code>.</p>
+    <li data-md>
+     <p><strong>MUST</strong> declare the output format defined in the associated service mapping using:</p>
      <ul>
       <li data-md>
-       <p>This link <strong>MAY</strong> occur multiple times to indicate support for multiple formats (e.g., to enable content negotiation).</p>
+       <p><code>dcat:mediaType</code> when the format corresponds to an IANA-registered media type.</p>
+      <li data-md>
+       <p><code>dct:format</code> when the format is not an IANA-conformant media type.</p>
      </ul>
    </ul>
-   <p class="issue" id="issue-2396a97e"><a class="self-link" href="#issue-2396a97e"></a> how to advertise supported input formats without referencing parameters? Replace format to fno:Mapping?</p>
+   <p>The corresponding dataset:</p>
+   <ul>
+    <li data-md>
+     <p><strong>MUST AT LEAST</strong> reference the most recently generated output using <code>dcat:distribution</code>.</p>
+   </ul>
+   <p>This ensures that consumers can reliably discover the latest available result while preserving compatibility with versioned
+or historical distributions if provided.</p>
+   <div class="example" id="example-ced034a9">
+    <a class="self-link" href="#example-ced034a9"></a>
+
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>dcat:</c-> <c- g>&lt;https://www.w3.org/ns/dcat#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>dct:</c-> <c- g>&lt;http://purl.org/dc/terms/></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>prov:</c-> <c- g>&lt;http://www.w3.org/ns/prov#></c-> <c- p>.</c->
+
+<c- p>:</c-><c- f>merge-tables-service</c->
+    <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>Service</c-> <c- p>;</c->
+    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>DataService</c-> <c- p>;</c->
+    <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>SoftwareAgent</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>status</c-> <c- s>"running"</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>createdAt</c-> <c- s>"2024-01-01T12:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>usesMapping</c-> <c- p>:</c-><c- f>merge-tables-csv-mapping</c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>servesDataset</c-> <c- p>:</c-><c- f>merge-tables-service-dataset</c-> <c- p>.</c->
+
+<c- p>:</c-><c- f>merge-tables-service-dataset</c->
+    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>distribution</c-> <c- p>:</c-><c- f>merge-tables-service-distribution</c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>accrualPeriodicity</c-> <c- g>&lt;http://purl.org/cld/freq/daily></c-> <c- p>.</c->
+
+<c- p>:</c-><c- f>merge-tables-service-distribution</c->
+    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Distribution</c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>mediaType</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;http://example.com/my-service/result></c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- p>:</c-><c- f>merge-tables-service</c-> <c- p>.</c->
+</pre>
+   </div>
+   <p>Further requirements on how an Aggregator Server <strong>MUST</strong> manage services — including how clients can create,
+configure, and delete service instances — are specified in <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>.</p>
+   <h3 class="heading settled" data-level="4.4" id="aggregator-semantic-mappings"><span class="secno">4.4. </span><span class="content">Enriching Services with Semantic Mappings</span><a class="self-link" href="#aggregator-semantic-mappings"></a></h3>
+   <p>Service Descriptions <strong>MAY</strong> be further semantically enriched to describe its outputs and capabilities. Examples for this
+include describing it as a SPARQL service using <code>sd:Service</code> or describe the service API using the Hydra Core Ontology. This 
+can helps make services and their outputs more FAIR.</p>
+   <p>What an aggregator server supports and how it does this is implementation dependent and should be described in its documentation.
+This specification provides an example method using <code>aggr:ServiceImplementation</code> (see <a href="#aggregator-service-implementation">§ 4.4.1 Aggregator Service Implementation</a>), but it is up to the server wether or not it supports
+this.</p>
+   <h4 class="heading settled" data-level="4.4.1" id="aggregator-service-implementation"><span class="secno">4.4.1. </span><span class="content">Aggregator Service Implementation</span><a class="self-link" href="#aggregator-service-implementation"></a></h4>
+   <p>An <code>aggr:ServiceImplementation</code> is a subclass of <code>fno:Implementation</code> and uses <code>aggr:ServiceMapping</code> to enrich running services that are mapped
+to this implementation.</p>
+   <p>It can add mappings using:</p>
+   <ul>
+    <li data-md>
+     <p><code>aggr:serviceMapping</code> to link service mappings to the <code>dcat:DataService</code> resource.</p>
+    <li data-md>
+     <p><code>aggr:datasetMapping</code> to link service mappings to each <code>dcat:Dataset</code> resource the service serves.</p>
+    <li data-md>
+     <p><code>aggr:distributionMapping</code> to link service mappings to each generated <code>dcat:Distribution</code> resource.</p>
+   </ul>
+   <p>An <code>aggr:ServiceMapping</code> declares:</p>
+   <ul>
+    <li data-md>
+     <p>the predicate to use with <code>aggr:predicate</code></p>
+    <li data-md>
+     <p>the URI or Literal to use with <code>aggr:value</code></p>
+   </ul>
    <div class="example" id="example-bd00e0d1">
     <a class="self-link" href="#example-bd00e0d1"></a>
 
@@ -2533,68 +2653,6 @@ service will be exposed. It provides additional implementation-level metadata, i
    </div>
    <p>Further requirements on how a server <strong>MUST</strong> expose and maintain the set of available and supported transformations,
 as well as the concrete service implementations that execute them, are specified in <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>.</p>
-   <h3 class="heading settled" data-level="4.3" id="aggregator-service"><span class="secno">4.3. </span><span class="content">Service</span><a class="self-link" href="#aggregator-service"></a></h3>
-   <p>A deployed aggregator service is modeled as:</p>
-   <ul>
-    <li data-md>
-     <p>an <code>aggr:Service</code></p>
-    <li data-md>
-     <p>a <code>dcat:DataService</code> (<a data-link-type="biblio" href="#biblio-data-catalog" title="Data Catalog Vocabulary">[Data-Catalog]</a>)</p>
-    <li data-md>
-     <p>a <code>prov:SoftwareAgent</code> (<a data-link-type="biblio" href="#biblio-prov-o" title="The Provenance Ontology">[PROV-O]</a>)</p>
-   </ul>
-   <p>The running service:</p>
-   <ul>
-    <li data-md>
-     <p><strong>MUST</strong> expose exactly one dataset</p>
-    <li data-md>
-     <p><strong>MUST</strong> declare conformance via <code>dct:conformsTo</code> (<a data-link-type="biblio" href="#biblio-dcterms" title="Dublin Core Metadata Terms">[DCTERMS]</a>) if <code>aggr:conformsTo</code> was declared</p>
-    <li data-md>
-     <p><strong>MUST</strong> provide a <code>dcat:Distribution</code> for each declared <code>aggr:outputFormat</code></p>
-    <li data-md>
-     <p><strong>MUST</strong> link each <code>dcat:Distribution</code> to the output URL  using <code>dcat:accessURL</code>.</p>
-    <li data-md>
-     <p><strong>MUST</strong> link to a <code>aggr:ServiceImplementation</code> using <code>aggr:implements</code></p>
-    <li data-md>
-     <p><strong>MUST</strong> link to a <code>fno:Function</code> using <code>aggr:performs</code></p>
-    <li data-md>
-     <p><strong>SHOULD</strong> declare operational metadata such as status and creation time</p>
-   </ul>
-   <p>The dataset <strong>MUST</strong> include the period between updates using <code>dct:accrualPeriodicity</code></p>
-   <div class="example" id="example-a43386f1">
-    <a class="self-link" href="#example-a43386f1"></a>
-
-<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>dcat:</c-> <c- g>&lt;https://www.w3.org/ns/dcat#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>dct:</c-> <c- g>&lt;http://purl.org/dc/terms/></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>prov:</c-> <c- g>&lt;http://www.w3.org/ns/prov#></c-> <c- p>.</c->
-
-<c- p>:</c-><c- f>weight-loss-service</c->
-    <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>Service</c-> <c- p>;</c->
-    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>DataService</c-> <c- p>;</c->
-    <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>SoftwareAgent</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>status</c-> <c- s>"running"</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>createdAt</c-> <c- s>"2024-01-01T12:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>implements</c-> <c- p>:</c-><c- f>sparql-service-implementation</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>performs</c-> <c- p>:</c-><c- f>query-view</c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>servesDataset</c-> <c- p>:</c-><c- f>weight-loss-service-dataset</c-> <c- p>.</c->
-
-<c- p>:</c-><c- f>weight-loss-service-dataset</c->
-    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>distribution</c-> <c- p>:</c-><c- f>weight-loss-service-distribution</c-> <c- p>;</c->
-    <c- nn>dct</c-><c- p>:</c-><c- f>accrualPeriodicity</c-> <c- g>&lt;http://purl.org/cld/freq/daily></c-> <c- p>.</c->
-
-<c- p>:</c-><c- f>weight-loss-service-distribution</c->
-    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Distribution</c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>mediaType</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;http://example.com/result></c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- p>:</c-><c- f>weight-loss-service</c-> <c- p>.</c->
-</pre>
-   </div>
-   <p>Further requirements on how an Aggregator Server <strong>MUST</strong> manage services — including how clients can create,
-configure, and delete service instances — are specified in <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>.</p>
-   <h3 class="heading settled" data-level="4.4" id="aggregator-service-mappings"><span class="secno">4.4. </span><span class="content">Enriching Services with Semantic Mappings</span><a class="self-link" href="#aggregator-service-mappings"></a></h3>
    <p>An <code>aggr:ServiceImplementation</code> <strong>MAY</strong> further specify:</p>
    <ul>
     <li data-md>
@@ -5130,8 +5188,6 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
    <dd>Aaron Parecki; Emelia Smith. <a href="https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-metadata-document/"><cite>OAuth Client ID Metadata Document</cite></a>. 10 January 2025. Internet-Draft. URL: <a href="https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-metadata-document/">https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-metadata-document/</a>
    <dt id="biblio-data-catalog">[Data-Catalog]
    <dd><a href="https://www.w3.org/TR/vocab-dcat-3/"><cite>Data Catalog Vocabulary</cite></a>. URL: <a href="https://www.w3.org/TR/vocab-dcat-3/">https://www.w3.org/TR/vocab-dcat-3/</a>
-   <dt id="biblio-dcterms">[DCTERMS]
-   <dd><a href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/"><cite>Dublin Core Metadata Terms</cite></a>. URL: <a href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/">https://www.dublincore.org/specifications/dublin-core/dcmi-terms/</a>
    <dt id="biblio-fno">[FNO]
    <dd><a href="https://w3id.org/function/spec/"><cite>Function Ontology (FnO)</cite></a>. URL: <a href="https://w3id.org/function/spec/">https://w3id.org/function/spec/</a>
    <dt id="biblio-ldp">[LDP]
@@ -5168,7 +5224,7 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
   </dl>
   <h2 class="heading no-num no-ref settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> how to advertise supported input formats without referencing parameters? Replace format to fno:Mapping? <a class="issue-return" href="#issue-2396a97e" title="Jump to section">↵</a></div>
+   <div class="issue"> <code>aggr:usesMapping</code> OK as a predicate? <a class="issue-return" href="#issue-f5b61520" title="Jump to section">↵</a></div>
    <div class="issue"> should we allow a name field for the aggregator during creation? <a class="issue-return" href="#issue-7876f244" title="Jump to section">↵</a></div>
    <div class="issue"> If multiple services perform the transformation with a different service implementation, what service must be chosen?
 ISSUE: What if you want to connect to a specific service?
