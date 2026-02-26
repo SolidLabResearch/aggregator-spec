@@ -291,7 +291,12 @@ An aggregator transformation defines a well-described functional interface using
 Each transformation **MUST** be described as an `fno:Function` that:
   - **MAY** define zero or more outputs
   - **MAY** define zero or more parameters
-  - **MAY** use `fno:type`to describe the semantic meaning of a parameter or output value.
+  - **MAY** use `fno:type`to describe what type a parameter or output value must represent.
+
+Examples of `fno:type` usage:
+  - Literal datatypes such as `xsd:string`, `xsd:integer`, etc.
+  - URIs, e.g., `xsd:anyURI`
+  - Ontology classes, e.g., `saref:Measurement` or `csvw:Table`
 
 <div class="example">
 ```turtle

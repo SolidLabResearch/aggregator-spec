@@ -2434,7 +2434,16 @@ Each transformation <strong>MUST</strong> be described as an <code>fno:Function<
     <li data-md>
      <p><strong>MAY</strong> define zero or more parameters</p>
     <li data-md>
-     <p><strong>MAY</strong> use <code>fno:type</code>to describe the semantic meaning of a parameter or output value.</p>
+     <p><strong>MAY</strong> use <code>fno:type</code>to describe what type a parameter or output value must represent.</p>
+   </ul>
+   <p>Examples of <code>fno:type</code> usage:</p>
+   <ul>
+    <li data-md>
+     <p>Literal datatypes such as <code>xsd:string</code>, <code>xsd:integer</code>, etc.</p>
+    <li data-md>
+     <p>URIs, e.g., <code>xsd:anyURI</code></p>
+    <li data-md>
+     <p>Ontology classes, e.g., <code>saref:Measurement</code> or <code>csvw:Table</code></p>
    </ul>
    <div class="example" id="example-b803bfac">
     <a class="self-link" href="#example-b803bfac"></a>
