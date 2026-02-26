@@ -69,14 +69,14 @@ Mapping {#aggregator-mapping}
 
 Every transformation description **MUST** be associated with at least one `fno:Mapping`.
 
-A `fno:Mapping` specifies how a transformation function is connected to a concrete implementation. It describes:
+A `fno:Mapping` specifies how a transformation function may be connected to a concrete implementation. It describes:
   - how input parameters are provided to the implementation, and
   - how output values are obtained from it.
 
-In other words, the mapping defines the contract between the abstract function description and its executable form.
+In other words, the mapping defines an interface that an implementation **MUST** implement if it wants to represent the transformation.
 
 A mapping **SHOULD** declare the supported input and output formats using `fnom:FormatMapping`. This makes explicit which format
-an implementation can consume and produce.
+an implementation **MUST** consume and produce.
 
 For example, `:merge-tables-csv-mapping` defines a mapping for implementations that merge multiple CSV tables into a single CSV table:
 
@@ -102,13 +102,40 @@ For example, `:merge-tables-csv-mapping` defines a mapping for implementations t
 ```
 </div>
 
+Further requirements on how a server **MUST** expose and maintain the set of available and supported mappings
+are specified in [[#server-level-transformation-catalog]].
+
+### Implementation ### {#aggregator-implementation}
+
 A mapping **MAY** associate one or more concrete implementations using `fno:implementation`.
 
 The linked `fno:Implementation` resource **SHOULD** be a semantic description of the deployable artifact that will be 
 executed inside the aggregator (e.g., a container image, script, or binary).
 
-Further requirements on how a server **MUST** expose and maintain the set of available and supported mappings
-are specified in [[#server-level-transformation-catalog]].
+<div class="example">
+```turtle
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:merge-tables-csv-image
+  a fnoi:DockerImage ;
+  schema:name "acme/merge-tables-csv" ;
+  schema:version "1.0.0" ;
+  schema:downloadUrl "ghcr.io/acme/merge-tables-csv" ;
+  fnoi:contains :numpy , :pandas ;
+  rdfs:label "Merge Tables CSV Container" ;
+  dct:description "Containerized API to merge CSV tables using numpy and pandas" .
+
+:numpy a fnoi:PythonPackage ;
+    schema:name "numpy" ;
+    schema:softwareVersion "1.26.2" .
+
+:pandas a fnoi:PythonPackage ;
+    schema:name "pandas" ;
+    schema:softwareVersion "2.1.1" .
+```
+</div>
 
 Service {#aggregator-service}
 -----------------------------
