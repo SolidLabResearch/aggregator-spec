@@ -7,7 +7,7 @@ deployment-specific URLs; the server description document MUST include absolute 
 discover them.
 
 Aggregator Server Description {#server-description}
-----------------------------------------------------------
+---------------------------------------------------
 
 The Aggregator Server Description is a public document that allows clients to discover the Aggregator Server’s 
 endpoints and capabilities. This document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MUST 
@@ -109,36 +109,14 @@ implementation to restrict which clients may create aggregators on the server.
 Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------
 
-The Transformation Catalog is an RDF document describing all aggregator transformations ([[#aggregator-data-model]]) 
+The Transformation Catalog is an RDF document describing all aggregator transformation mappings ([[#aggregator-data-model]]) 
 that can be deployed as services by the aggregator server.
 
-### Catalog Publication ###
-
-  - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
-
-  - The URL **MUST** be advertised in the Aggregator Server Description via the transformation_catalog field.
-
-  - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
-
-  - Access **MAY** be protected using an OpenID Connect (OIDC) ID Token for authentication.
-
-  - A catalog **MAY** reference resources defined in other catalogs using `rdfs:seeAlso`.
-
-### Linking Transformations to deployable artifacts ###
-
-The aggregator server is responsible for mapping each `aggr:ServiceImplementation` to a deployable artifact (e.g., an OCI image). 
-This mapping can be:
-  - **Internal** – stored inside the server for deployment purposes
-  - **Cataloged** – included in the transformation catalog as an RDF Resource using `prov:SpecializationOf`
-
-NOTE: Server capabilities for resolving `aggr:ServiceImplementation` specializations to create deployable units are 
-implementation-specific and are not defined by this specification. Such details should be included in the 
-aggregator server’s documentation.
-
-### Example ###
-
-This example illustrates a catalog containing a local transformation and an external reference, 
-linking a `aggr:ServiceImplementation` to an  OCI image:
+The `aggr:TransformationCatalog`:
+  - **MUST** reference all supported transformations using `aggr:hasTransformation`.
+  - **MUST** reference all supported mappings using `aggr:hasMapping`.
+  - **MUST** reference all supported implementations using `aggr:hasImplementation`.
+  - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
 
 <div class="example">
 ```turtle
@@ -150,13 +128,15 @@ linking a `aggr:ServiceImplementation` to an  OCI image:
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<> a aggr:TransformationCollection ;
+<> a aggr:TransformationCatalog ;
     dct:title "Aggregator transformations" ;
-    aggr:hasMapping <QueryViewMapping> .
-    aggr:hasMapping <ExternalTransformationMapping> ;
-    rdfs:seeAlso <http://example.org/external/ExternalTransformation>,
-      <http://example.org/external/CsvServiceImplementation>,
-      <http://example.org/registry/example-image:latest> .
+    aggr:hasTransformation <QueryView> ;
+    aggr:hasTransformation <http://example.org/external/ExternalFunction> ;
+    aggr:hasMapping <StringSourcesMapping> ;
+    aggr:hasMapping <EndpointSourcesMapping> ;
+    aggr:hasMapping <http://example.org/external/ExternalMapping> ;
+    rdfs:seeAlso <http://example.org/external/ExternalFunction> ;
+    rdfs:seeAlso <http://example.org/external/ExternalMapping> .
 
 
 <QueryView>
@@ -182,29 +162,58 @@ linking a `aggr:ServiceImplementation` to an  OCI image:
     a             fno:Output ;
     fno:predicate <result> ;
 
-<SPARQLServiceImplementation>
-    a                 aggr:ServiceImplementation ;
-    aggr:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
-    prov:specializationOf <http://example.org/registry/example-image:latest> .
-
-<QueryViewMapping>
+<StringSourcesMapping>
     a                  fno:Mapping ;
     fno:function       <QueryView> ;
-    fno:implementation 
-      <SPARQLServiceImplementation>,
-      <http://example.org/external/CsvTableImplementation> .
+    fno:outputMapping [
+      a fnom:EndpointMapping ;
+      fnom:functionOutput <Result>
+      dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
+    ] .
 
-<ExternalTransformationMapping>
-  a fno:Mapping ;
-  fno:function <http://example.org/external/ExternalTransformation> ;
-  fno:implementation <SPARQLServiceImplementation> .
+<EndpointSourcesMapping>
+  a fno:Mapping;
+  fno:function <QueryView> ;
+  fno:parameterMapping [
+    a fnom:EndpointMapping ;
+    a fnom:FormatMapping ;
+    fnom:functionParameter <Sources> ;
+    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> ;
+    dct:format <https://www.iana.org/assignments/media-types/text/plain> .
+  ] ;
+  fno:outputMapping [
+    a fnom:EndpointMapping ;
+    fnom:functionOutput <Result>
+    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
+  ] .
 ```
 </div>
 
-### Compositions ###
+### Compositions ### {#catalog-compositions}
 
-A Transformation Catalog can also include `fno:Composition` which detail a set of services where there inputs and outputs are 
-linked together to create a pipeline. More on how to request a pipeline deployment in 
+An Aggregator Server **MAY** support the deployment of pipelines described using `fno:Composition`. 
+A pipeline can be included in the catalog in one of the following ways, depending on how it is exposed.
+
+**Pipeline exposed as a single service**
+
+If a pipeline is exposed as a single service, with its internal components hidden:
+  - The `fno:Composition` **MUST** be linked to a transformation using `fno:composition`.
+  - The corresponding `fno:Function` representing the transformation **MUST** be linked to the catalog using `aggr:hasTransformation`.
+
+If the internal components represent deployable transformations:
+  - All components **MUST** represent deployable transformations.
+  - They **MUST** be linked to the catalog as defined in [[#server-level-transformation-catalog]].
+
+The fno:Composition MAY be used solely to describe the internal structure of a transformation. In this case, 
+the composition serves as descriptive metadata to provide additional transparency. This applies when **AT LEAST ONE** component 
+of the composition is not linked to the catalog. Then, the transformation **MUST** be deployable as a single unit.
+
+**Pipeline Exposing All Components as Services**
+
+If each component of the pipeline is exposed as an individual service: 
+  - The `fno:Composition` **MUST** be linked directly to the catalog using `aggr:hasComposition`.
+  - Every transformation used inside the `fno:Composition` **MUST** be linked to the catalog 
+      as defined earlier (see [[#server-level-transformation-catalog]]).
 
 <div class="example">
 ```turtle
@@ -218,68 +227,63 @@ linked together to create a pipeline. More on how to request a pipeline deployme
 
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
-    aggr:hasMapping <WLP-QueryViewMapping> ;
-    aggr:hasMapping <WLP-WeightLossMapping> ;
-    aggr:hasComposition <WeightLossPipeline> .
+    aggr:hasTransformation <RMLQueryPipeline> ;
+    aggr:hasMapping <QueryViewMapping> ;
+    aggr:hasMapping <RMLMapperMapping> .
 
-<WeightLossPipeline>
+<RMLQueryPipeline>
   a fno:Function ;
-  fno:expects ( <Query> <Sources> ) ;
-  fno:returns ( <WeightLossOutput> ) ;
+  fno:expects ( <Mappings> <Query> ) ;
+  fno:returns ( <Result> ) ;
   fno:composition [
     fnoc:composedOf [
       fnoc:mapFrom [
-        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <Mappings> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <RMLMapper> ;
+        fnoc:functionParameter <Mappings> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <RMLQueryPipeline> ;
         fnoc:functionParameter <Query> .
       ] ;
       fnoc:mapTo [
-        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:constituentFunction <QueryView> ;
         fnoc:functionParameter <Query> .
       ] .
     ],[
       fnoc:mapFrom [
-        fnoc:constituentFunction <WeightLossPipeline> ;
-        fnoc:functionParameter <Sources> .
+        fnoc:constituentFunction <RMLMapper> ;
+        fnoc:functionParameter <Result> .
       ] ;
       fnoc:mapTo [
-        fnoc:constituentFunction <WLP-QueryView> ;
-        fnoc:functionParameter <Sources> .
+        fnoc:constituentFunction <QueryView> ;
+        fnoc:functionParameter <Sources> ;
+        fnoc:mappingStrategy fnoc:append .
       ] .
     ],[
       fnoc:mapFrom [
-        fnoc:constituentFunction <WLP-QueryView> ;
-        fnoc:functionOutput <Result> .
+        fnoc:constituentFunction <QueryView> ;
+        fnoc:functionOutput <View> .
       ] ;
       fnoc:mapTo [
-        fnoc:constituentFunction <WLP-WeightLossGraph> ;
-        fnoc:functionParameter <Dataset> .
-      ] .
-    ],[
-      fnoc:mapFrom [
-        fnoc:constituentFunction <WLP-WeightLossGraph> ;
-        fnoc:functionParameter <WeightLossOutput> .
-      ] ;
-      fnoc:mapTo [
-        fnoc:constituentFunction <WeightLossPipeline> ;
-        fnoc:functionParameter <WeightLossOutput> .
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <View> .
       ] .
     ] .
   ] .
-
-<WLP-QueryViewMapping>
-  a fno:Mapping ;
-  fno:function <WLP-QueryView> ;
-  fno:implementation <SPARQLServiceImplementation> .
-
-<WLP-WeightLossMapping>
-  a fno:Mapping ;
-  fno:function <WLP-WeightLossGraph> ;
-  fno:implementation <CsvTableImplementation> .
-
-<WLP-QueryView>
-  fnoc:applies <QueryView> .
-
-<WLP-WeightLossGraph>
-  fnoc:applies <WeightLossGraph> .
 ```
 </div>
+
+### Catalog Publication ### {#server-level-catalog-publication}
+
+  - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
+
+  - The URL **MUST** be advertised in the Aggregator Server Description via the `mapping_catalog` field.
+
+  - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
+
+  - Access **MAY** be protected using an OpenID Connect (OIDC) ID Token for authentication.
