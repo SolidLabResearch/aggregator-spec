@@ -202,7 +202,7 @@ each of them represents a deployable service. This enables an Aggregator to expo
 while internally orchestrating multiple individual services.
 
 The following example describes a pipeline that:
-  1. Uses RML to map a non-RDF source to RDF.
+  1. Uses RML to map a JSON source to RDF.
   2. Executes a query over the generated RDF.
   3. Exposes the resulting query output.
 
@@ -221,8 +221,7 @@ The following example describes a pipeline that:
     aggr:hasTransformation <RMLQueryPipeline> ;
     aggr:hasTransformation <QueryView> ;
     aggr:hasTransformation <RMLMapper> ;
-    aggr:hasMapping <QueryViewMapping> ;
-    aggr:hasMapping <RMLMapperMapping> .
+    aggr:hasMapping <RMLQueryMapping> .
 
 <RMLQueryPipeline>
   a fno:Function ;
@@ -237,6 +236,15 @@ The following example describes a pipeline that:
       fnoc:mapTo [
         fnoc:constituentFunction <RMLMapper> ;
         fnoc:functionParameter <Mappings> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <Source> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <RMLMapper> ;
+        fnoc:functionParameter <Source> .
       ] .
     ],[
       fnoc:mapFrom [
@@ -260,13 +268,30 @@ The following example describes a pipeline that:
     ],[
       fnoc:mapFrom [
         fnoc:constituentFunction <QueryView> ;
-        fnoc:functionOutput <View> .
+        fnoc:functionOutput <Result> .
       ] ;
       fnoc:mapTo [
         fnoc:constituentFunction <RMLQueryPipeline> ;
-        fnoc:functionParameter <View> .
+        fnoc:functionParameter <Result> .
       ] .
     ] .
+  ] .
+
+<RMLQueryMapping>
+  a fno:Mapping ;
+  fno:parameterMapping [
+    a fnom:EndpointMapping ;
+    fnom:functionParameter <Source> ;
+    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> ;
+    dct:format <https://www.iana.org/assignments/media-types/application/json> .
+  ],[
+    fnom:functionParameter <Mappings> ;
+    dct:format <http://www.w3.org/ns/formats/Turtle> .
+  ] ;
+  fno:outputMapping [
+    a fnom:EndpointMapping ;
+    fnom:functionOutput <Result> ;
+    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> .
   ] .
 ```
 </div>

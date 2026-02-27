@@ -2128,8 +2128,7 @@ to protected derived resources.</p>
        <ol class="toc">
         <li><a href="#service-deployment"><span class="secno">9.1.1</span> <span class="content">Deploying a Service</span></a>
         <li><a href="#composite-service-deployment"><span class="secno">9.1.2</span> <span class="content">Deploying a Composite Service</span></a>
-        <li><a href="#composition-deployment"><span class="secno">9.1.3</span> <span class="content">Deploying a Composition</span></a>
-        <li><a href="#service-discovery"><span class="secno">9.1.4</span> <span class="content">Service Discovery</span></a>
+        <li><a href="#service-discovery"><span class="secno">9.1.3</span> <span class="content">Service Discovery</span></a>
        </ol>
       <li><a href="#service-endpoint"><span class="secno">9.2</span> <span class="content">Service Endpoint</span></a>
       <li>
@@ -2348,7 +2347,7 @@ user.</p>
 <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
     <li data-md>
      <p><strong>Aggregator Service resources:</strong> a service collection and individual services managed under the instance (see
-<a href="#service-discovery">§ 9.1.4 Service Discovery</a> and service resource and provenance).</p>
+<a href="#service-discovery">§ 9.1.3 Service Discovery</a> and service resource and provenance).</p>
    </ul>
    <h3 class="heading settled" data-level="3.3" id="base-urls-and-addressing"><span class="secno">3.3. </span><span class="content">Base URLs and Addressing</span><a class="self-link" href="#base-urls-and-addressing"></a></h3>
    <p>An implementation MUST define a stable base URL for:</p>
@@ -3039,14 +3038,14 @@ while internally orchestrating multiple individual services.</p>
    <p>The following example describes a pipeline that:</p>
    <ol>
     <li data-md>
-     <p>Uses RML to map a non-RDF source to RDF.</p>
+     <p>Uses RML to map a JSON source to RDF.</p>
     <li data-md>
      <p>Executes a query over the generated RDF.</p>
     <li data-md>
      <p>Exposes the resulting query output.</p>
    </ol>
-   <div class="example" id="example-f117aa60">
-    <a class="self-link" href="#example-f117aa60"></a>
+   <div class="example" id="example-9b5c2e19">
+    <a class="self-link" href="#example-9b5c2e19"></a>
 
 <pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -3061,8 +3060,7 @@ while internally orchestrating multiple individual services.</p>
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;RMLMapper></c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;QueryViewMapping></c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;RMLMapperMapping></c-> <c- p>.</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;RMLQueryMapping></c-> <c- p>.</c->
 
 <c- g>&lt;RMLQueryPipeline></c->
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Function</c-> <c- p>;</c->
@@ -3077,6 +3075,15 @@ while internally orchestrating multiple individual services.</p>
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLMapper></c-> <c- p>;</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Mappings></c-> <c- p>.</c->
+      <c- p>]</c-> <c- p>.</c->
+    <c- p>],[</c->
+      <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Source></c-> <c- p>.</c->
+      <c- p>]</c-> <c- p>;</c->
+      <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLMapper></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Source></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>.</c->
     <c- p>],[</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
@@ -3100,13 +3107,30 @@ while internally orchestrating multiple individual services.</p>
     <c- p>],[</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionOutput</c-> <c- g>&lt;View></c-> <c- p>.</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionOutput</c-> <c- g>&lt;Result></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>;</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;View></c-> <c- p>.</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Result></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>.</c->
     <c- p>]</c-> <c- p>.</c->
+  <c- p>]</c-> <c- p>.</c->
+
+<c- g>&lt;RMLQueryMapping></c->
+  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Mapping</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>parameterMapping</c-> <c- p>[</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Source></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://www.rfc-editor.org/rfc/rfc9110></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;https://www.iana.org/assignments/media-types/application/json></c-> <c- p>.</c->
+  <c- p>],[</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Mappings></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;http://www.w3.org/ns/formats/Turtle></c-> <c- p>.</c->
+  <c- p>]</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>outputMapping</c-> <c- p>[</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionOutput</c-> <c- g>&lt;Result></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://www.w3.org/TR/sparql11-protocol/></c-> <c- p>.</c->
   <c- p>]</c-> <c- p>.</c->
 </pre>
    </div>
@@ -4227,7 +4251,7 @@ the predicate <code>aggr:tokenExpiry</code> (<a href="#aggr-token-expiry-propert
     <dt data-md><strong>service_collection_endpoint</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator
-Services (<a href="#service-discovery">§ 9.1.4 Service Discovery</a>); in the RDF representations, this member maps to the predicate
+Services (<a href="#service-discovery">§ 9.1.3 Service Discovery</a>); in the RDF representations, this member maps to the predicate
 <code>aggr:serviceCollectionEndpoint</code> (<a href="#aggr-service-discovery-endpoint-property">§ 11.2.5 aggr:serviceCollectionEndpoint</a>).</p>
    </dl>
    <p>This document MAY be the WebID of the Aggregator Instance when the <code>provision</code> flow <a href="#creation-provision">§ 6.2.1 Creation provision Flow</a> was used. In
@@ -4290,7 +4314,7 @@ endpoint MUST at least return a list of transformations that are directly availa
    <p>The Service Collection endpoint (<a href="#service-discovery-endpoint">§ 9.1 Service Collection Endpoint</a>), which allows client to:</p>
    <ul>
     <li data-md>
-     <p>Discover running services on an aggregator (<a href="#service-discovery">§ 9.1.4 Service Discovery</a>)</p>
+     <p>Discover running services on an aggregator (<a href="#service-discovery">§ 9.1.3 Service Discovery</a>)</p>
     <li data-md>
      <p>Deploy new services on an aggregator</p>
    </ul>
@@ -4432,8 +4456,7 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
 </pre>
    </div>
    <h4 class="heading settled" data-level="9.1.2" id="composite-service-deployment"><span class="secno">9.1.2. </span><span class="content">Deploying a Composite Service</span><a class="self-link" href="#composite-service-deployment"></a></h4>
-   <h4 class="heading settled" data-level="9.1.3" id="composition-deployment"><span class="secno">9.1.3. </span><span class="content">Deploying a Composition</span><a class="self-link" href="#composition-deployment"></a></h4>
-   <h4 class="heading settled" data-level="9.1.4" id="service-discovery"><span class="secno">9.1.4. </span><span class="content">Service Discovery</span><a class="self-link" href="#service-discovery"></a></h4>
+   <h4 class="heading settled" data-level="9.1.3" id="service-discovery"><span class="secno">9.1.3. </span><span class="content">Service Discovery</span><a class="self-link" href="#service-discovery"></a></h4>
    <p>The Service Collection Endpoint <strong>MUST</strong> expose the Service Collection, an RDF document including all deployed service URIs.</p>
    <p>The endpoint <strong>SHOULD</strong> support HTTP content negotiation to allow clients to request different RDF serializations
 (e.g., Turtle, JSON-LD) of the RDF Document.</p>
@@ -4451,7 +4474,7 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
      </ul>
     <dt data-md><code>GET</code>
     <dd data-md>
-     <p>Returns the service collection RDF Document (<a href="#service-discovery">§ 9.1.4 Service Discovery</a>).
+     <p>Returns the service collection RDF Document (<a href="#service-discovery">§ 9.1.3 Service Discovery</a>).
 This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection endpoint.</p>
      <p>The server <strong>MUST</strong> respond with:</p>
      <ul>
