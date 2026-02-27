@@ -32,7 +32,7 @@ This specification defines HTTP resources at three levels:
 - **Aggregator Instance resources:** instance metadata and service management (see [[#aggregator-metadata]] and
     [[#aggregator-service-management]]).
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
-    [[#service-collection]] and service resource and provenance).
+    [[#service-discovery]] and service resource and provenance).
 
 Base URLs and Addressing {#base-urls-and-addressing}
 ---------------------------------------------------

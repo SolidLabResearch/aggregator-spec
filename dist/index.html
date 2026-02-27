@@ -2089,7 +2089,7 @@ to protected derived resources.</p>
       <li>
        <a href="#server-level-transformation-catalog"><span class="secno">5.3</span> <span class="content">Server-level Transformation Catalog</span></a>
        <ol class="toc">
-        <li><a href="#catalog-composite-services"><span class="secno">5.3.1</span> <span class="content">Composite Services</span></a>
+        <li><a href="#catalog-composite-transformations"><span class="secno">5.3.1</span> <span class="content">Composite Transformations</span></a>
         <li><a href="#server-level-catalog-publication"><span class="secno">5.3.2</span> <span class="content">Catalog Publication</span></a>
        </ol>
      </ol>
@@ -2130,13 +2130,11 @@ to protected derived resources.</p>
         <li><a href="#composite-service-deployment"><span class="secno">9.1.2</span> <span class="content">Deploying a Composite Service</span></a>
         <li><a href="#service-discovery"><span class="secno">9.1.3</span> <span class="content">Service Discovery</span></a>
        </ol>
-      <li><a href="#service-endpoint"><span class="secno">9.2</span> <span class="content">Service Endpoint</span></a>
       <li>
-       <a href="#service-request"><span class="secno">9.3</span> <span class="content">Service Request</span></a>
+       <a href="#service-endpoint"><span class="secno">9.2</span> <span class="content">Service Description Endpoint</span></a>
        <ol class="toc">
-        <li><a href="#deploying-services"><span class="secno">9.3.1</span> <span class="content">Deploying services</span></a>
-        <li><a href="#re-using-services"><span class="secno">9.3.2</span> <span class="content">Re-using services</span></a>
-        <li><a href="#deploying-compositions"><span class="secno">9.3.3</span> <span class="content">Deploying compositions</span></a>
+        <li><a href="#service-deletion"><span class="secno">9.2.1</span> <span class="content">Deleting a Service</span></a>
+        <li><a href="#service-output"><span class="secno">9.2.2</span> <span class="content">Service Output Endpoint</span></a>
        </ol>
      </ol>
     <li>
@@ -3027,8 +3025,8 @@ that can be deployed as services by the aggregator server.</p>
   <c- p>]</c-> <c- p>.</c->
 </pre>
    </div>
-   <h4 class="heading settled" data-level="5.3.1" id="catalog-composite-services"><span class="secno">5.3.1. </span><span class="content">Composite Services</span><a class="self-link" href="#catalog-composite-services"></a></h4>
-   <p>An Aggregator Server <strong>MAY</strong> support the deployment of composite services.</p>
+   <h4 class="heading settled" data-level="5.3.1" id="catalog-composite-transformations"><span class="secno">5.3.1. </span><span class="content">Composite Transformations</span><a class="self-link" href="#catalog-composite-transformations"></a></h4>
+   <p>An Aggregator Server <strong>MAY</strong> support the deployment of composite transformations.</p>
    <p>A transformation <strong>MAY</strong> be linked to an <code>fno:Composition</code> using <code>fno:composition</code>. This <strong>MAY</strong> be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
 provide additional transparency.</p>
@@ -4318,7 +4316,7 @@ endpoint MUST at least return a list of transformations that are directly availa
     <li data-md>
      <p>Deploy new services on an aggregator</p>
    </ul>
-   <p>Each deployed service <strong>MUST</strong> expose its own Service Description endpoint (<a href="#service-endpoint">§ 9.2 Service Endpoint</a>), which allows clients to:</p>
+   <p>Each deployed service <strong>MUST</strong> expose its own Service Description endpoint (<a href="#service-endpoint">§ 9.2 Service Description Endpoint</a>), which allows clients to:</p>
    <ul>
     <li data-md>
      <p>Inspect the service metadata (e.g. status)</p>
@@ -4379,7 +4377,7 @@ This request <strong>MUST</strong>:</p>
        <p>Add an applied function to the instance-level Transformation Catalog if no applied function
 with the same parameter bindings exists.</p>
       <li data-md>
-       <p>Deploy the new service on the aggregator and expose its Service Description Endpoint <a href="#service-endpoint">§ 9.2 Service Endpoint</a>.</p>
+       <p>Deploy the new service on the aggregator and expose its Service Description Endpoint <a href="#service-endpoint">§ 9.2 Service Description Endpoint</a>.</p>
        <ul>
         <li data-md>
          <p><code>aggr:performs</code> <strong>MUST</strong> link to the fno:AppliedFunction IRI that either:</p>
@@ -4456,6 +4454,24 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
 </pre>
    </div>
    <h4 class="heading settled" data-level="9.1.2" id="composite-service-deployment"><span class="secno">9.1.2. </span><span class="content">Deploying a Composite Service</span><a class="self-link" href="#composite-service-deployment"></a></h4>
+   <p>Deploying a service that performs a composite transformation <strong>MUST</strong> use the same request format as any other transformation service.</p>
+   <p>When all transformations referenced in the <code>fno:Composition</code> are included in the Transformation Catalog, the server <strong>MUST</strong>:</p>
+   <ul>
+    <li data-md>
+     <p>Deploy a service for each individual transformation referenced in the composition
+without exposing a Service Description Endpoint for those internal services.</p>
+     <ul>
+      <li data-md>
+       <p>If the output of such a transformation is mapped to the output of the composite transformation,
+the corresponding Service Output Endpoint <strong>MUST</strong> be exposed.</p>
+     </ul>
+    <li data-md>
+     <p>Expose a Service Description Endpoint for the composite service.</p>
+     <ul>
+      <li data-md>
+       <p>This Service Description Endpoint <strong>MUST</strong> reference the Service Output Endpoints of the corresponding internal services.</p>
+     </ul>
+   </ul>
    <h4 class="heading settled" data-level="9.1.3" id="service-discovery"><span class="secno">9.1.3. </span><span class="content">Service Discovery</span><a class="self-link" href="#service-discovery"></a></h4>
    <p>The Service Collection Endpoint <strong>MUST</strong> expose the Service Collection, an RDF document including all deployed service URIs.</p>
    <p>The endpoint <strong>SHOULD</strong> support HTTP content negotiation to allow clients to request different RDF serializations
@@ -4522,11 +4538,8 @@ For example, two services may maintain the same query over the same sources, whi
     <li data-md>
      <p>Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.</p>
    </ul>
-   <h3 class="heading settled" data-level="9.2" id="service-endpoint"><span class="secno">9.2. </span><span class="content">Service Endpoint</span><a class="self-link" href="#service-endpoint"></a></h3>
-   <ul>
-    <li data-md>
-   </ul>
-   <p>The aggregator <strong>MUST</strong> expose a Service Endpoint for each deployed service.</p>
+   <h3 class="heading settled" data-level="9.2" id="service-endpoint"><span class="secno">9.2. </span><span class="content">Service Description Endpoint</span><a class="self-link" href="#service-endpoint"></a></h3>
+   <p>The Service Description Endpoint <strong>MUST</strong> expose the Service Description as described in <a href="#aggregator-service">§ 4.4 Service</a>.</p>
    <p>This endpoint <strong>SHOULD</strong> support HTTP content negotiation as defined in <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>.</p>
    <dl>
     <dt data-md>GET
@@ -4534,10 +4547,13 @@ For example, two services may maintain the same query over the same sources, whi
      <p>Retrieves the service description (as defined in <a href="#aggregator-service">§ 4.4 Service</a>).</p>
      <ul>
       <li data-md>
-       <p>The request <strong>MUST</strong> be authorized with the read <code>scope</code> on the service resource.</p>
+       <p>The request <strong>MUST</strong> be authorized with the read <code>scope</code> on the service description endpoint.</p>
       <li data-md>
        <p>The server <strong>MUST</strong> respond with <code>200 OK</code>.</p>
      </ul>
+   </dl>
+   <h4 class="heading settled" data-level="9.2.1" id="service-deletion"><span class="secno">9.2.1. </span><span class="content">Deleting a Service</span><a class="self-link" href="#service-deletion"></a></h4>
+   <dl>
     <dt data-md>DELETE
     <dd data-md>
      <p>Deletes a running Aggregator Service.</p>
@@ -4560,128 +4576,21 @@ For example, two services may maintain the same query over the same sources, whi
        <p>If the service does not exist, the server <strong>SHOULD</strong> respond with <code>404 Not Found</code>.</p>
      </ul>
    </dl>
-   <h3 class="heading settled" data-level="9.3" id="service-request"><span class="secno">9.3. </span><span class="content">Service Request</span><a class="self-link" href="#service-request"></a></h3>
-   <h4 class="heading settled" data-level="9.3.1" id="deploying-services"><span class="secno">9.3.1. </span><span class="content">Deploying services</span><a class="self-link" href="#deploying-services"></a></h4>
-   <p>The request <strong>MUST</strong> be authorized with the <code>create</code> scope on the Service Collection resource.</p>
-   <p>The request <strong>MUST</strong> be an RDF Document containing <code>aggr:Service</code> descriptions that:</p>
-   <ul>
-    <li data-md>
-     <p>declare <code>aggr:performs</code> with an <code>fno:AppliedFunction</code> that:</p>
-     <ul>
-      <li data-md>
-       <p><strong>MUST</strong> apply a transformation from the server-level or instance-level transformation catalog.</p>
-      <li data-md>
-       <p>bounds a value to <strong>AT LEAST</strong> each required parameter.</p>
-      <li data-md>
-       <p><strong>MUST</strong> be a blank node. Any IRI value <strong>MUST</strong> be ignored.</p>
-     </ul>
-    <li data-md>
-     <p>declare <code>aggr:implements</code> with an <code>aggr:ServiceImplementation</code> that:</p>
-     <ul>
-      <li data-md>
-       <p>If the performed transformation only has one mapped <code>aggr:ServiceImplementation</code> the aggregator
-<strong>MAY</strong> treat this link as optional.</p>
-     </ul>
-    <li data-md>
-     <p><strong>MAY</strong> specify a URI indicating the requested service endpoint location.</p>
-     <ul>
-      <li data-md>
-       <p>The Aggregator <strong>MAY</strong> ignore the requested URI and assign its own.</p>
-      <li data-md>
-       <p>If the requested URI is syntactically invalid or not permitted, the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
-      <li data-md>
-       <p>If the requested URI is valid but already in use, the server <strong>MUST</strong> respond with <code>409 Conflict</code>.</p>
-     </ul>
-   </ul>
-   <h4 class="heading settled" data-level="9.3.2" id="re-using-services"><span class="secno">9.3.2. </span><span class="content">Re-using services</span><a class="self-link" href="#re-using-services"></a></h4>
-   <p>Services can be mapped to other service outputs using <code>fnoc:boundTo</code> instead of <code>fnoc:boundToTerm</code>. If there is no valid service running
-that performs the transformation, the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
-   <div class="example" id="example-94af8441">
-    <a class="self-link" href="#example-94af8441"></a>
+   <p>If a composite service is being deleted the server <strong>MUST</strong> stop and remove every internal server if
+not part of any other composite service.</p>
+   <h4 class="heading settled" data-level="9.2.2" id="service-output"><span class="secno">9.2.2. </span><span class="content">Service Output Endpoint</span><a class="self-link" href="#service-output"></a></h4>
+   <p>The Service Output Endpoint <strong>MUST</strong> be hosted at the same URL as the one referenced via <code>dcat:accessURL</code>
+in the corresponding service <code>dcat:Distribution</code>.</p>
+   <p>When a client requests a Service Output Endpoint, the server <strong>MUST</strong> include an HTTP <code>Link</code> header (<a data-link-type="biblio" href="#biblio-web-linking" title="Web Linking">[Web-Linking]</a>) pointing to the
+Service Description Endpoint using <code>aggr:fromService</code>.</p>
+   <div class="example" id="example-15451c5d">
+    <a class="self-link" href="#example-15451c5d"></a>
 
-<pre class="highlight language-http"><c- nf>POST</c-> <c- nn>http://aggregator.example.org/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
-<c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
-<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/ld+json</c->
-
-<c- p>{</c->
-    <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
-        <c- f>"aggr"</c-><c- p>:</c-> <c- u>"https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#"</c-><c- p>,</c->
-        <c- f>"fno"</c-><c- p>:</c-> <c- u>"https://w3id.org/function/ontology#"</c-><c- p>,</c->
-        <c- f>"fnoc"</c-><c- p>:</c-> <c- u>"https://w3id.org/function/vocabulary/composition#"</c-><c- p>,</c->
-        <c- f>"prov"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/prov#"</c->
-    <c- p>},</c->
-    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"aggr:Service"</c-><c- p>,</c->
-    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/agg1/query-service"</c-><c- p>,</c->
-    <c- f>"aggr:performs"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@type"</c-><c- p>:</c-> <c- u>"fno:AppliedFunction"</c-><c- p>,</c->
-        <c- f>"fnoc:applies"</c-><c- p>:</c-> <c- p>{</c->
-            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#QueryView"</c->
-        <c- p>},</c->
-        <c- f>"fnoc:parameterBindings"</c-><c- p>:</c-> <c- p>[</c->
-            <c- p>{</c->
-                <c- f>"fnoc:boundParameter"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#Query"</c-><c- p>,</c->
-                <c- f>"fnoc:boundToTerm"</c-><c- p>:</c-> <c- u>"SELECT * WHERE { ?s ?p ?o }"</c->
-            <c- p>},</c->
-            <c- p>{</c->
-                <c- f>"fnoc:boundParameter"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#Sources"</c-><c- p>,</c->
-                <c- f>"fnoc:boundTo"</c-><c- p>:</c-> <c- p>{</c->
-                    <c- f>"fnoc:constituentFunction"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#FetchSources"</c-><c- p>,</c->
-                    <c- f>"fnoc:functionOutput"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#FetchedSources"</c-><c- p>,</c->
-                <c- p>}</c->
-            <c- p>}</c->
-        <c- p>]</c->
-    <c- p>},</c->
-    <c- f>"aggr:implements"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#SPARQLServiceImplementation"</c->
-    <c- p>}</c->
-<c- p>}</c->
+<pre class="highlight language-http">Link: &lt;http://aggregator.example.com/agg1/example-service>; rel="https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#fromService"
 </pre>
    </div>
-   <p class="issue" id="issue-b82b9949"><a class="self-link" href="#issue-b82b9949"></a> If multiple services perform the transformation with a different service implementation, what service must be chosen?
-ISSUE: What if you want to connect to a specific service?
-ISSUE: What if you want to connect to a service running on an other aggregator?</p>
-   <h4 class="heading settled" data-level="9.3.3" id="deploying-compositions"><span class="secno">9.3.3. </span><span class="content">Deploying compositions</span><a class="self-link" href="#deploying-compositions"></a></h4>
-   <p class="issue" id="issue-0875f9f8"><a class="self-link" href="#issue-0875f9f8"></a> How to deploy compositions?
-ISSUE: How does an aggregator know what service implementation to choose for each service inside the composition?
-ISSUE: Create one service that represents the whole composition? Or a new service for each component?</p>
-   <div class="example" id="example-a12a7e5e">
-    <a class="self-link" href="#example-a12a7e5e"></a>
-
-<pre class="highlight language-http"><c- nf>POST</c-> <c- nn>http://aggregator.example.org/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
-<c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
-<c- e>Content-Type</c-><c- o>:</c-> <c- l>application/ld+json</c->
-
-<c- p>{</c->
-    <c- nd>"@context"</c-><c- p>:</c-> <c- p>{</c->
-        <c- f>"aggr"</c-><c- p>:</c-> <c- u>"https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#"</c-><c- p>,</c->
-        <c- f>"fno"</c-><c- p>:</c-> <c- u>"https://w3id.org/function/ontology#"</c-><c- p>,</c->
-        <c- f>"fnoc"</c-><c- p>:</c-> <c- u>"https://w3id.org/function/vocabulary/composition#"</c-><c- p>,</c->
-        <c- f>"prov"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/prov#"</c->
-    <c- p>},</c->
-    <c- nd>"@type"</c-><c- p>:</c-> <c- u>"aggr:Service"</c-><c- p>,</c->
-    <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/agg1/query-service"</c-><c- p>,</c->
-    <c- f>"aggr:performs"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@type"</c-><c- p>:</c-> <c- u>"fno:AppliedFunction"</c-><c- p>,</c->
-        <c- f>"fnoc:applies"</c-><c- p>:</c-> <c- p>{</c->
-            <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#WeightLossPipeline"</c->
-        <c- p>},</c->
-        <c- f>"fnoc:parameterBindings"</c-><c- p>:</c-> <c- p>[</c->
-            <c- p>{</c->
-                <c- f>"fnoc:boundParameter"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#Query"</c-><c- p>,</c->
-                <c- f>"fnoc:boundToTerm"</c-><c- p>:</c-> <c- u>"SELECT * WHERE { ?s ?p ?o }"</c->
-            <c- p>},</c->
-            <c- p>{</c->
-                <c- f>"fnoc:boundParameter"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#Sources"</c-><c- p>,</c->
-                <c- f>"fnoc:boundToTerm"</c-><c- p>:</c-> <c- p>[</c->
-                    <c- u>"http://example.com/source1"</c-><c- p>,</c->
-                    <c- u>"http://example.com/source2"</c->
-                <c- p>]</c->
-            <c- p>}</c->
-        <c- p>]</c->
-    <c- p>}</c->
-<c- p>}</c->
-</pre>
-   </div>
+   <p>This requirement establishes an explicit and machine-readable relationship between a service output
+and its corresponding service description.</p>
    <h2 class="heading settled" data-level="10" id="aggregator-provenance-management"><span class="secno">10. </span><span class="content">Aggregator Provenance Managment</span><a class="self-link" href="#aggregator-provenance-management"></a></h2>
    <p>This section describes how an aggregator should store, expose and maintain the provenance metadata detailing
 service executions.</p>
@@ -5252,6 +5161,8 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
    <dd><a href="https://semver.org/"><cite>Semantic Versioning 2.0.0</cite></a>. URL: <a href="https://semver.org/">https://semver.org/</a>
    <dt id="biblio-uma">[UMA]
    <dd><a href="https://docs.kantarainitiative.org/uma/rec-uma-core.html"><cite>User-Managed Access (UMA) 2.0</cite></a>. URL: <a href="https://docs.kantarainitiative.org/uma/rec-uma-core.html">https://docs.kantarainitiative.org/uma/rec-uma-core.html</a>
+   <dt id="biblio-web-linking">[Web-Linking]
+   <dd><a href="https://www.rfc-editor.org/rfc/rfc8288"><cite>Web Linking</cite></a>. URL: <a href="https://www.rfc-editor.org/rfc/rfc8288">https://www.rfc-editor.org/rfc/rfc8288</a>
    <dt id="biblio-webid-profile">[WEBID-PROFILE]
    <dd><a href="https://solid.github.io/webid-profile/"><cite>WebID Profile</cite></a>. URL: <a href="https://solid.github.io/webid-profile/">https://solid.github.io/webid-profile/</a>
   </dl>
@@ -5274,10 +5185,4 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
   <div style="counter-reset:issue">
    <div class="issue"> This is actually for the FnO Spec <a class="issue-return" href="#issue-1f1089c5" title="Jump to section">↵</a></div>
    <div class="issue"> should we allow a name field for the aggregator during creation? <a class="issue-return" href="#issue-7876f244" title="Jump to section">↵</a></div>
-   <div class="issue"> If multiple services perform the transformation with a different service implementation, what service must be chosen?
-ISSUE: What if you want to connect to a specific service?
-ISSUE: What if you want to connect to a service running on an other aggregator? <a class="issue-return" href="#issue-b82b9949" title="Jump to section">↵</a></div>
-   <div class="issue"> How to deploy compositions?
-ISSUE: How does an aggregator know what service implementation to choose for each service inside the composition?
-ISSUE: Create one service that represents the whole composition? Or a new service for each component? <a class="issue-return" href="#issue-0875f9f8" title="Jump to section">↵</a></div>
   </div>

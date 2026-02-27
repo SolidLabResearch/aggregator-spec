@@ -75,6 +75,10 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
   "PROV-O": {
     "href": "https://www.w3.org/TR/prov-o/",
     "title": "The Provenance Ontology"
+  },
+  "Web-Linking": {
+    "href": "https://www.rfc-editor.org/rfc/rfc8288",
+    "title": "Web Linking"
   }
 }
 </pre>

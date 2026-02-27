@@ -75,6 +75,10 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
   "PROV-O": {
     "href": "https://www.w3.org/TR/prov-o/",
     "title": "The Provenance Ontology"
+  },
+  "Web-Linking": {
+    "href": "https://www.rfc-editor.org/rfc/rfc8288",
+    "title": "Web Linking"
   }
 }
 </pre>
@@ -855,9 +859,9 @@ The `aggr:TransformationCatalog`:
 ```
 </div>
 
-### Composite Services ### {#catalog-composite-services}
+### Composite Transformations ### {#catalog-composite-transformations}
 
-An Aggregator Server **MAY** support the deployment of composite services. 
+An Aggregator Server **MAY** support the deployment of composite transformations. 
 
 A transformation **MAY** be linked to an `fno:Composition` using `fno:composition`. This **MAY** be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
@@ -2317,6 +2321,16 @@ Content-Type: application/ld+json
 
 ### Deploying a Composite Service ### {#composite-service-deployment}
 
+Deploying a service that performs a composite transformation **MUST** use the same request format as any other transformation service.
+
+When all transformations referenced in the `fno:Composition` are included in the Transformation Catalog, the server **MUST**:
+    - Deploy a service for each individual transformation referenced in the composition 
+        without exposing a Service Description Endpoint for those internal services.
+        - If the output of such a transformation is mapped to the output of the composite transformation, 
+            the corresponding Service Output Endpoint **MUST** be exposed.
+    - Expose a Service Description Endpoint for the composite service.
+        - This Service Description Endpoint **MUST** reference the Service Output Endpoints of the corresponding internal services.
+
 ### Service Discovery ### {#service-discovery}
 
 The Service Collection Endpoint **MUST** expose the Service Collection, an RDF document including all deployed service URIs.
@@ -2371,19 +2385,19 @@ This achieves the following:
         - The mapping being used
     - Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.
 
-Service Endpoint {#service-endpoint}
-------------------------------------
+Service Description Endpoint {#service-endpoint}
+------------------------------------------------
 
-- 
-
-The aggregator **MUST** expose a Service Endpoint for each deployed service.
+The Service Description Endpoint **MUST** expose the Service Description as described in [[#aggregator-service]].
 
 This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
 
 : GET
 :: Retrieves the service description (as defined in [[#aggregator-service]]).
-    - The request **MUST** be authorized with the read `scope` on the service resource.
+    - The request **MUST** be authorized with the read `scope` on the service description endpoint.
     - The server **MUST** respond with `200 OK`.
+
+### Deleting a Service ### {#service-deletion}
 
 : DELETE
 :: Deletes a running Aggregator Service.
@@ -2395,123 +2409,25 @@ This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC911
         4. Respond with either `200 OK` or `204 No Content`.
     - If the service does not exist, the server **SHOULD** respond with `404 Not Found`.
 
-Service Request {#service-request}
-----------------------------------
+If a composite service is being deleted the server **MUST** stop and remove every internal server if 
+not part of any other composite service.
 
-### Deploying services ### {#deploying-services}
+### Service Output Endpoint ### {#service-output}
 
-The request **MUST** be authorized with the `create` scope on the Service Collection resource.
+The Service Output Endpoint **MUST** be hosted at the same URL as the one referenced via `dcat:accessURL` 
+in the corresponding service `dcat:Distribution`.
 
-The request **MUST** be an RDF Document containing `aggr:Service` descriptions that:
-    - declare `aggr:performs` with an `fno:AppliedFunction` that:
-        - **MUST** apply a transformation from the server-level or instance-level transformation catalog.
-        - bounds a value to **AT LEAST** each required parameter.
-        - **MUST** be a blank node. Any IRI value **MUST** be ignored.
-    - declare `aggr:implements` with an `aggr:ServiceImplementation` that:
-        - If the performed transformation only has one mapped `aggr:ServiceImplementation` the aggregator
-            **MAY** treat this link as optional.
-    - **MAY** specify a URI indicating the requested service endpoint location.
-        - The Aggregator **MAY** ignore the requested URI and assign its own.
-        - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
-        - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
-
-
-
-
-
-### Re-using services ### {#re-using-services}
-
-Services can be mapped to other service outputs using `fnoc:boundTo` instead of `fnoc:boundToTerm`. If there is no valid service running 
-that performs the transformation, the server **MUST** respond with `400 Bad Request`.
+When a client requests a Service Output Endpoint, the server **MUST** include an HTTP `Link` header ([[!Web-Linking]]) pointing to the 
+Service Description Endpoint using `aggr:fromService`.
 
 <div class="example">
 ```http
-POST http://aggregator.example.org/agg1/services HTTP/1.1
-Host: aggregator.example.org
-Content-Type: application/ld+json
-
-{
-    "@context": {
-        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
-        "fno": "https://w3id.org/function/ontology#",
-        "fnoc": "https://w3id.org/function/vocabulary/composition#",
-        "prov": "http://www.w3.org/ns/prov#"
-    },
-    "@type": "aggr:Service",
-    "@id": "http://aggregator.example.org/agg1/query-service",
-    "aggr:performs": {
-        "@type": "fno:AppliedFunction",
-        "fnoc:applies": {
-            "@id": "http://aggregator.example.org/transformations#QueryView"
-        },
-        "fnoc:parameterBindings": [
-            {
-                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Query",
-                "fnoc:boundToTerm": "SELECT * WHERE { ?s ?p ?o }"
-            },
-            {
-                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Sources",
-                "fnoc:boundTo": {
-                    "fnoc:constituentFunction": "http://aggregator.example.org/transformations#FetchSources",
-                    "fnoc:functionOutput": "http://aggregator.example.org/transformations#FetchedSources",
-                }
-            }
-        ]
-    },
-    "aggr:implements": {
-        "@id": "http://aggregator.example.org/transformations#SPARQLServiceImplementation"
-    }
-}
+Link: <http://aggregator.example.com/agg1/example-service>; rel="https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#fromService"
 ```
 </div>
 
-ISSUE: If multiple services perform the transformation with a different service implementation, what service must be chosen?
-ISSUE: What if you want to connect to a specific service?
-ISSUE: What if you want to connect to a service running on an other aggregator?
-
-### Deploying compositions ### {#deploying-compositions}
-
-ISSUE: How to deploy compositions?
-ISSUE: How does an aggregator know what service implementation to choose for each service inside the composition?
-ISSUE: Create one service that represents the whole composition? Or a new service for each component?
-
-<div class="example">
-```http
-POST http://aggregator.example.org/agg1/services HTTP/1.1
-Host: aggregator.example.org
-Content-Type: application/ld+json
-
-{
-    "@context": {
-        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
-        "fno": "https://w3id.org/function/ontology#",
-        "fnoc": "https://w3id.org/function/vocabulary/composition#",
-        "prov": "http://www.w3.org/ns/prov#"
-    },
-    "@type": "aggr:Service",
-    "@id": "http://aggregator.example.org/agg1/query-service",
-    "aggr:performs": {
-        "@type": "fno:AppliedFunction",
-        "fnoc:applies": {
-            "@id": "http://aggregator.example.org/transformations#WeightLossPipeline"
-        },
-        "fnoc:parameterBindings": [
-            {
-                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Query",
-                "fnoc:boundToTerm": "SELECT * WHERE { ?s ?p ?o }"
-            },
-            {
-                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Sources",
-                "fnoc:boundToTerm": [
-                    "http://example.com/source1",
-                    "http://example.com/source2"
-                ]
-            }
-        ]
-    }
-}
-```
-</div>
+This requirement establishes an explicit and machine-readable relationship between a service output 
+and its corresponding service description.
 
 
 

@@ -189,9 +189,9 @@ The `aggr:TransformationCatalog`:
 ```
 </div>
 
-### Composite Services ### {#catalog-composite-services}
+### Composite Transformations ### {#catalog-composite-transformations}
 
-An Aggregator Server **MAY** support the deployment of composite services. 
+An Aggregator Server **MAY** support the deployment of composite transformations. 
 
 A transformation **MAY** be linked to an `fno:Composition` using `fno:composition`. This **MAY** be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
