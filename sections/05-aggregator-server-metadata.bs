@@ -189,31 +189,22 @@ The `aggr:TransformationCatalog`:
 ```
 </div>
 
-### Compositions ### {#catalog-compositions}
+### Composite Services ### {#catalog-composite-services}
 
-An Aggregator Server **MAY** support the deployment of pipelines described using `fno:Composition`. 
-A pipeline can be included in the catalog in one of the following ways, depending on how it is exposed.
+An Aggregator Server **MAY** support the deployment of composite services. 
 
-**Pipeline exposed as a single service**
+A transformation **MAY** be linked to an `fno:Composition` using `fno:composition`. This **MAY** be done
+solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
+provide additional transparency.
 
-If a pipeline is exposed as a single service, with its internal components hidden:
-  - The `fno:Composition` **MUST** be linked to a transformation using `fno:composition`.
-  - The corresponding `fno:Function` representing the transformation **MUST** be linked to the catalog using `aggr:hasTransformation`.
+If all transformations referenced within the `fno:Composition` are also included in the catalog, 
+each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
+while internally orchestrating multiple individual services.
 
-If the internal components represent deployable transformations:
-  - All components **MUST** represent deployable transformations.
-  - They **MUST** be linked to the catalog as defined in [[#server-level-transformation-catalog]].
-
-The fno:Composition MAY be used solely to describe the internal structure of a transformation. In this case, 
-the composition serves as descriptive metadata to provide additional transparency. This applies when **AT LEAST ONE** component 
-of the composition is not linked to the catalog. Then, the transformation **MUST** be deployable as a single unit.
-
-**Pipeline Exposing All Components as Services**
-
-If each component of the pipeline is exposed as an individual service: 
-  - The `fno:Composition` **MUST** be linked directly to the catalog using `aggr:hasComposition`.
-  - Every transformation used inside the `fno:Composition` **MUST** be linked to the catalog 
-      as defined earlier (see [[#server-level-transformation-catalog]]).
+The following example describes a pipeline that:
+  1. Uses RML to map a non-RDF source to RDF.
+  2. Executes a query over the generated RDF.
+  3. Exposes the resulting query output.
 
 <div class="example">
 ```turtle
@@ -228,6 +219,8 @@ If each component of the pipeline is exposed as an individual service:
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
     aggr:hasTransformation <RMLQueryPipeline> ;
+    aggr:hasTransformation <QueryView> ;
+    aggr:hasTransformation <RMLMapper> ;
     aggr:hasMapping <QueryViewMapping> ;
     aggr:hasMapping <RMLMapperMapping> .
 

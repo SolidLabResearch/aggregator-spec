@@ -215,7 +215,7 @@ This specification defines HTTP resources at three levels:
 - **Aggregator Instance resources:** instance metadata and service management (see [[#aggregator-metadata]] and
     [[#aggregator-service-management]]).
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
-    [[#service-collection]] and service resource and provenance).
+    [[#service-discovery]] and service resource and provenance).
 
 Base URLs and Addressing {#base-urls-and-addressing}
 ---------------------------------------------------
@@ -855,31 +855,22 @@ The `aggr:TransformationCatalog`:
 ```
 </div>
 
-### Compositions ### {#catalog-compositions}
+### Composite Services ### {#catalog-composite-services}
 
-An Aggregator Server **MAY** support the deployment of pipelines described using `fno:Composition`. 
-A pipeline can be included in the catalog in one of the following ways, depending on how it is exposed.
+An Aggregator Server **MAY** support the deployment of composite services. 
 
-**Pipeline exposed as a single service**
+A transformation **MAY** be linked to an `fno:Composition` using `fno:composition`. This **MAY** be done
+solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
+provide additional transparency.
 
-If a pipeline is exposed as a single service, with its internal components hidden:
-  - The `fno:Composition` **MUST** be linked to a transformation using `fno:composition`.
-  - The corresponding `fno:Function` representing the transformation **MUST** be linked to the catalog using `aggr:hasTransformation`.
+If all transformations referenced within the `fno:Composition` are also included in the catalog, 
+each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
+while internally orchestrating multiple individual services.
 
-If the internal components represent deployable transformations:
-  - All components **MUST** represent deployable transformations.
-  - They **MUST** be linked to the catalog as defined in [[#server-level-transformation-catalog]].
-
-The fno:Composition MAY be used solely to describe the internal structure of a transformation. In this case, 
-the composition serves as descriptive metadata to provide additional transparency. This applies when **AT LEAST ONE** component 
-of the composition is not linked to the catalog. Then, the transformation **MUST** be deployable as a single unit.
-
-**Pipeline Exposing All Components as Services**
-
-If each component of the pipeline is exposed as an individual service: 
-  - The `fno:Composition` **MUST** be linked directly to the catalog using `aggr:hasComposition`.
-  - Every transformation used inside the `fno:Composition` **MUST** be linked to the catalog 
-      as defined earlier (see [[#server-level-transformation-catalog]]).
+The following example describes a pipeline that:
+  1. Uses RML to map a non-RDF source to RDF.
+  2. Executes a query over the generated RDF.
+  3. Exposes the resulting query output.
 
 <div class="example">
 ```turtle
@@ -894,6 +885,8 @@ If each component of the pipeline is exposed as an individual service:
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
     aggr:hasTransformation <RMLQueryPipeline> ;
+    aggr:hasTransformation <QueryView> ;
+    aggr:hasTransformation <RMLMapper> ;
     aggr:hasMapping <QueryViewMapping> ;
     aggr:hasMapping <RMLMapperMapping> .
 
@@ -2121,8 +2114,8 @@ that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-c
     `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
 : **service_collection_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
-    Services ([[#service-collection]]); in the RDF representations, this member maps to the predicate
-    `aggr:serviceCollectionEndpoint` ([[#aggr-service-collection-endpoint-property]]).
+    Services ([[#service-discovery]]); in the RDF representations, this member maps to the predicate
+    `aggr:serviceCollectionEndpoint` ([[#aggr-service-discovery-endpoint-property]]).
  
 This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 
 that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
@@ -2190,10 +2183,11 @@ Aggregator Service Management {#aggregator-service-management}
 
 This section describes how users manage services deployed on an aggregator.
 
-Service management is performed through the service collection endpoint ([[#service-collection-endpoint]]), 
-which provides access to the set of deployed services.
+The Service Collection endpoint ([[#service-discovery-endpoint]]), which allows client to:
+    - Discover running services on an aggregator ([[#service-discovery]])
+    - Deploy new services on an aggregator
 
-Each deployed service **MUST** expose its own service endpoint ([[#service-endpoint]]), which allows clients to:
+Each deployed service **MUST** expose its own Service Description endpoint ([[#service-endpoint]]), which allows clients to:
     - Inspect the service metadata (e.g. status)
     - Discover its capabilities
     - Delete the service
@@ -2201,68 +2195,58 @@ Each deployed service **MUST** expose its own service endpoint ([[#service-endpo
 All endpoints described in this section **MUST** be protected using the authentication and authorization mechanisms defined in 
 [[#aggregator-security-model]].
 
-Service Collection Endpoint {#service-collection-endpoint}
+Service Collection Endpoint {#service-discovery-endpoint}
 ----------------------------------------------------------
-
-This endpoint supports management of aggregator services. It enables clients to:
-    - Discover all deployed services and the transformations they implement
-    - Create new services
 
 The location of this endpoint **MUST** be advertised in the Aggregator Description ([[#aggregator-description]]) 
 using the `service_collection_endpoint` field. Clients **MUST** treat the advertised URL as authoritative and **MUST NOT**
-assume a fixed path. Examples shown in this section use `/agg1/services` for illustation purposes only.
+assume a fixed path. Examples shown in this section use `http://aggregator.example.org/agg1/services` for illustation purposes only.
 
 The Aggregator **MUST** register this endpoint as an UMA resource with the Authorization Server and **MUST** advertise 
 atleast the `read` and `create` scopes.
 
-This endpoint **SHOULD** support content-negotiation as defined in [[RFC9110]], and advertise supported content types for 
-`POST` requests via the `Accept-Post` header defined in [[!LDP]].
+### Deploying a Service ### {#service-deployment}
 
-: `HEAD`
-:: Enables clients to detect changes to the collection without retrieving the full representation. 
-    This request **MUST** be authorized with a `read` scope on the Service Collection resource.
-
-    The server **MUST** respond with:
-        - `200 OK`
-        - An `ETag` header whose value changes whenever a service is added to or removed from the collection.
-
-: `GET`
-:: Returns the service collection RDF Document ([[#service-collection]]). 
-    This request **MUST** be authorized with a `read` scope on the Service Collection endpoint.
-
-    The server **MUST** respond with:
-        - `200 OK`
-        - The same `ETag` value that would be returned in response to a `HEAD` request
-    
-    The server **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
+The Service Collection Endpoint **MUST** allow `POST` requests to deploy new services. The supported content types must be advertised
+via the `Accept-Post` header defined in [[!LDP]].
 
 : `POST`
-:: Deploys Aggregator Service(s) based on a service request. (see [[#service-request]])
+:: Enables clients to deploy new Services.
+    This request **MUST**:
+        - be authorized with the `create` scope on the Service Collection Endpoint.
+        - be an RDF Document containing `aggr:Service` descriptions that:
+            - **MUST** declare an `fno:AppliedFunction` with `aggr:performs`that:
+                - **MUST** apply a transformation from the server-level or instance-level transformation catalog.
+                - bounds a value to **AT LEAST** each required parameter.
+                - **MUST** be a blank node. Any IRI value **MUST** be ignored.
+            - **MAY** declare an `fno:Mapping` with `aggr:usesMapping`.
+            - **MAY** specify a URI indicating the requested service endpoint location.
+                - The Aggregator **MAY** ignore the requested URI and assign its own.
+                - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
+                - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
     
-: `OPTION`
-:: Advertise:
-    - the supported RDF serializations for the Service Collection ( as defined in [[RFC9110]]).
-    - the supported content types for POST requests via the `Accept-Post` header defined in [[!LDP]].
+    Upon successful processing of a valid request, the server **MUST**:
+        1. Add an applied function to the instance-level Transformation Catalog if no applied function
+            with the same parameter bindings exists.
+        2. Deploy the new service on the aggregator and expose its Service Description Endpoint [[#service-endpoint]].
+            - `aggr:performs` **MUST** link to the fno:AppliedFunction IRI that either:
+                - Was created as part of the service deployment request, or
+                - Already existed in the instance-level Transformation Catalog.
+        3. Update the Service Collection and its associated `ETag`.
+        4. Register the service endpoint as a UMA resource at the Authorization Server, 
+            advertising at least the `read` and `delete` scopes.
+        5. Register the service output endpoint as a UMA resource, advertising at least the `read` scope.
+        6. Respond with:
+            - `201 Created`
+            - The service description (as defined in [[#aggregator-service]]) in the response body, and
+            - A `Location` header identifying the Service Description Endpoint.
 
-Service Request {#service-request}
-----------------------------------
+    If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
+    referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`.
 
-### Deploying services ### {#deploying-services}
-
-The request **MUST** be authorized with the `create` scope on the Service Collection resource.
-
-The request **MUST** be an RDF Document containing `aggr:Service` descriptions that:
-    - declare `aggr:performs` with an `fno:AppliedFunction` that:
-        - **MUST** apply a transformation from the server-level or instance-level transformation catalog.
-        - bounds a value to **AT LEAST** each required parameter.
-        - **MUST** be a blank node. Any IRI value **MUST** be ignored.
-    - declare `aggr:implements` with an `aggr:ServiceImplementation` that:
-        - If the performed transformation only has one mapped `aggr:ServiceImplementation` the aggregator
-            **MAY** treat this link as optional.
-    - **MAY** specify a URI indicating the requested service endpoint location.
-        - The Aggregator **MAY** ignore the requested URI and assign its own.
-        - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
-        - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
+    If the request is valid but the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
+    
+The following example requests a service that performs the `QueryView` transformation using the `QueryViewMapping`:
 
 <div class="example">
 ```http
@@ -2300,32 +2284,117 @@ Content-Type: application/ld+json
     },
     "aggr:usesMapping": {
         "@type": "fno:Mapping",
-        "@id": "http://aggregator.example.org/transformations#QueryViewSPARQLMapping"
+        "@id": "http://aggregator.example.org/transformations#QueryViewMapping"
     },
 }
 ```
 </div>
 
-Upon successful processing of a valid request, the server **MUST**:
-    1. Add the applied function to the instance-level Transformation Catalog if no applied function
-        with the same parameter bindings exists.
-    2. Deploy the new service on the aggregator and expose its service endpoint [[#service-endpoint]].
-        - `aggr:performs` **MUST** link to the fno:AppliedFunction IRI that either:
-            - Was created as part of the service deployment request, or
-            - Already exists in the Transformation Catalog.
-    3. Update the Service Collection and its associated `ETag`.
-    4. Register the service endpoint as a UMA resource at the Authorization Server, 
-        advertising at least the `read` and `delete` scopes.
-    5. Register the service output endpoint as a UMA resource, advertising at least the `read` scope.
-    6. Respond with:
-        - `201 Created`
-        - The service description (as defined in [[#aggregator-service]]) in the response body, and
-        - A `Location` header identifying the Service Endpoint URI.
+### Deploying a Composite Service ### {#composite-service-deployment}
 
-If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
-referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`.
+### Deploying a Composition ### {#composition-deployment}
 
-If the request is valid but the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
+### Service Discovery ### {#service-discovery}
+
+The Service Collection Endpoint **MUST** expose the Service Collection, an RDF document including all deployed service URIs.
+
+The endpoint **SHOULD** support HTTP content negotiation to allow clients to request different RDF serializations 
+(e.g., Turtle, JSON-LD) of the RDF Document.
+
+: `HEAD`
+:: Enables clients to detect changes to the collection without retrieving the full representation. 
+    This request **MUST** be authorized with a `read` scope on the Service Collection resource.
+
+    The server **MUST** respond with:
+        - `200 OK`
+        - An `ETag` header whose value changes whenever a service is added to or removed from the collection.
+
+: `GET`
+:: Returns the service collection RDF Document ([[#service-discovery]]). 
+    This request **MUST** be authorized with a `read` scope on the Service Collection endpoint.
+
+    The server **MUST** respond with:
+        - `200 OK`
+        - The same `ETag` value that would be returned in response to a `HEAD` request
+        - The serialized Service Collection in the body
+
+The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoints using `aggr:hasService`.
+
+<div class="example">
+```turtle
+@base <http://aggregator.example.com/agg1/services#>
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix tfc: <http://aggregator.example.org/transformations#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<>
+    a aggr:ServiceCollection ;
+    aggr:hasService (
+        <http://aggregator.example.com/agg1/my-query-view-service>
+        <http://aggregator.example.com/agg1/my-rml-service>
+    ) .
+```
+</div>
+
+Services that perform the same transformation with identical input bindings **MUST** be mapped to the same `fno:AppliedFunction`. 
+For example, two services may maintain the same query over the same sources, while exposing the result through different interfaces 
+(e.g., a SPARQL endpoint or an event stream).
+
+This achieves the following:
+    - Clients can discover services based on:
+        - The transformation being executed
+        - The bound input parameters
+        - The mapping being used
+    - Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.
+
+Service Endpoint {#service-endpoint}
+------------------------------------
+
+- 
+
+The aggregator **MUST** expose a Service Endpoint for each deployed service.
+
+This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
+
+: GET
+:: Retrieves the service description (as defined in [[#aggregator-service]]).
+    - The request **MUST** be authorized with the read `scope` on the service resource.
+    - The server **MUST** respond with `200 OK`.
+
+: DELETE
+:: Deletes a running Aggregator Service.
+    - The request **MUST** be authorized with the `delete` scope on the service resources.
+    - Upon successful processing, the server **MUST**:
+        1. Stop and remove the running service from the aggregator.
+        2. Update the Service Collection and its associated `ETag`.
+        3. Delete the corresponding UMA resources at the Authorization Server.
+        4. Respond with either `200 OK` or `204 No Content`.
+    - If the service does not exist, the server **SHOULD** respond with `404 Not Found`.
+
+Service Request {#service-request}
+----------------------------------
+
+### Deploying services ### {#deploying-services}
+
+The request **MUST** be authorized with the `create` scope on the Service Collection resource.
+
+The request **MUST** be an RDF Document containing `aggr:Service` descriptions that:
+    - declare `aggr:performs` with an `fno:AppliedFunction` that:
+        - **MUST** apply a transformation from the server-level or instance-level transformation catalog.
+        - bounds a value to **AT LEAST** each required parameter.
+        - **MUST** be a blank node. Any IRI value **MUST** be ignored.
+    - declare `aggr:implements` with an `aggr:ServiceImplementation` that:
+        - If the performed transformation only has one mapped `aggr:ServiceImplementation` the aggregator
+            **MAY** treat this link as optional.
+    - **MAY** specify a URI indicating the requested service endpoint location.
+        - The Aggregator **MAY** ignore the requested URI and assign its own.
+        - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
+        - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
+
+
+
+
 
 ### Re-using services ### {#re-using-services}
 
@@ -2420,75 +2489,6 @@ Content-Type: application/ld+json
 }
 ```
 </div>
-
-Service Collection {#service-collection}
-----------------------------------------
-
-The Service Collection is an RDF document including all deployed service URIs.
-
-### Collection Publication ###
-
-    - Aggregator servers **MAY** publish the Service Collection at any deployment-specific URL.
-
-    - The collection **MUST** be retrievable via `HTTP GET` at the URL advertised in the Aggregator Description 
-        through the `service_collection_endpoint` field.
-
-    - The collection **SHOULD** support HTTP content negotiation, 
-        allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
-
-### Grouping Services ### {#grouping-services}
-
-Services that implement the same transformation with identical input bindings **MUST** be mapped to the same `fno:AppliedFunction`
-within the collection. For example, two services may maintain the same query over the same sources, 
-while exposing the result through different interfaces (e.g., a SPARQL endpoint or an event stream).
-
-This achieves the following:
-    - Multiple services can share the same applied transformation.
-    - Clients can discover services based on:
-        - The transformation being executed
-        - The bound input parameters
-    - Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.
-
-### Example
-
-<div class="example">
-```turtle
-@base <http://aggregator.example.com/agg1/services#>
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix fno: <https://w3id.org/function/ontology#> .
-@prefix tfc: <http://aggregator.example.org/transformations#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-<>
-    a aggr:ServiceCollection ;
-    aggr:service (
-        <http://aggregator.example.com/agg1/my-sparql-service>
-        <http://aggregator.example.com/agg1/my-events-service>
-    )
-```
-</div>
-
-Service Endpoint {#service-endpoint}
-------------------------------------
-
-The aggregator **MUST** expose a Service Endpoint for each deployed service.
-
-This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
-
-: GET
-:: Retrieves the service description (as defined in [[#aggregator-service]]).
-    - The request **MUST** be authorized with the read `scope` on the service resource.
-    - The server **MUST** respond with `200 OK`.
-
-: DELETE
-:: Deletes a running Aggregator Service.
-    - The request **MUST** be authorized with the `delete` scope on the service resources.
-    - Upon successful processing, the server **MUST**:
-        1. Stop and remove the running service from the aggregator.
-        2. Update the Service Collection and its associated `ETag`.
-        3. Delete the corresponding UMA resources at the Authorization Server.
-        4. Respond with either `200 OK` or `204 No Content`.
-    - If the service does not exist, the server **SHOULD** respond with `404 Not Found`.
 
 
 
@@ -2637,7 +2637,7 @@ Describes the Aggregator Server Description document that advertises discovery m
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Service](https://schema.org/Service)
 
-### aggr:ServiceCollection ### {#aggr-service-collection-class}
+### aggr:ServiceCollection ### {#aggr-service-discovery-class}
 Describes the service collection resource (e.g., `/services`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
@@ -2724,7 +2724,7 @@ Links an `aggr:Aggregator` to its (possibly private) transformations endpoint.
 **domain:** `aggr:Aggregator`<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:serviceCollectionEndpoint ### {#aggr-service-collection-endpoint-property}
+### aggr:serviceCollectionEndpoint ### {#aggr-service-discovery-endpoint-property}
 Links an `aggr:Aggregator` to its service collection endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>

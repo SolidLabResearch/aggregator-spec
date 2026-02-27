@@ -2089,7 +2089,7 @@ to protected derived resources.</p>
       <li>
        <a href="#server-level-transformation-catalog"><span class="secno">5.3</span> <span class="content">Server-level Transformation Catalog</span></a>
        <ol class="toc">
-        <li><a href="#catalog-compositions"><span class="secno">5.3.1</span> <span class="content">Compositions</span></a>
+        <li><a href="#catalog-composite-services"><span class="secno">5.3.1</span> <span class="content">Composite Services</span></a>
         <li><a href="#server-level-catalog-publication"><span class="secno">5.3.2</span> <span class="content">Catalog Publication</span></a>
        </ol>
      </ol>
@@ -2123,22 +2123,22 @@ to protected derived resources.</p>
     <li>
      <a href="#aggregator-service-management"><span class="secno">9</span> <span class="content">Aggregator Service Management</span></a>
      <ol class="toc">
-      <li><a href="#service-collection-endpoint"><span class="secno">9.1</span> <span class="content">Service Collection Endpoint</span></a>
       <li>
-       <a href="#service-request"><span class="secno">9.2</span> <span class="content">Service Request</span></a>
+       <a href="#service-discovery-endpoint"><span class="secno">9.1</span> <span class="content">Service Collection Endpoint</span></a>
        <ol class="toc">
-        <li><a href="#deploying-services"><span class="secno">9.2.1</span> <span class="content">Deploying services</span></a>
-        <li><a href="#re-using-services"><span class="secno">9.2.2</span> <span class="content">Re-using services</span></a>
-        <li><a href="#deploying-compositions"><span class="secno">9.2.3</span> <span class="content">Deploying compositions</span></a>
+        <li><a href="#service-deployment"><span class="secno">9.1.1</span> <span class="content">Deploying a Service</span></a>
+        <li><a href="#composite-service-deployment"><span class="secno">9.1.2</span> <span class="content">Deploying a Composite Service</span></a>
+        <li><a href="#composition-deployment"><span class="secno">9.1.3</span> <span class="content">Deploying a Composition</span></a>
+        <li><a href="#service-discovery"><span class="secno">9.1.4</span> <span class="content">Service Discovery</span></a>
        </ol>
+      <li><a href="#service-endpoint"><span class="secno">9.2</span> <span class="content">Service Endpoint</span></a>
       <li>
-       <a href="#service-collection"><span class="secno">9.3</span> <span class="content">Service Collection</span></a>
+       <a href="#service-request"><span class="secno">9.3</span> <span class="content">Service Request</span></a>
        <ol class="toc">
-        <li><a href="#collection-publication"><span class="secno">9.3.1</span> <span class="content">Collection Publication ###</span></a>
-        <li><a href="#grouping-services"><span class="secno">9.3.2</span> <span class="content">Grouping Services</span></a>
-        <li><a href="#example"><span class="secno">9.3.3</span> <span class="content">Example</span></a>
+        <li><a href="#deploying-services"><span class="secno">9.3.1</span> <span class="content">Deploying services</span></a>
+        <li><a href="#re-using-services"><span class="secno">9.3.2</span> <span class="content">Re-using services</span></a>
+        <li><a href="#deploying-compositions"><span class="secno">9.3.3</span> <span class="content">Deploying compositions</span></a>
        </ol>
-      <li><a href="#service-endpoint"><span class="secno">9.4</span> <span class="content">Service Endpoint</span></a>
      </ol>
     <li>
      <a href="#aggregator-provenance-management"><span class="secno">10</span> <span class="content">Aggregator Provenance Managment</span></a>
@@ -2147,7 +2147,7 @@ to protected derived resources.</p>
        <a href="#provenance-log"><span class="secno">10.1</span> <span class="content">Service Provenance Log</span></a>
        <ol class="toc">
         <li><a href="#log-publication"><span class="secno">10.1.1</span> <span class="content">Log Publication ###</span></a>
-        <li><a href="#example①"><span class="secno">10.1.2</span> <span class="content">Example ###</span></a>
+        <li><a href="#example"><span class="secno">10.1.2</span> <span class="content">Example ###</span></a>
         <li><a href="#periodic-vs-continous-updates"><span class="secno">10.1.3</span> <span class="content">Periodic vs. Continous updates ###</span></a>
         <li><a href="#connecting-provenance"><span class="secno">10.1.4</span> <span class="content">Connecting Provenance ###</span></a>
         <li><a href="#versioned-history"><span class="secno">10.1.5</span> <span class="content">Versioned History ###</span></a>
@@ -2163,7 +2163,7 @@ to protected derived resources.</p>
         <li><a href="#aggr-service-implementation"><span class="secno">11.1.2</span> <span class="content">aggr:ServiceImplementation</span></a>
         <li><a href="#aggr-service-class"><span class="secno">11.1.3</span> <span class="content">aggr:Service</span></a>
         <li><a href="#aggr-aggregator-server-class"><span class="secno">11.1.4</span> <span class="content">aggr:AggregatorServer</span></a>
-        <li><a href="#aggr-service-collection-class"><span class="secno">11.1.5</span> <span class="content">aggr:ServiceCollection</span></a>
+        <li><a href="#aggr-service-discovery-class"><span class="secno">11.1.5</span> <span class="content">aggr:ServiceCollection</span></a>
         <li><a href="#aggr-transformation-collection-class"><span class="secno">11.1.6</span> <span class="content">aggr:TransformationCollection</span></a>
         <li><a href="#aggr-provenance-log-class"><span class="secno">11.1.7</span> <span class="content">aggr:ProvenanceLog</span></a>
         <li><a href="#aggr-registration-flow-class"><span class="secno">11.1.8</span> <span class="content">aggr:RegistrationFlow</span></a>
@@ -2179,7 +2179,7 @@ to protected derived resources.</p>
         <li><a href="#aggr-login-status-property"><span class="secno">11.2.2</span> <span class="content">aggr:loginStatus</span></a>
         <li><a href="#aggr-token-expiry-property"><span class="secno">11.2.3</span> <span class="content">aggr:tokenExpiry</span></a>
         <li><a href="#aggr-transformations-endpoint-property"><span class="secno">11.2.4</span> <span class="content">aggr:transformationsEndpoint</span></a>
-        <li><a href="#aggr-service-collection-endpoint-property"><span class="secno">11.2.5</span> <span class="content">aggr:serviceCollectionEndpoint</span></a>
+        <li><a href="#aggr-service-discovery-endpoint-property"><span class="secno">11.2.5</span> <span class="content">aggr:serviceCollectionEndpoint</span></a>
         <li><a href="#aggr-service-property"><span class="secno">11.2.6</span> <span class="content">aggr:service</span></a>
         <li><a href="#aggr-has-mapping-property"><span class="secno">11.2.7</span> <span class="content">aggr:hasMapping</span></a>
         <li><a href="#aggr-has-composition-property"><span class="secno">11.2.8</span> <span class="content">aggr:hasComposition</span></a>
@@ -2348,7 +2348,7 @@ user.</p>
 <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
     <li data-md>
      <p><strong>Aggregator Service resources:</strong> a service collection and individual services managed under the instance (see
-<a href="#service-collection">§ 9.3 Service Collection</a> and service resource and provenance).</p>
+<a href="#service-discovery">§ 9.1.4 Service Discovery</a> and service resource and provenance).</p>
    </ul>
    <h3 class="heading settled" data-level="3.3" id="base-urls-and-addressing"><span class="secno">3.3. </span><span class="content">Base URLs and Addressing</span><a class="self-link" href="#base-urls-and-addressing"></a></h3>
    <p>An implementation MUST define a stable base URL for:</p>
@@ -3028,38 +3028,25 @@ that can be deployed as services by the aggregator server.</p>
   <c- p>]</c-> <c- p>.</c->
 </pre>
    </div>
-   <h4 class="heading settled" data-level="5.3.1" id="catalog-compositions"><span class="secno">5.3.1. </span><span class="content">Compositions</span><a class="self-link" href="#catalog-compositions"></a></h4>
-   <p>An Aggregator Server <strong>MAY</strong> support the deployment of pipelines described using <code>fno:Composition</code>.
-A pipeline can be included in the catalog in one of the following ways, depending on how it is exposed.</p>
-   <p><strong>Pipeline exposed as a single service</strong></p>
-   <p>If a pipeline is exposed as a single service, with its internal components hidden:</p>
-   <ul>
+   <h4 class="heading settled" data-level="5.3.1" id="catalog-composite-services"><span class="secno">5.3.1. </span><span class="content">Composite Services</span><a class="self-link" href="#catalog-composite-services"></a></h4>
+   <p>An Aggregator Server <strong>MAY</strong> support the deployment of composite services.</p>
+   <p>A transformation <strong>MAY</strong> be linked to an <code>fno:Composition</code> using <code>fno:composition</code>. This <strong>MAY</strong> be done
+solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
+provide additional transparency.</p>
+   <p>If all transformations referenced within the <code>fno:Composition</code> are also included in the catalog,
+each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
+while internally orchestrating multiple individual services.</p>
+   <p>The following example describes a pipeline that:</p>
+   <ol>
     <li data-md>
-     <p>The <code>fno:Composition</code> <strong>MUST</strong> be linked to a transformation using <code>fno:composition</code>.</p>
+     <p>Uses RML to map a non-RDF source to RDF.</p>
     <li data-md>
-     <p>The corresponding <code>fno:Function</code> representing the transformation <strong>MUST</strong> be linked to the catalog using <code>aggr:hasTransformation</code>.</p>
-   </ul>
-   <p>If the internal components represent deployable transformations:</p>
-   <ul>
+     <p>Executes a query over the generated RDF.</p>
     <li data-md>
-     <p>All components <strong>MUST</strong> represent deployable transformations.</p>
-    <li data-md>
-     <p>They <strong>MUST</strong> be linked to the catalog as defined in <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>.</p>
-   </ul>
-   <p>The fno:Composition MAY be used solely to describe the internal structure of a transformation. In this case,
-the composition serves as descriptive metadata to provide additional transparency. This applies when <strong>AT LEAST ONE</strong> component 
-of the composition is not linked to the catalog. Then, the transformation <strong>MUST</strong> be deployable as a single unit.</p>
-   <p><strong>Pipeline Exposing All Components as Services</strong></p>
-   <p>If each component of the pipeline is exposed as an individual service:</p>
-   <ul>
-    <li data-md>
-     <p>The <code>fno:Composition</code> <strong>MUST</strong> be linked directly to the catalog using <code>aggr:hasComposition</code>.</p>
-    <li data-md>
-     <p>Every transformation used inside the <code>fno:Composition</code> <strong>MUST</strong> be linked to the catalog
-  as defined earlier (see <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>).</p>
-   </ul>
-   <div class="example" id="example-12311013">
-    <a class="self-link" href="#example-12311013"></a>
+     <p>Exposes the resulting query output.</p>
+   </ol>
+   <div class="example" id="example-f117aa60">
+    <a class="self-link" href="#example-f117aa60"></a>
 
 <pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -3072,6 +3059,8 @@ of the composition is not linked to the catalog. Then, the transformation <stron
 <c- g>&lt;></c-> <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>TransformationCollection</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>title</c-> <c- s>"Aggregator transformations"</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;RMLMapper></c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;QueryViewMapping></c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;RMLMapperMapping></c-> <c- p>.</c->
 
@@ -4238,8 +4227,8 @@ the predicate <code>aggr:tokenExpiry</code> (<a href="#aggr-token-expiry-propert
     <dt data-md><strong>service_collection_endpoint</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator
-Services (<a href="#service-collection">§ 9.3 Service Collection</a>); in the RDF representations, this member maps to the predicate
-<code>aggr:serviceCollectionEndpoint</code> (<a href="#aggr-service-collection-endpoint-property">§ 11.2.5 aggr:serviceCollectionEndpoint</a>).</p>
+Services (<a href="#service-discovery">§ 9.1.4 Service Discovery</a>); in the RDF representations, this member maps to the predicate
+<code>aggr:serviceCollectionEndpoint</code> (<a href="#aggr-service-discovery-endpoint-property">§ 11.2.5 aggr:serviceCollectionEndpoint</a>).</p>
    </dl>
    <p>This document MAY be the WebID of the Aggregator Instance when the <code>provision</code> flow <a href="#creation-provision">§ 6.2.1 Creation provision Flow</a> was used. In
 that case this document MUST be an RDF document that conforms to the WebID Profile specification <a data-link-type="biblio" href="#biblio-webid-profile" title="WebID Profile">[WEBID-PROFILE]</a>.</p>
@@ -4298,9 +4287,14 @@ transformations in different resources so different policies can be added, and l
 endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.</p>
    <h2 class="heading settled" data-level="9" id="aggregator-service-management"><span class="secno">9. </span><span class="content">Aggregator Service Management</span><a class="self-link" href="#aggregator-service-management"></a></h2>
    <p>This section describes how users manage services deployed on an aggregator.</p>
-   <p>Service management is performed through the service collection endpoint (<a href="#service-collection-endpoint">§ 9.1 Service Collection Endpoint</a>),
-which provides access to the set of deployed services.</p>
-   <p>Each deployed service <strong>MUST</strong> expose its own service endpoint (<a href="#service-endpoint">§ 9.4 Service Endpoint</a>), which allows clients to:</p>
+   <p>The Service Collection endpoint (<a href="#service-discovery-endpoint">§ 9.1 Service Collection Endpoint</a>), which allows client to:</p>
+   <ul>
+    <li data-md>
+     <p>Discover running services on an aggregator (<a href="#service-discovery">§ 9.1.4 Service Discovery</a>)</p>
+    <li data-md>
+     <p>Deploy new services on an aggregator</p>
+   </ul>
+   <p>Each deployed service <strong>MUST</strong> expose its own Service Description endpoint (<a href="#service-endpoint">§ 9.2 Service Endpoint</a>), which allows clients to:</p>
    <ul>
     <li data-md>
      <p>Inspect the service metadata (e.g. status)</p>
@@ -4311,93 +4305,92 @@ which provides access to the set of deployed services.</p>
    </ul>
    <p>All endpoints described in this section <strong>MUST</strong> be protected using the authentication and authorization mechanisms defined in
 <a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
-   <h3 class="heading settled" data-level="9.1" id="service-collection-endpoint"><span class="secno">9.1. </span><span class="content">Service Collection Endpoint</span><a class="self-link" href="#service-collection-endpoint"></a></h3>
-   <p>This endpoint supports management of aggregator services. It enables clients to:</p>
-   <ul>
-    <li data-md>
-     <p>Discover all deployed services and the transformations they implement</p>
-    <li data-md>
-     <p>Create new services</p>
-   </ul>
+   <h3 class="heading settled" data-level="9.1" id="service-discovery-endpoint"><span class="secno">9.1. </span><span class="content">Service Collection Endpoint</span><a class="self-link" href="#service-discovery-endpoint"></a></h3>
    <p>The location of this endpoint <strong>MUST</strong> be advertised in the Aggregator Description (<a href="#aggregator-description">§ 8.1 Aggregator Description</a>)
 using the <code>service_collection_endpoint</code> field. Clients <strong>MUST</strong> treat the advertised URL as authoritative and <strong>MUST NOT</strong>
-assume a fixed path. Examples shown in this section use <code>/agg1/services</code> for illustation purposes only.</p>
+assume a fixed path. Examples shown in this section use <code>http://aggregator.example.org/agg1/services</code> for illustation purposes only.</p>
    <p>The Aggregator <strong>MUST</strong> register this endpoint as an UMA resource with the Authorization Server and <strong>MUST</strong> advertise
 atleast the <code>read</code> and <code>create</code> scopes.</p>
-   <p>This endpoint <strong>SHOULD</strong> support content-negotiation as defined in <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>, and advertise supported content types for
-<code>POST</code> requests via the <code>Accept-Post</code> header defined in <a data-link-type="biblio" href="#biblio-ldp" title="Linked Data Platform">[LDP]</a>.</p>
+   <h4 class="heading settled" data-level="9.1.1" id="service-deployment"><span class="secno">9.1.1. </span><span class="content">Deploying a Service</span><a class="self-link" href="#service-deployment"></a></h4>
+   <p>The Service Collection Endpoint <strong>MUST</strong> allow <code>POST</code> requests to deploy new services. The supported content types must be advertised
+via the <code>Accept-Post</code> header defined in <a data-link-type="biblio" href="#biblio-ldp" title="Linked Data Platform">[LDP]</a>.</p>
    <dl>
-    <dt data-md><code>HEAD</code>
-    <dd data-md>
-     <p>Enables clients to detect changes to the collection without retrieving the full representation.
-This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection resource.</p>
-     <p>The server <strong>MUST</strong> respond with:</p>
-     <ul>
-      <li data-md>
-       <p><code>200 OK</code></p>
-      <li data-md>
-       <p>An <code>ETag</code> header whose value changes whenever a service is added to or removed from the collection.</p>
-     </ul>
-    <dt data-md><code>GET</code>
-    <dd data-md>
-     <p>Returns the service collection RDF Document (<a href="#service-collection">§ 9.3 Service Collection</a>).
-This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection endpoint.</p>
-     <p>The server <strong>MUST</strong> respond with:</p>
-     <ul>
-      <li data-md>
-       <p><code>200 OK</code></p>
-      <li data-md>
-       <p>The same <code>ETag</code> value that would be returned in response to a <code>HEAD</code> request</p>
-     </ul>
-     <p>The server <strong>SHOULD</strong> support HTTP content negotiation as defined in <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>.</p>
     <dt data-md><code>POST</code>
     <dd data-md>
-     <p>Deploys Aggregator Service(s) based on a service request. (see <a href="#service-request">§ 9.2 Service Request</a>)</p>
-    <dt data-md><code>OPTION</code>
-    <dd data-md>
-     <p>Advertise:</p>
+     <p>Enables clients to deploy new Services.
+This request <strong>MUST</strong>:</p>
      <ul>
       <li data-md>
-       <p>the supported RDF serializations for the Service Collection ( as defined in <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>).</p>
+       <p>be authorized with the <code>create</code> scope on the Service Collection Endpoint.</p>
       <li data-md>
-       <p>the supported content types for POST requests via the <code>Accept-Post</code> header defined in <a data-link-type="biblio" href="#biblio-ldp" title="Linked Data Platform">[LDP]</a>.</p>
+       <p>be an RDF Document containing <code>aggr:Service</code> descriptions that:</p>
+       <ul>
+        <li data-md>
+         <p><strong>MUST</strong> declare an <code>fno:AppliedFunction</code> with <code>aggr:performs</code>that:</p>
+         <ul>
+          <li data-md>
+           <p><strong>MUST</strong> apply a transformation from the server-level or instance-level transformation catalog.</p>
+          <li data-md>
+           <p>bounds a value to <strong>AT LEAST</strong> each required parameter.</p>
+          <li data-md>
+           <p><strong>MUST</strong> be a blank node. Any IRI value <strong>MUST</strong> be ignored.</p>
+         </ul>
+        <li data-md>
+         <p><strong>MAY</strong> declare an <code>fno:Mapping</code> with <code>aggr:usesMapping</code>.</p>
+        <li data-md>
+         <p><strong>MAY</strong> specify a URI indicating the requested service endpoint location.</p>
+         <ul>
+          <li data-md>
+           <p>The Aggregator <strong>MAY</strong> ignore the requested URI and assign its own.</p>
+          <li data-md>
+           <p>If the requested URI is syntactically invalid or not permitted, the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
+          <li data-md>
+           <p>If the requested URI is valid but already in use, the server <strong>MUST</strong> respond with <code>409 Conflict</code>.</p>
+         </ul>
+       </ul>
      </ul>
+     <p>Upon successful processing of a valid request, the server <strong>MUST</strong>:</p>
+     <ol>
+      <li data-md>
+       <p>Add an applied function to the instance-level Transformation Catalog if no applied function
+with the same parameter bindings exists.</p>
+      <li data-md>
+       <p>Deploy the new service on the aggregator and expose its Service Description Endpoint <a href="#service-endpoint">§ 9.2 Service Endpoint</a>.</p>
+       <ul>
+        <li data-md>
+         <p><code>aggr:performs</code> <strong>MUST</strong> link to the fno:AppliedFunction IRI that either:</p>
+         <ul>
+          <li data-md>
+           <p>Was created as part of the service deployment request, or</p>
+          <li data-md>
+           <p>Already existed in the instance-level Transformation Catalog.</p>
+         </ul>
+       </ul>
+      <li data-md>
+       <p>Update the Service Collection and its associated <code>ETag</code>.</p>
+      <li data-md>
+       <p>Register the service endpoint as a UMA resource at the Authorization Server,
+advertising at least the <code>read</code> and <code>delete</code> scopes.</p>
+      <li data-md>
+       <p>Register the service output endpoint as a UMA resource, advertising at least the <code>read</code> scope.</p>
+      <li data-md>
+       <p>Respond with:</p>
+       <ul>
+        <li data-md>
+         <p><code>201 Created</code></p>
+        <li data-md>
+         <p>The service description (as defined in <a href="#aggregator-service">§ 4.4 Service</a>) in the response body, and</p>
+        <li data-md>
+         <p>A <code>Location</code> header identifying the Service Description Endpoint.</p>
+       </ul>
+     </ol>
+     <p>If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or
+referencing an unknown transformation), the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
+     <p>If the request is valid but the service fails to deploy the service, the server <strong>MUST</strong> respond with <code>500 Internal Server Error</code>.</p>
    </dl>
-   <h3 class="heading settled" data-level="9.2" id="service-request"><span class="secno">9.2. </span><span class="content">Service Request</span><a class="self-link" href="#service-request"></a></h3>
-   <h4 class="heading settled" data-level="9.2.1" id="deploying-services"><span class="secno">9.2.1. </span><span class="content">Deploying services</span><a class="self-link" href="#deploying-services"></a></h4>
-   <p>The request <strong>MUST</strong> be authorized with the <code>create</code> scope on the Service Collection resource.</p>
-   <p>The request <strong>MUST</strong> be an RDF Document containing <code>aggr:Service</code> descriptions that:</p>
-   <ul>
-    <li data-md>
-     <p>declare <code>aggr:performs</code> with an <code>fno:AppliedFunction</code> that:</p>
-     <ul>
-      <li data-md>
-       <p><strong>MUST</strong> apply a transformation from the server-level or instance-level transformation catalog.</p>
-      <li data-md>
-       <p>bounds a value to <strong>AT LEAST</strong> each required parameter.</p>
-      <li data-md>
-       <p><strong>MUST</strong> be a blank node. Any IRI value <strong>MUST</strong> be ignored.</p>
-     </ul>
-    <li data-md>
-     <p>declare <code>aggr:implements</code> with an <code>aggr:ServiceImplementation</code> that:</p>
-     <ul>
-      <li data-md>
-       <p>If the performed transformation only has one mapped <code>aggr:ServiceImplementation</code> the aggregator
-<strong>MAY</strong> treat this link as optional.</p>
-     </ul>
-    <li data-md>
-     <p><strong>MAY</strong> specify a URI indicating the requested service endpoint location.</p>
-     <ul>
-      <li data-md>
-       <p>The Aggregator <strong>MAY</strong> ignore the requested URI and assign its own.</p>
-      <li data-md>
-       <p>If the requested URI is syntactically invalid or not permitted, the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
-      <li data-md>
-       <p>If the requested URI is valid but already in use, the server <strong>MUST</strong> respond with <code>409 Conflict</code>.</p>
-     </ul>
-   </ul>
-   <div class="example" id="example-39754d7a">
-    <a class="self-link" href="#example-39754d7a"></a>
+   <p>The following example requests a service that performs the <code>QueryView</code> transformation using the <code>QueryViewMapping</code>:</p>
+   <div class="example" id="example-35e7faf0">
+    <a class="self-link" href="#example-35e7faf0"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>http://aggregator.example.org/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
@@ -4433,50 +4426,151 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
     <c- p>},</c->
     <c- f>"aggr:usesMapping"</c-><c- p>:</c-> <c- p>{</c->
         <c- nd>"@type"</c-><c- p>:</c-> <c- u>"fno:Mapping"</c-><c- p>,</c->
-        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#QueryViewSPARQLMapping"</c->
+        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#QueryViewMapping"</c->
     <c- p>},</c->
 <c- p>}</c->
 </pre>
    </div>
-   <p>Upon successful processing of a valid request, the server <strong>MUST</strong>:</p>
-   <ol>
-    <li data-md>
-     <p>Add the applied function to the instance-level Transformation Catalog if no applied function
-with the same parameter bindings exists.</p>
-    <li data-md>
-     <p>Deploy the new service on the aggregator and expose its service endpoint <a href="#service-endpoint">§ 9.4 Service Endpoint</a>.</p>
+   <h4 class="heading settled" data-level="9.1.2" id="composite-service-deployment"><span class="secno">9.1.2. </span><span class="content">Deploying a Composite Service</span><a class="self-link" href="#composite-service-deployment"></a></h4>
+   <h4 class="heading settled" data-level="9.1.3" id="composition-deployment"><span class="secno">9.1.3. </span><span class="content">Deploying a Composition</span><a class="self-link" href="#composition-deployment"></a></h4>
+   <h4 class="heading settled" data-level="9.1.4" id="service-discovery"><span class="secno">9.1.4. </span><span class="content">Service Discovery</span><a class="self-link" href="#service-discovery"></a></h4>
+   <p>The Service Collection Endpoint <strong>MUST</strong> expose the Service Collection, an RDF document including all deployed service URIs.</p>
+   <p>The endpoint <strong>SHOULD</strong> support HTTP content negotiation to allow clients to request different RDF serializations
+(e.g., Turtle, JSON-LD) of the RDF Document.</p>
+   <dl>
+    <dt data-md><code>HEAD</code>
+    <dd data-md>
+     <p>Enables clients to detect changes to the collection without retrieving the full representation.
+This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection resource.</p>
+     <p>The server <strong>MUST</strong> respond with:</p>
      <ul>
       <li data-md>
-       <p><code>aggr:performs</code> <strong>MUST</strong> link to the fno:AppliedFunction IRI that either:</p>
-       <ul>
-        <li data-md>
-         <p>Was created as part of the service deployment request, or</p>
-        <li data-md>
-         <p>Already exists in the Transformation Catalog.</p>
-       </ul>
+       <p><code>200 OK</code></p>
+      <li data-md>
+       <p>An <code>ETag</code> header whose value changes whenever a service is added to or removed from the collection.</p>
      </ul>
-    <li data-md>
-     <p>Update the Service Collection and its associated <code>ETag</code>.</p>
-    <li data-md>
-     <p>Register the service endpoint as a UMA resource at the Authorization Server,
-advertising at least the <code>read</code> and <code>delete</code> scopes.</p>
-    <li data-md>
-     <p>Register the service output endpoint as a UMA resource, advertising at least the <code>read</code> scope.</p>
-    <li data-md>
-     <p>Respond with:</p>
+    <dt data-md><code>GET</code>
+    <dd data-md>
+     <p>Returns the service collection RDF Document (<a href="#service-discovery">§ 9.1.4 Service Discovery</a>).
+This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection endpoint.</p>
+     <p>The server <strong>MUST</strong> respond with:</p>
      <ul>
       <li data-md>
-       <p><code>201 Created</code></p>
+       <p><code>200 OK</code></p>
       <li data-md>
-       <p>The service description (as defined in <a href="#aggregator-service">§ 4.4 Service</a>) in the response body, and</p>
+       <p>The same <code>ETag</code> value that would be returned in response to a <code>HEAD</code> request</p>
       <li data-md>
-       <p>A <code>Location</code> header identifying the Service Endpoint URI.</p>
+       <p>The serialized Service Collection in the body</p>
      </ul>
-   </ol>
-   <p>If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or
-referencing an unknown transformation), the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
-   <p>If the request is valid but the service fails to deploy the service, the server <strong>MUST</strong> respond with <code>500 Internal Server Error</code>.</p>
-   <h4 class="heading settled" data-level="9.2.2" id="re-using-services"><span class="secno">9.2.2. </span><span class="content">Re-using services</span><a class="self-link" href="#re-using-services"></a></h4>
+   </dl>
+   <p>The <code>aggr:ServiceCollection</code> <strong>MUST</strong> reference all Service Description Endpoints using <code>aggr:hasService</code>.</p>
+   <div class="example" id="example-d2ad1abb">
+    <a class="self-link" href="#example-d2ad1abb"></a>
+
+<pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.com/agg1/services#></c->
+<c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>tfc:</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
+
+<c- g>&lt;></c->
+    <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>ServiceCollection</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasService</c-> <c- p>(</c->
+        <c- g>&lt;http://aggregator.example.com/agg1/my-query-view-service></c->
+        <c- g>&lt;http://aggregator.example.com/agg1/my-rml-service></c->
+    <c- p>)</c-> <c- p>.</c->
+</pre>
+   </div>
+   <p>Services that perform the same transformation with identical input bindings <strong>MUST</strong> be mapped to the same <code>fno:AppliedFunction</code>.
+For example, two services may maintain the same query over the same sources, while exposing the result through different interfaces 
+(e.g., a SPARQL endpoint or an event stream).</p>
+   <p>This achieves the following:</p>
+   <ul>
+    <li data-md>
+     <p>Clients can discover services based on:</p>
+     <ul>
+      <li data-md>
+       <p>The transformation being executed</p>
+      <li data-md>
+       <p>The bound input parameters</p>
+      <li data-md>
+       <p>The mapping being used</p>
+     </ul>
+    <li data-md>
+     <p>Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.</p>
+   </ul>
+   <h3 class="heading settled" data-level="9.2" id="service-endpoint"><span class="secno">9.2. </span><span class="content">Service Endpoint</span><a class="self-link" href="#service-endpoint"></a></h3>
+   <ul>
+    <li data-md>
+   </ul>
+   <p>The aggregator <strong>MUST</strong> expose a Service Endpoint for each deployed service.</p>
+   <p>This endpoint <strong>SHOULD</strong> support HTTP content negotiation as defined in <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>.</p>
+   <dl>
+    <dt data-md>GET
+    <dd data-md>
+     <p>Retrieves the service description (as defined in <a href="#aggregator-service">§ 4.4 Service</a>).</p>
+     <ul>
+      <li data-md>
+       <p>The request <strong>MUST</strong> be authorized with the read <code>scope</code> on the service resource.</p>
+      <li data-md>
+       <p>The server <strong>MUST</strong> respond with <code>200 OK</code>.</p>
+     </ul>
+    <dt data-md>DELETE
+    <dd data-md>
+     <p>Deletes a running Aggregator Service.</p>
+     <ul>
+      <li data-md>
+       <p>The request <strong>MUST</strong> be authorized with the <code>delete</code> scope on the service resources.</p>
+      <li data-md>
+       <p>Upon successful processing, the server <strong>MUST</strong>:</p>
+       <ol>
+        <li data-md>
+         <p>Stop and remove the running service from the aggregator.</p>
+        <li data-md>
+         <p>Update the Service Collection and its associated <code>ETag</code>.</p>
+        <li data-md>
+         <p>Delete the corresponding UMA resources at the Authorization Server.</p>
+        <li data-md>
+         <p>Respond with either <code>200 OK</code> or <code>204 No Content</code>.</p>
+       </ol>
+      <li data-md>
+       <p>If the service does not exist, the server <strong>SHOULD</strong> respond with <code>404 Not Found</code>.</p>
+     </ul>
+   </dl>
+   <h3 class="heading settled" data-level="9.3" id="service-request"><span class="secno">9.3. </span><span class="content">Service Request</span><a class="self-link" href="#service-request"></a></h3>
+   <h4 class="heading settled" data-level="9.3.1" id="deploying-services"><span class="secno">9.3.1. </span><span class="content">Deploying services</span><a class="self-link" href="#deploying-services"></a></h4>
+   <p>The request <strong>MUST</strong> be authorized with the <code>create</code> scope on the Service Collection resource.</p>
+   <p>The request <strong>MUST</strong> be an RDF Document containing <code>aggr:Service</code> descriptions that:</p>
+   <ul>
+    <li data-md>
+     <p>declare <code>aggr:performs</code> with an <code>fno:AppliedFunction</code> that:</p>
+     <ul>
+      <li data-md>
+       <p><strong>MUST</strong> apply a transformation from the server-level or instance-level transformation catalog.</p>
+      <li data-md>
+       <p>bounds a value to <strong>AT LEAST</strong> each required parameter.</p>
+      <li data-md>
+       <p><strong>MUST</strong> be a blank node. Any IRI value <strong>MUST</strong> be ignored.</p>
+     </ul>
+    <li data-md>
+     <p>declare <code>aggr:implements</code> with an <code>aggr:ServiceImplementation</code> that:</p>
+     <ul>
+      <li data-md>
+       <p>If the performed transformation only has one mapped <code>aggr:ServiceImplementation</code> the aggregator
+<strong>MAY</strong> treat this link as optional.</p>
+     </ul>
+    <li data-md>
+     <p><strong>MAY</strong> specify a URI indicating the requested service endpoint location.</p>
+     <ul>
+      <li data-md>
+       <p>The Aggregator <strong>MAY</strong> ignore the requested URI and assign its own.</p>
+      <li data-md>
+       <p>If the requested URI is syntactically invalid or not permitted, the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
+      <li data-md>
+       <p>If the requested URI is valid but already in use, the server <strong>MUST</strong> respond with <code>409 Conflict</code>.</p>
+     </ul>
+   </ul>
+   <h4 class="heading settled" data-level="9.3.2" id="re-using-services"><span class="secno">9.3.2. </span><span class="content">Re-using services</span><a class="self-link" href="#re-using-services"></a></h4>
    <p>Services can be mapped to other service outputs using <code>fnoc:boundTo</code> instead of <code>fnoc:boundToTerm</code>. If there is no valid service running
 that performs the transformation, the server <strong>MUST</strong> respond with <code>400 Bad Request</code>.</p>
    <div class="example" id="example-94af8441">
@@ -4523,7 +4617,7 @@ that performs the transformation, the server <strong>MUST</strong> respond with 
    <p class="issue" id="issue-b82b9949"><a class="self-link" href="#issue-b82b9949"></a> If multiple services perform the transformation with a different service implementation, what service must be chosen?
 ISSUE: What if you want to connect to a specific service?
 ISSUE: What if you want to connect to a service running on an other aggregator?</p>
-   <h4 class="heading settled" data-level="9.2.3" id="deploying-compositions"><span class="secno">9.2.3. </span><span class="content">Deploying compositions</span><a class="self-link" href="#deploying-compositions"></a></h4>
+   <h4 class="heading settled" data-level="9.3.3" id="deploying-compositions"><span class="secno">9.3.3. </span><span class="content">Deploying compositions</span><a class="self-link" href="#deploying-compositions"></a></h4>
    <p class="issue" id="issue-0875f9f8"><a class="self-link" href="#issue-0875f9f8"></a> How to deploy compositions?
 ISSUE: How does an aggregator know what service implementation to choose for each service inside the composition?
 ISSUE: Create one service that represents the whole composition? Or a new service for each component?</p>
@@ -4565,91 +4659,6 @@ ISSUE: Create one service that represents the whole composition? Or a new servic
 <c- p>}</c->
 </pre>
    </div>
-   <h3 class="heading settled" data-level="9.3" id="service-collection"><span class="secno">9.3. </span><span class="content">Service Collection</span><a class="self-link" href="#service-collection"></a></h3>
-   <p>The Service Collection is an RDF document including all deployed service URIs.</p>
-   <h4 class="heading settled" data-level="9.3.1" id="collection-publication"><span class="secno">9.3.1. </span><span class="content">Collection Publication ###</span><a class="self-link" href="#collection-publication"></a></h4>
-   <ul>
-    <li data-md>
-     <p>Aggregator servers <strong>MAY</strong> publish the Service Collection at any deployment-specific URL.</p>
-    <li data-md>
-     <p>The collection <strong>MUST</strong> be retrievable via <code>HTTP GET</code> at the URL advertised in the Aggregator Description
-through the <code>service_collection_endpoint</code> field.</p>
-    <li data-md>
-     <p>The collection <strong>SHOULD</strong> support HTTP content negotiation,
-allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
-   </ul>
-   <h4 class="heading settled" data-level="9.3.2" id="grouping-services"><span class="secno">9.3.2. </span><span class="content">Grouping Services</span><a class="self-link" href="#grouping-services"></a></h4>
-   <p>Services that implement the same transformation with identical input bindings <strong>MUST</strong> be mapped to the same <code>fno:AppliedFunction</code>
-within the collection. For example, two services may maintain the same query over the same sources, 
-while exposing the result through different interfaces (e.g., a SPARQL endpoint or an event stream).</p>
-   <p>This achieves the following:</p>
-   <ul>
-    <li data-md>
-     <p>Multiple services can share the same applied transformation.</p>
-    <li data-md>
-     <p>Clients can discover services based on:</p>
-     <ul>
-      <li data-md>
-       <p>The transformation being executed</p>
-      <li data-md>
-       <p>The bound input parameters</p>
-     </ul>
-    <li data-md>
-     <p>Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.</p>
-   </ul>
-   <h4 class="heading settled" data-level="9.3.3" id="example"><span class="secno">9.3.3. </span><span class="content">Example</span><a class="self-link" href="#example"></a></h4>
-   <div class="example" id="example-f939e2b2">
-    <a class="self-link" href="#example-f939e2b2"></a>
-
-<pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.com/agg1/services#></c->
-<c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>tfc:</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
-
-<c- g>&lt;></c->
-    <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>ServiceCollection</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>service</c-> <c- p>(</c->
-        <c- g>&lt;http://aggregator.example.com/agg1/my-sparql-service></c->
-        <c- g>&lt;http://aggregator.example.com/agg1/my-events-service></c->
-    <c- p>)</c->
-</pre>
-   </div>
-   <h3 class="heading settled" data-level="9.4" id="service-endpoint"><span class="secno">9.4. </span><span class="content">Service Endpoint</span><a class="self-link" href="#service-endpoint"></a></h3>
-   <p>The aggregator <strong>MUST</strong> expose a Service Endpoint for each deployed service.</p>
-   <p>This endpoint <strong>SHOULD</strong> support HTTP content negotiation as defined in <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>.</p>
-   <dl>
-    <dt data-md>GET
-    <dd data-md>
-     <p>Retrieves the service description (as defined in <a href="#aggregator-service">§ 4.4 Service</a>).</p>
-     <ul>
-      <li data-md>
-       <p>The request <strong>MUST</strong> be authorized with the read <code>scope</code> on the service resource.</p>
-      <li data-md>
-       <p>The server <strong>MUST</strong> respond with <code>200 OK</code>.</p>
-     </ul>
-    <dt data-md>DELETE
-    <dd data-md>
-     <p>Deletes a running Aggregator Service.</p>
-     <ul>
-      <li data-md>
-       <p>The request <strong>MUST</strong> be authorized with the <code>delete</code> scope on the service resources.</p>
-      <li data-md>
-       <p>Upon successful processing, the server <strong>MUST</strong>:</p>
-       <ol>
-        <li data-md>
-         <p>Stop and remove the running service from the aggregator.</p>
-        <li data-md>
-         <p>Update the Service Collection and its associated <code>ETag</code>.</p>
-        <li data-md>
-         <p>Delete the corresponding UMA resources at the Authorization Server.</p>
-        <li data-md>
-         <p>Respond with either <code>200 OK</code> or <code>204 No Content</code>.</p>
-       </ol>
-      <li data-md>
-       <p>If the service does not exist, the server <strong>SHOULD</strong> respond with <code>404 Not Found</code>.</p>
-     </ul>
-   </dl>
    <h2 class="heading settled" data-level="10" id="aggregator-provenance-management"><span class="secno">10. </span><span class="content">Aggregator Provenance Managment</span><a class="self-link" href="#aggregator-provenance-management"></a></h2>
    <p>This section describes how an aggregator should store, expose and maintain the provenance metadata detailing
 service executions.</p>
@@ -4668,7 +4677,7 @@ advertise atleast the <code>read</code> scope.</p>
      <p>The endpoint <strong>SHOULD</strong> support HTTP content negotiation,
 allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
    </ul>
-   <h4 class="heading settled" data-level="10.1.2" id="example①"><span class="secno">10.1.2. </span><span class="content">Example ###</span><a class="self-link" href="#example①"></a></h4>
+   <h4 class="heading settled" data-level="10.1.2" id="example"><span class="secno">10.1.2. </span><span class="content">Example ###</span><a class="self-link" href="#example"></a></h4>
    <div class="example" id="example-68ab3728">
     <a class="self-link" href="#example-68ab3728"></a>
 
@@ -4780,7 +4789,7 @@ Describes the Aggregator Server Description document that advertises discovery m
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
 <strong>subClassOf:</strong> <a href="https://schema.org/Service">schema:Service</a></p>
-   <h4 class="heading settled" data-level="11.1.5" id="aggr-service-collection-class"><span class="secno">11.1.5. </span><span class="content">aggr:ServiceCollection</span><a class="self-link" href="#aggr-service-collection-class"></a></h4>
+   <h4 class="heading settled" data-level="11.1.5" id="aggr-service-discovery-class"><span class="secno">11.1.5. </span><span class="content">aggr:ServiceCollection</span><a class="self-link" href="#aggr-service-discovery-class"></a></h4>
    
 Describes the service collection resource (e.g., <code>/services</code>).
 
@@ -4877,7 +4886,7 @@ Links an <code>aggr:Aggregator</code> to its (possibly private) transformations 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Aggregator</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="11.2.5" id="aggr-service-collection-endpoint-property"><span class="secno">11.2.5. </span><span class="content">aggr:serviceCollectionEndpoint</span><a class="self-link" href="#aggr-service-collection-endpoint-property"></a></h4>
+   <h4 class="heading settled" data-level="11.2.5" id="aggr-service-discovery-endpoint-property"><span class="secno">11.2.5. </span><span class="content">aggr:serviceCollectionEndpoint</span><a class="self-link" href="#aggr-service-discovery-endpoint-property"></a></h4>
    
 Links an <code>aggr:Aggregator</code> to its service collection endpoint.
 
