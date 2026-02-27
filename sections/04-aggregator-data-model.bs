@@ -17,7 +17,7 @@ Each transformation **MUST** be described as an `fno:Function` that:
 Examples of `fno:type` usage:
   - Literal datatypes such as `xsd:string`, `xsd:integer`, etc.
   - URIs, e.g., `xsd:anyURI`
-  - Ontology classes, e.g., `saref:Measurement` or `csvw:Table`
+  - Ontology classes, e.g., `saref:Measurement` or `csvw:Table` 
 
 <div class="example">
 ```turtle
@@ -32,11 +32,11 @@ Examples of `fno:type` usage:
     fno:returns         ( :query-output ) .
 
 :sources-parameter
-    a             fno:Parameter ;
-    fno:predicate :sources ;
-    fno:list      "true"^^xsd:boolean ;
-    fno:type      xsd:anyURI ;
-    fno:required  "true"^^xsd:boolean .
+    a                   fno:Parameter ;
+    fno:predicate       :sources ;
+    fno:containerType   rdf:List ;
+    fno:type            xsd:anyURI ;
+    fno:required        "true"^^xsd:boolean .
 
 :query-parameter
     a             fno:Parameter ;
@@ -56,34 +56,58 @@ Examples of `fno:type` usage:
   fno:returns ( :table-output ) .
 
 :tables-parameter 
-  a fno:Parameter ;
-  fno:type xsd:anyURI ;
-  fno:list "true"^^xsd:boolean ;
-  fno:predicate :table ;
-  fno:required "true"^^xsd:boolean .
+  a                   fno:Parameter ;
+  fno:type            xsd:anyURI ;
+  fno:containerType   rdf:List ;
+  fno:predicate       :table ;
+  fno:required        "true"^^xsd:boolean .
 
 :table-output
-  a fno:Output ;
-  fno:type csvw:Table
-  fno:predicate :table .
+  a               fno:Output ;
+  fno:type        csvw:Table ;
+  fno:predicate   :table .
 ```
 </div>
+
+Further requirements on how a server **MUST** expose and maintain the set of available and supported transformations
+are specified in [[#server-level-transformation-catalog]].
 
 Mapping {#aggregator-mapping}
 -----------------------------
 
-Every transformation description **MUST** be associated with at least one `fno:Mapping`.
+Every transformation description **SHOULD** be associated with one or more `fno:Mapping`.
 
-A `fno:Mapping` specifies how a transformation function may be connected to a concrete implementation. It describes:
-  - how input parameters are provided to the implementation, and
-  - how output values are obtained from it.
+An `fno:Mapping` specifies:
+  - how to provide input values when executing the transformation, and
+  - how output values can be obtained after executing the transformation.
 
-In other words, the mapping defines an interface that an implementation **MUST** implement if it wants to represent the transformation.
+If not specified it may not be clear how to interact with the service that runs the transformation.
 
-A mapping **SHOULD** declare the supported input and output formats using `fnom:FormatMapping`. This makes explicit which format
-an implementation **MUST** consume and produce.
+An Aggregator Service will always expose generated outputs as an endpoint. Therefore the output mapping **MUST** be
+an `fnom:EndpointMapping`.
 
-For example, `:merge-tables-csv-mapping` defines a mapping for implementations that merge multiple CSV tables into a single CSV table:
+A mapping **SHOULD** include the `dct:format` and `dct:conformsTo` if relevant.
+
+----------------------------------------
+
+ISSUE: This is actually for the FnO Spec
+
+If the input value will be fetched from an external source the  `fnom:EndpointMapping` **MUST** be used. For example, a function expects
+a list of string values. This can be given directly or you could give one string value representing the URL where the source is hosted.
+
+Certain parameters represent a container using `fno:containerType`. To indicate you are providing a mapping for individual contianer elements
+instead of the full list parameter use `fnom:functionParameterElement`.
+
+A mapping **MAY** include `dct:format` to specify one or more desired formats for the input value.
+A mapping **MAY** include `dct:conformsTo` to specify the input value conforms to a certain specification or protocol. If
+this is combined with an `fnom:EndpointMapping` this can specify the protocol the endpoint adheres to.
+
+-------------------------------------
+
+For example, `:merge-tables-csv-mapping` defines a mapping for implementations that:
+  - Get `:tables-parameter` inputs from a list of endpoints that either support the `FTP` or `HTTP` Protocol and expect
+    a CSV format.
+  - Provides output via an HTTP endpoint that accpets the `text/csv` content type.
 
 <div class="example">
 ```turtle
@@ -96,26 +120,36 @@ For example, `:merge-tables-csv-mapping` defines a mapping for implementations t
   fno:function :merge-tables
   fno:parameterMapping [
     a fnom:FormatMapping ;
-    fnom:functionParameter :tables-parameter ;
-    fnom:format <http://www.iana.org/assignments/media-types/text/csv> .
+    a fnom:EndpointMapping ;
+    fnom:functionParameterElement :tables-parameter ;
+    dct:format ".csv" ;
+    dct:conformsTo <https://datatracker.ietf.org/doc/html/rfc959> .
+  ],[
+    a fnom:FormatMapping ;
+    a fnom:EndpointMapping ;
+    fnom:functionParameterElement :tables-parameter ;
+    dct:format <http://www.iana.org/assignments/media-types/text/csv> ;
+    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> .
   ] ;
   fno:outputMapping [
     a fnom:FormatMapping ;
-    fnom:functionParameter :table-output ;
-    fnom:format <http://www.iana.org/assignments/media-types/text/csv> .
+    a fnom:EndpointMapping ;
+    fnom:functionOutput :table-output ;
+    dct:format <http://www.iana.org/assignments/media-types/text/csv> ;
+    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> .
   ] .
 ```
 </div>
 
-Further requirements on how a server **MUST** expose and maintain the set of available and supported mappings
-are specified in [[#server-level-transformation-catalog]].
+Implementation {#aggregator-implementation}
+-------------------------------------------
 
-### Implementation ### {#aggregator-implementation}
+A mapping **MAY** associate one or more concrete implementations using `fno:implementation` that:
+  - **MUST** a subclass of `fno:Implementation`
+  - **SHOULD** be a semantic description of the deployable artifact that will be executed inside the aggregator 
+      (e.g., a container image, script, or binary).
 
-A mapping **MAY** associate one or more concrete implementations using `fno:implementation`.
-
-The linked `fno:Implementation` resource **SHOULD** be a semantic description of the deployable artifact that will be 
-executed inside the aggregator (e.g., a container image, script, or binary).
+The mapping represents the interface that an implementation **MUST** implement if it wants to represent the transformation.
 
 <div class="example">
 ```turtle
@@ -145,8 +179,6 @@ executed inside the aggregator (e.g., a container image, script, or binary).
 Service {#aggregator-service}
 -----------------------------
 
-ISSUE: `aggr:usesMapping` OK as a predicate?
-
 A deployed aggregator service is modeled as:
   - an `aggr:Service`
   - a `dcat:DataService` ([[!Data-Catalog]])
@@ -154,16 +186,21 @@ A deployed aggregator service is modeled as:
 
 The service:
   - **MUST** serve one dataset for each transformation output
-  - **MUST** link to an `fno:Mapping` using `aggr:usesMapping`
+  - **MUST** link to an `fno:AppliedFunction`using `aggr:performs`. This `fno:AppliedFunction` specifies the input values used when 
+    executing the transformation.
+  - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`.
+    - The `fno:Mapping` **MUST** reference the same transformation via `fno:function` as 
+        the `fno:AppliedFunction` from `aggr:performs` does with `fnoc:applies`.
   - **SHOULD** declare operational metadata such as status and creation time
   - **SHOULD** indicate it adheres to the aggregator protocol using `dct:conformsTo`
 
 Outputs generated by a running service **MUST** be described as a `dcat:Distribution`. Each `dcat:Distribution`:
   - **MUST** reference the corresponding output endpoint using `dcat:accessURL`.
   - **MUST** reference the service via `dcat:accessService`.
-  - **MUST** declare the output format defined in the associated service mapping using:
+  - **MUST** declare the output format if defined in the associated mapping using:
     - `dcat:mediaType` when the format corresponds to an IANA-registered media type.
     - `dct:format` when the format is not an IANA-conformant media type.
+  - **MUST** declare conformity using `dct:conformsTo` if defined in the associated mapping.
 
 The corresponding dataset:
   - **MUST AT LEAST** reference the most recently generated output using `dcat:distribution`.
@@ -186,6 +223,7 @@ or historical distributions if provided.
     aggr:status "running" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
     aggr:usesMapping :merge-tables-csv-mapping ;
+    aggr:performs :merge-tables-service-input ;
     dct:conformsTo <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> ;
     dcat:servesDataset :merge-tables-service-dataset .
 
@@ -199,23 +237,32 @@ or historical distributions if provided.
     dcat:mediaType <http://www.iana.org/assignments/media-types/text/csv> ;
     dcat:accessURL <http://example.com/service/result> ;
     dcat:accessService :merge-tables-service .
+
+:merge-tables-service-input
+  a fno:AppliedFunction ;
+  fnoc:applies :merge-tables ;
+  fnoc:parameterBinding [
+    fnoc:boundParameter :tables-parameter ;
+    fnoc:boundToTerm (
+      "http://example.com/table1.csv"
+      "http://example.com/table2.csv"
+    ) .
+  ] .
 ```
 </div>
 
-Further requirements on how an Aggregator Server **MUST** manage services — including how clients can create, 
-configure, and delete service instances — are specified in [[#aggregator-service-management]].
+Further requirements on how an Aggregator Server **MUST** manage services — including how clients can discover, create, 
+and delete service instances — are specified in [[#aggregator-service-management]].
 
-Semantic Enrichment of Service Descriptions {#aggregator-semantic-enrichment}
------------------------------------------------------------------------------
+### Semantic Enrichment of Service Descriptions ### {#aggregator-semantic-enrichment}
 
-Service descriptions MAY be semantically enriched to provide more detailed information about their outputs and capabilities.
+Service descriptions **MAY** be semantically enriched to provide more detailed information about their outputs and capabilities.
 Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable).
 
 How an aggregator server enables semantic enrichment is implementation-dependent and should be documented 
 in its accompanying documentation.
 
-### Examples of Semantic Enrichment ### {#aggregator-semantic-enrichment-examples}
-
+Examples include:
   - Describe a service output endpoint as a SPARQL endpoint using `sd:Service`.
   - Use `dct:conformsTo` to specify the protocol that a service output endpoint adheres to.
   - Use `dct:accrualPeriodicity` on the dataset to indicate the frequency of updates.
@@ -246,7 +293,7 @@ The following example illustrates a service that serves a dataset via a SPARQL e
     a dcat:Dataset ;
     a prov:Entity ;
     dcat:distribution :sparql-query-view-service-distribution ;
-    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> .
+    dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
  
 :sparql-query-view-service-distribution ;
     a dcat:Distribution ;
@@ -272,8 +319,8 @@ that results in new distributions for its datasets.
 
 This execution **MUST** be typed as:
   - an `fno:Execution` detailing:
-    - what transformation it executes with `fno:executes`
-    - what mapping was used with `fno:uses`. 
+    - what `fno:AppliedFunction` it executed with `fno:executes`
+    - what `fno:Mapping` was used with `fno:uses`. 
     - what input values were used with the parameter predicates. 
     - the newly created distribution with the output predicate.
   - a `prov:Activity` that:
@@ -329,7 +376,7 @@ However, if a new distribution fully replaces a previous distribution (i.e., the
   a prov:Entity ;
   prov:wasGeneratedBy :execution-0 ;
   prov:wasGeneratedAtTime "2025-01-01T12:01:00Z"^^xsd:dateTime ;
-  prov:wasInvalidated :execution-1 .
+  prov:wasInvalidatedBy :execution-1 .
 ```
 </div>
 
