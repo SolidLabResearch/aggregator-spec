@@ -64,10 +64,6 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://www.w3.org/TR/vocab-dcat-3/",
     "title": "Data Catalog Vocabulary"
   },
-  "DCTERMS": {
-    "href": "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
-    "title": "Dublin Core Metadata Terms"
-  },
   "LDP": {
     "href": "https://www.w3.org/TR/ldp/",
     "title": "Linked Data Platform"
@@ -101,7 +97,5 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 <pre class="include" path="sections/08-aggregator-metadata.bs"></pre>
 
 <pre class="include" path="sections/09-aggregator-service-management.bs"></pre>
-
-<pre class="include" path="sections/10-aggregator-provenance-management.bs"></pre>
 
 <pre class="include" path="sections/11-vocabulary.bs"></pre>

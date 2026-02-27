@@ -336,7 +336,6 @@ The resulting distribution:
 If previous distributions remain accessible (e.g., versioned history), no special invalidation is required.
 However, if a new distribution fully replaces a previous distribution (i.e., the previous version is no longer available):
   - The execution **MUST** invalidate the old distribution using `prov:invalidated`
-  - The invalidated distribution **MUST** reference the execution using `prov:wasInvalidatedBy`
 
 <div class="example">
 ```turtle
@@ -371,14 +370,8 @@ However, if a new distribution fully replaces a previous distribution (i.e., the
   a prov:Entity ;
   prov:wasGeneratedBy :execution-1 ;
   prov:wasGeneratedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
-
-:old-distribution ;
-  a prov:Entity ;
-  prov:wasGeneratedBy :execution-0 ;
-  prov:wasGeneratedAtTime "2025-01-01T12:01:00Z"^^xsd:dateTime ;
-  prov:wasInvalidatedBy :execution-1 .
 ```
 </div>
 
 Further requirements for how an Aggregator Server **MUST** expose provenance information, 
-if it chooses to provide it, are specified in [[#aggregator-provenance-management]].
+if it chooses to provide it, are specified in [[#service-provenance]].

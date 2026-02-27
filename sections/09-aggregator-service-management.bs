@@ -180,6 +180,7 @@ Service Description Endpoint {#service-endpoint}
 ------------------------------------------------
 
 The Service Description Endpoint **MUST** expose the Service Description as described in [[#aggregator-service]].
+It is also used to delete the corresponding service.
 
 This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
 
@@ -187,8 +188,6 @@ This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC911
 :: Retrieves the service description (as defined in [[#aggregator-service]]).
     - The request **MUST** be authorized with the read `scope` on the service description endpoint.
     - The server **MUST** respond with `200 OK`.
-
-### Deleting a Service ### {#service-deletion}
 
 : DELETE
 :: Deletes a running Aggregator Service.
@@ -219,3 +218,102 @@ Link: <http://aggregator.example.com/agg1/example-service>; rel="https://spec.kn
 
 This requirement establishes an explicit and machine-readable relationship between a service output 
 and its corresponding service description.
+
+One example of how this relationship **MAY** be used is in provenance tracking across Aggregator Services. 
+When an Aggregator Service dereferences a Service Output Endpoint and encounters the required `Link` header, it **MAY**
+use this information to establish a provenance relationship between distributions.
+
+More specifically, the Aggregator Service **MAY** link the consumed service output distribution to the newly generated 
+output distribution using `prov:wasDerivedFrom`.
+
+This enables explicit provenance chains to be constructed across multiple Aggregator Services
+
+### Versioned History ### {#versioned-history}
+
+An Aggregator **MAY** retain previously generated distributions and keep them accessible.
+
+If an Aggregator chooses to maintain versioned distributions, it **MUST** comply with the following requirements:
+    - A separate endpoint for each distribution access URL **MUST** be created and registered as an UMA Resource.
+
+Each retained distribution MUST be included in the corresponding Service Description.
+
+Provenance Log {#service-provenance}
+---------------------------------
+
+This section describes how an Aggregator **SHOULD** store, expose, and maintain provenance metadata describing service executions.
+
+An Aggregator is not required to manage provenance data. However, if it does, it **MUST** conform to this specification.
+
+A service’s Provenance Log is an RDF document that references all executions performed by the service using `aggr:hasExecution`.
+The execution resources:
+    - **MAY** be embedded in the Provenance Log document, or
+    - **MAY** be hosted on separate endpoints as individual RDF documents.
+
+The Provenance Log **SHOULD** be subject to a retention policy defining how long execution records remain included in the log. 
+This prevents unbounded growth of the log over time and ensures manageable storage and query performance.
+
+<div class="example">
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix tfc: <http://aggregator.example.org/transformations#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<>
+  a aggr:provenanceLog ;
+  aggr:hasExecution :execution .
+
+:execution
+  a fno:Execution ;
+  a prov:Activity ;
+  fno:executes :query-view ;
+  :query "SELECT * WHERE { ?s ?p ?o }" ;
+  :sources (
+    "http://example.org/source1",
+    "http://example.org/source2",
+  ) ;
+  :result :distribution-1 ;
+  prov:associatedWith :example-service ;
+  prov:quallifiedAssociation [
+    a prov:Association ;
+    prov:agent :example-service ;
+    prov:hadPlan :query-view .
+  ] ;
+  prov:used :query-view ;
+  prov:invalidated :distribution-0 ;
+  prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
+  prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+```
+</div>
+
+### Log Publication ### {#provlog-publication}
+
+Aggregator servers **MAY** publish a services' Provenance Log at any deployment-specific URL using the `GET` method:
+    - The endpoint **MUST** be advertised in the Service Description through the `aggr:provenanceLog` predicate.
+    - The endpoint **SHOULD** support HTTP content negotiation, 
+        allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
+
+### Periodic vs. Continous updates ### {#periodic-vs-continous}
+
+**Periodic Execution**
+
+When a service executes a transformation periodically (e.g., scheduled batch processing), a new resource **MUST** 
+be created for each execution and added to the Provenance Log.
+
+Each resulting `dcat:Distribution` **SHOULD** reference the corresponding execution activity.
+
+For services that continuously update their data (e.g., event-driven or streaming updates):
+  - The transformation activity **SHOULD NOT** include `prov:endedAtTime`
+  - All newly generated distributions **SHOULD** reference the same ongoing `prov:Activity`
+
+Creating a new `dcat:Distribution` for every minor change may lead to excessive provenance granularity and operational overhead. 
+Therefore, an Aggregator Server **SHOULD** determine an appropriate provenance granularity level based on its use case, 
+performance constraints, and retention policy.
+
+The server **MAY** choose, for example, to:
+
+  - Apply time-based grouping (e.g., hourly or daily snapshots)
+
+  - Only materialize provenance for externally visible distributions (e.g., when used by another service provenance log)
+
+The chosen strategy **SHOULD** be documented and consistently applied to ensure predictable provenance semantics.

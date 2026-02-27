@@ -35,7 +35,7 @@ Describes the Aggregator Server Description document that advertises discovery m
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Service](https://schema.org/Service)
 
-### aggr:ServiceCollection ### {#aggr-service-collection-class}
+### aggr:ServiceCollection ### {#aggr-service-discovery-class}
 Describes the service collection resource (e.g., `/services`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
@@ -122,7 +122,7 @@ Links an `aggr:Aggregator` to its (possibly private) transformations endpoint.
 **domain:** `aggr:Aggregator`<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:serviceCollectionEndpoint ### {#aggr-service-collection-endpoint-property}
+### aggr:serviceCollectionEndpoint ### {#aggr-service-discovery-endpoint-property}
 Links an `aggr:Aggregator` to its service collection endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
@@ -178,13 +178,6 @@ Provides the service implementation an `aggr:Service` uses to execute its transf
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
 **range:** `aggr:ServiceImplementation`
-
-### aggr:provenanceLog ### {#aggr-provlog-property}
-Provides the endpoint to `aggr:Service` its provenance log.
-
-**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
-**range:** `aggr:ProvenanceLog`
 
 ### aggr:provenanceLog ### {#aggr-provlog-property}
 Provides the endpoint to `aggr:Service` its provenance log.
