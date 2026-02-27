@@ -296,7 +296,7 @@ Each transformation **MUST** be described as an `fno:Function` that:
 Examples of `fno:type` usage:
   - Literal datatypes such as `xsd:string`, `xsd:integer`, etc.
   - URIs, e.g., `xsd:anyURI`
-  - Ontology classes, e.g., `saref:Measurement` or `csvw:Table`
+  - Ontology classes, e.g., `saref:Measurement` or `csvw:Table` 
 
 <div class="example">
 ```turtle
@@ -311,11 +311,11 @@ Examples of `fno:type` usage:
     fno:returns         ( :query-output ) .
 
 :sources-parameter
-    a             fno:Parameter ;
-    fno:predicate :sources ;
-    fno:list      "true"^^xsd:boolean ;
-    fno:type      xsd:anyURI ;
-    fno:required  "true"^^xsd:boolean .
+    a                   fno:Parameter ;
+    fno:predicate       :sources ;
+    fno:containerType   rdf:List ;
+    fno:type            xsd:anyURI ;
+    fno:required        "true"^^xsd:boolean .
 
 :query-parameter
     a             fno:Parameter ;
@@ -335,34 +335,58 @@ Examples of `fno:type` usage:
   fno:returns ( :table-output ) .
 
 :tables-parameter 
-  a fno:Parameter ;
-  fno:type xsd:anyURI ;
-  fno:list "true"^^xsd:boolean ;
-  fno:predicate :table ;
-  fno:required "true"^^xsd:boolean .
+  a                   fno:Parameter ;
+  fno:type            xsd:anyURI ;
+  fno:containerType   rdf:List ;
+  fno:predicate       :table ;
+  fno:required        "true"^^xsd:boolean .
 
 :table-output
-  a fno:Output ;
-  fno:type csvw:Table
-  fno:predicate :table .
+  a               fno:Output ;
+  fno:type        csvw:Table ;
+  fno:predicate   :table .
 ```
 </div>
+
+Further requirements on how a server **MUST** expose and maintain the set of available and supported transformations
+are specified in [[#server-level-transformation-catalog]].
 
 Mapping {#aggregator-mapping}
 -----------------------------
 
-Every transformation description **MUST** be associated with at least one `fno:Mapping`.
+Every transformation description **SHOULD** be associated with one or more `fno:Mapping`.
 
-A `fno:Mapping` specifies how a transformation function may be connected to a concrete implementation. It describes:
-  - how input parameters are provided to the implementation, and
-  - how output values are obtained from it.
+An `fno:Mapping` specifies:
+  - how to provide input values when executing the transformation, and
+  - how output values can be obtained after executing the transformation.
 
-In other words, the mapping defines an interface that an implementation **MUST** implement if it wants to represent the transformation.
+If not specified it may not be clear how to interact with the service that runs the transformation.
 
-A mapping **SHOULD** declare the supported input and output formats using `fnom:FormatMapping`. This makes explicit which format
-an implementation **MUST** consume and produce.
+An Aggregator Service will always expose generated outputs as an endpoint. Therefore the output mapping **MUST** be
+an `fnom:EndpointMapping`.
 
-For example, `:merge-tables-csv-mapping` defines a mapping for implementations that merge multiple CSV tables into a single CSV table:
+A mapping **SHOULD** include the `dct:format` and `dct:conformsTo` if relevant.
+
+----------------------------------------
+
+ISSUE: This is actually for the FnO Spec
+
+If the input value will be fetched from an external source the  `fnom:EndpointMapping` **MUST** be used. For example, a function expects
+a list of string values. This can be given directly or you could give one string value representing the URL where the source is hosted.
+
+Certain parameters represent a container using `fno:containerType`. To indicate you are providing a mapping for individual contianer elements
+instead of the full list parameter use `fnom:functionParameterElement`.
+
+A mapping **MAY** include `dct:format` to specify one or more desired formats for the input value.
+A mapping **MAY** include `dct:conformsTo` to specify the input value conforms to a certain specification or protocol. If
+this is combined with an `fnom:EndpointMapping` this can specify the protocol the endpoint adheres to.
+
+-------------------------------------
+
+For example, `:merge-tables-csv-mapping` defines a mapping for implementations that:
+  - Get `:tables-parameter` inputs from a list of endpoints that either support the `FTP` or `HTTP` Protocol and expect
+    a CSV format.
+  - Provides output via an HTTP endpoint that accpets the `text/csv` content type.
 
 <div class="example">
 ```turtle
@@ -375,26 +399,36 @@ For example, `:merge-tables-csv-mapping` defines a mapping for implementations t
   fno:function :merge-tables
   fno:parameterMapping [
     a fnom:FormatMapping ;
-    fnom:functionParameter :tables-parameter ;
-    fnom:format <http://www.iana.org/assignments/media-types/text/csv> .
+    a fnom:EndpointMapping ;
+    fnom:functionParameterElement :tables-parameter ;
+    dct:format ".csv" ;
+    dct:conformsTo <https://datatracker.ietf.org/doc/html/rfc959> .
+  ],[
+    a fnom:FormatMapping ;
+    a fnom:EndpointMapping ;
+    fnom:functionParameterElement :tables-parameter ;
+    dct:format <http://www.iana.org/assignments/media-types/text/csv> ;
+    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> .
   ] ;
   fno:outputMapping [
     a fnom:FormatMapping ;
-    fnom:functionParameter :table-output ;
-    fnom:format <http://www.iana.org/assignments/media-types/text/csv> .
+    a fnom:EndpointMapping ;
+    fnom:functionOutput :table-output ;
+    dct:format <http://www.iana.org/assignments/media-types/text/csv> ;
+    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> .
   ] .
 ```
 </div>
 
-Further requirements on how a server **MUST** expose and maintain the set of available and supported mappings
-are specified in [[#server-level-transformation-catalog]].
+Implementation {#aggregator-implementation}
+-------------------------------------------
 
-### Implementation ### {#aggregator-implementation}
+A mapping **MAY** link a concrete implementations using `fno:implementation` that:
+  - **MUST** a subclass of `fno:Implementation`
+  - **SHOULD** be a semantic description of the deployable artifact that will be executed inside the aggregator 
+      (e.g., a container image, script, or binary).
 
-A mapping **MAY** associate one or more concrete implementations using `fno:implementation`.
-
-The linked `fno:Implementation` resource **SHOULD** be a semantic description of the deployable artifact that will be 
-executed inside the aggregator (e.g., a container image, script, or binary).
+The mapping represents the interface that an implementation **MUST** implement if it wants to represent the transformation.
 
 <div class="example">
 ```turtle
@@ -424,8 +458,6 @@ executed inside the aggregator (e.g., a container image, script, or binary).
 Service {#aggregator-service}
 -----------------------------
 
-ISSUE: `aggr:usesMapping` OK as a predicate?
-
 A deployed aggregator service is modeled as:
   - an `aggr:Service`
   - a `dcat:DataService` ([[!Data-Catalog]])
@@ -433,16 +465,21 @@ A deployed aggregator service is modeled as:
 
 The service:
   - **MUST** serve one dataset for each transformation output
-  - **MUST** link to an `fno:Mapping` using `aggr:usesMapping`
+  - **MUST** link to an `fno:AppliedFunction`using `aggr:performs`. This `fno:AppliedFunction` specifies the input values used when 
+    executing the transformation.
+  - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`.
+    - The `fno:Mapping` **MUST** reference the same transformation via `fno:function` as 
+        the `fno:AppliedFunction` from `aggr:performs` does with `fnoc:applies`.
   - **SHOULD** declare operational metadata such as status and creation time
   - **SHOULD** indicate it adheres to the aggregator protocol using `dct:conformsTo`
 
 Outputs generated by a running service **MUST** be described as a `dcat:Distribution`. Each `dcat:Distribution`:
   - **MUST** reference the corresponding output endpoint using `dcat:accessURL`.
   - **MUST** reference the service via `dcat:accessService`.
-  - **MUST** declare the output format defined in the associated service mapping using:
+  - **MUST** declare the output format if defined in the associated mapping using:
     - `dcat:mediaType` when the format corresponds to an IANA-registered media type.
     - `dct:format` when the format is not an IANA-conformant media type.
+  - **MUST** declare conformity using `dct:conformsTo` if defined in the associated mapping.
 
 The corresponding dataset:
   - **MUST AT LEAST** reference the most recently generated output using `dcat:distribution`.
@@ -465,6 +502,7 @@ or historical distributions if provided.
     aggr:status "running" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
     aggr:usesMapping :merge-tables-csv-mapping ;
+    aggr:performs :merge-tables-service-input ;
     dct:conformsTo <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> ;
     dcat:servesDataset :merge-tables-service-dataset .
 
@@ -478,23 +516,32 @@ or historical distributions if provided.
     dcat:mediaType <http://www.iana.org/assignments/media-types/text/csv> ;
     dcat:accessURL <http://example.com/service/result> ;
     dcat:accessService :merge-tables-service .
+
+:merge-tables-service-input
+  a fno:AppliedFunction ;
+  fnoc:applies :merge-tables ;
+  fnoc:parameterBinding [
+    fnoc:boundParameter :tables-parameter ;
+    fnoc:boundToTerm (
+      "http://example.com/table1.csv"
+      "http://example.com/table2.csv"
+    ) .
+  ] .
 ```
 </div>
 
-Further requirements on how an Aggregator Server **MUST** manage services — including how clients can create, 
-configure, and delete service instances — are specified in [[#aggregator-service-management]].
+Further requirements on how an Aggregator Server **MUST** manage services — including how clients can discover, create, 
+and delete service instances — are specified in [[#aggregator-service-management]].
 
-Semantic Enrichment of Service Descriptions {#aggregator-semantic-enrichment}
------------------------------------------------------------------------------
+### Making services FAIR ### {#aggregator-semantic-enrichment}
 
-Service descriptions MAY be semantically enriched to provide more detailed information about their outputs and capabilities.
+Service descriptions **MAY** be semantically enriched to provide more detailed information about their outputs and capabilities.
 Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable).
 
 How an aggregator server enables semantic enrichment is implementation-dependent and should be documented 
 in its accompanying documentation.
 
-### Examples of Semantic Enrichment ### {#aggregator-semantic-enrichment-examples}
-
+Examples include:
   - Describe a service output endpoint as a SPARQL endpoint using `sd:Service`.
   - Use `dct:conformsTo` to specify the protocol that a service output endpoint adheres to.
   - Use `dct:accrualPeriodicity` on the dataset to indicate the frequency of updates.
@@ -525,7 +572,7 @@ The following example illustrates a service that serves a dataset via a SPARQL e
     a dcat:Dataset ;
     a prov:Entity ;
     dcat:distribution :sparql-query-view-service-distribution ;
-    dct:accrualPeriodicity <http://purl.org/cld/freq/continuous> .
+    dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
  
 :sparql-query-view-service-distribution ;
     a dcat:Distribution ;
@@ -551,8 +598,8 @@ that results in new distributions for its datasets.
 
 This execution **MUST** be typed as:
   - an `fno:Execution` detailing:
-    - what transformation it executes with `fno:executes`
-    - what mapping was used with `fno:uses`. 
+    - what `fno:AppliedFunction` it executed with `fno:executes`
+    - what `fno:Mapping` was used with `fno:uses`. 
     - what input values were used with the parameter predicates. 
     - the newly created distribution with the output predicate.
   - a `prov:Activity` that:
@@ -608,7 +655,7 @@ However, if a new distribution fully replaces a previous distribution (i.e., the
   a prov:Entity ;
   prov:wasGeneratedBy :execution-0 ;
   prov:wasGeneratedAtTime "2025-01-01T12:01:00Z"^^xsd:dateTime ;
-  prov:wasInvalidated :execution-1 .
+  prov:wasInvalidatedBy :execution-1 .
 ```
 </div>
 
@@ -626,7 +673,7 @@ deployment-specific URLs; the server description document MUST include absolute 
 discover them.
 
 Aggregator Server Description {#server-description}
-----------------------------------------------------------
+---------------------------------------------------
 
 The Aggregator Server Description is a public document that allows clients to discover the Aggregator Server’s 
 endpoints and capabilities. This document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MUST 
@@ -728,36 +775,14 @@ implementation to restrict which clients may create aggregators on the server.
 Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------
 
-The Transformation Catalog is an RDF document describing all aggregator transformations ([[#aggregator-data-model]]) 
+The Transformation Catalog is an RDF document describing all aggregator transformation mappings ([[#aggregator-data-model]]) 
 that can be deployed as services by the aggregator server.
 
-### Catalog Publication ###
-
-  - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
-
-  - The URL **MUST** be advertised in the Aggregator Server Description via the transformation_catalog field.
-
-  - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
-
-  - Access **MAY** be protected using an OpenID Connect (OIDC) ID Token for authentication.
-
-  - A catalog **MAY** reference resources defined in other catalogs using `rdfs:seeAlso`.
-
-### Linking Transformations to deployable artifacts ###
-
-The aggregator server is responsible for mapping each `aggr:ServiceImplementation` to a deployable artifact (e.g., an OCI image). 
-This mapping can be:
-  - **Internal** – stored inside the server for deployment purposes
-  - **Cataloged** – included in the transformation catalog as an RDF Resource using `prov:SpecializationOf`
-
-NOTE: Server capabilities for resolving `aggr:ServiceImplementation` specializations to create deployable units are 
-implementation-specific and are not defined by this specification. Such details should be included in the 
-aggregator server’s documentation.
-
-### Example ###
-
-This example illustrates a catalog containing a local transformation and an external reference, 
-linking a `aggr:ServiceImplementation` to an  OCI image:
+The `aggr:TransformationCatalog`:
+  - **MUST** reference all supported transformations using `aggr:hasTransformation`.
+  - **MUST** reference all supported mappings using `aggr:hasMapping`.
+  - **MUST** reference all supported implementations using `aggr:hasImplementation`.
+  - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
 
 <div class="example">
 ```turtle
@@ -769,13 +794,15 @@ linking a `aggr:ServiceImplementation` to an  OCI image:
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<> a aggr:TransformationCollection ;
+<> a aggr:TransformationCatalog ;
     dct:title "Aggregator transformations" ;
-    aggr:hasMapping <QueryViewMapping> .
-    aggr:hasMapping <ExternalTransformationMapping> ;
-    rdfs:seeAlso <http://example.org/external/ExternalTransformation>,
-      <http://example.org/external/CsvServiceImplementation>,
-      <http://example.org/registry/example-image:latest> .
+    aggr:hasTransformation <QueryView> ;
+    aggr:hasTransformation <http://example.org/external/ExternalFunction> ;
+    aggr:hasMapping <StringSourcesMapping> ;
+    aggr:hasMapping <EndpointSourcesMapping> ;
+    aggr:hasMapping <http://example.org/external/ExternalMapping> ;
+    rdfs:seeAlso <http://example.org/external/ExternalFunction> ;
+    rdfs:seeAlso <http://example.org/external/ExternalMapping> .
 
 
 <QueryView>
@@ -801,29 +828,58 @@ linking a `aggr:ServiceImplementation` to an  OCI image:
     a             fno:Output ;
     fno:predicate <result> ;
 
-<SPARQLServiceImplementation>
-    a                 aggr:ServiceImplementation ;
-    aggr:conformsTo   <https://www.w3.org/TR/sparql11-protocol/> ;
-    prov:specializationOf <http://example.org/registry/example-image:latest> .
-
-<QueryViewMapping>
+<StringSourcesMapping>
     a                  fno:Mapping ;
     fno:function       <QueryView> ;
-    fno:implementation 
-      <SPARQLServiceImplementation>,
-      <http://example.org/external/CsvTableImplementation> .
+    fno:outputMapping [
+      a fnom:EndpointMapping ;
+      fnom:functionOutput <Result>
+      dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
+    ] .
 
-<ExternalTransformationMapping>
-  a fno:Mapping ;
-  fno:function <http://example.org/external/ExternalTransformation> ;
-  fno:implementation <SPARQLServiceImplementation> .
+<EndpointSourcesMapping>
+  a fno:Mapping;
+  fno:function <QueryView> ;
+  fno:parameterMapping [
+    a fnom:EndpointMapping ;
+    a fnom:FormatMapping ;
+    fnom:functionParameter <Sources> ;
+    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> ;
+    dct:format <https://www.iana.org/assignments/media-types/text/plain> .
+  ] ;
+  fno:outputMapping [
+    a fnom:EndpointMapping ;
+    fnom:functionOutput <Result>
+    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
+  ] .
 ```
 </div>
 
-### Compositions ###
+### Compositions ### {#catalog-compositions}
 
-A Transformation Catalog can also include `fno:Composition` which detail a set of services where there inputs and outputs are 
-linked together to create a pipeline. More on how to request a pipeline deployment in 
+An Aggregator Server **MAY** support the deployment of pipelines described using `fno:Composition`. 
+A pipeline can be included in the catalog in one of the following ways, depending on how it is exposed.
+
+**Pipeline exposed as a single service**
+
+If a pipeline is exposed as a single service, with its internal components hidden:
+  - The `fno:Composition` **MUST** be linked to a transformation using `fno:composition`.
+  - The corresponding `fno:Function` representing the transformation **MUST** be linked to the catalog using `aggr:hasTransformation`.
+
+If the internal components represent deployable transformations:
+  - All components **MUST** represent deployable transformations.
+  - They **MUST** be linked to the catalog as defined in [[#server-level-transformation-catalog]].
+
+The fno:Composition MAY be used solely to describe the internal structure of a transformation. In this case, 
+the composition serves as descriptive metadata to provide additional transparency. This applies when **AT LEAST ONE** component 
+of the composition is not linked to the catalog. Then, the transformation **MUST** be deployable as a single unit.
+
+**Pipeline Exposing All Components as Services**
+
+If each component of the pipeline is exposed as an individual service: 
+  - The `fno:Composition` **MUST** be linked directly to the catalog using `aggr:hasComposition`.
+  - Every transformation used inside the `fno:Composition` **MUST** be linked to the catalog 
+      as defined earlier (see [[#server-level-transformation-catalog]]).
 
 <div class="example">
 ```turtle
@@ -837,71 +893,66 @@ linked together to create a pipeline. More on how to request a pipeline deployme
 
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;
-    aggr:hasMapping <WLP-QueryViewMapping> ;
-    aggr:hasMapping <WLP-WeightLossMapping> ;
-    aggr:hasComposition <WeightLossPipeline> .
+    aggr:hasTransformation <RMLQueryPipeline> ;
+    aggr:hasMapping <QueryViewMapping> ;
+    aggr:hasMapping <RMLMapperMapping> .
 
-<WeightLossPipeline>
+<RMLQueryPipeline>
   a fno:Function ;
-  fno:expects ( <Query> <Sources> ) ;
-  fno:returns ( <WeightLossOutput> ) ;
+  fno:expects ( <Mappings> <Query> ) ;
+  fno:returns ( <Result> ) ;
   fno:composition [
     fnoc:composedOf [
       fnoc:mapFrom [
-        fnoc:constituentFunction <WeightLossPipeline> ;
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <Mappings> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <RMLMapper> ;
+        fnoc:functionParameter <Mappings> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <RMLQueryPipeline> ;
         fnoc:functionParameter <Query> .
       ] ;
       fnoc:mapTo [
-        fnoc:constituentFunction <WLP-QueryView> ;
+        fnoc:constituentFunction <QueryView> ;
         fnoc:functionParameter <Query> .
       ] .
     ],[
       fnoc:mapFrom [
-        fnoc:constituentFunction <WeightLossPipeline> ;
-        fnoc:functionParameter <Sources> .
+        fnoc:constituentFunction <RMLMapper> ;
+        fnoc:functionParameter <Result> .
       ] ;
       fnoc:mapTo [
-        fnoc:constituentFunction <WLP-QueryView> ;
-        fnoc:functionParameter <Sources> .
+        fnoc:constituentFunction <QueryView> ;
+        fnoc:functionParameter <Sources> ;
+        fnoc:mappingStrategy fnoc:append .
       ] .
     ],[
       fnoc:mapFrom [
-        fnoc:constituentFunction <WLP-QueryView> ;
-        fnoc:functionOutput <Result> .
+        fnoc:constituentFunction <QueryView> ;
+        fnoc:functionOutput <View> .
       ] ;
       fnoc:mapTo [
-        fnoc:constituentFunction <WLP-WeightLossGraph> ;
-        fnoc:functionParameter <Dataset> .
-      ] .
-    ],[
-      fnoc:mapFrom [
-        fnoc:constituentFunction <WLP-WeightLossGraph> ;
-        fnoc:functionParameter <WeightLossOutput> .
-      ] ;
-      fnoc:mapTo [
-        fnoc:constituentFunction <WeightLossPipeline> ;
-        fnoc:functionParameter <WeightLossOutput> .
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <View> .
       ] .
     ] .
   ] .
-
-<WLP-QueryViewMapping>
-  a fno:Mapping ;
-  fno:function <WLP-QueryView> ;
-  fno:implementation <SPARQLServiceImplementation> .
-
-<WLP-WeightLossMapping>
-  a fno:Mapping ;
-  fno:function <WLP-WeightLossGraph> ;
-  fno:implementation <CsvTableImplementation> .
-
-<WLP-QueryView>
-  fnoc:applies <QueryView> .
-
-<WLP-WeightLossGraph>
-  fnoc:applies <WeightLossGraph> .
 ```
 </div>
+
+### Catalog Publication ### {#server-level-catalog-publication}
+
+  - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
+
+  - The URL **MUST** be advertised in the Aggregator Server Description via the `mapping_catalog` field.
+
+  - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
+
+  - Access **MAY** be protected using an OpenID Connect (OIDC) ID Token for authentication.
 
 
 
@@ -2247,9 +2298,10 @@ Content-Type: application/ld+json
             }
         ]
     },
-    "aggr:implements": {
-        "@id": "http://aggregator.example.org/transformations#SPARQLServiceImplementation"
-    }
+    "aggr:usesMapping": {
+        "@type": "fno:Mapping",
+        "@id": "http://aggregator.example.org/transformations#QueryViewSPARQLMapping"
+    },
 }
 ```
 </div>

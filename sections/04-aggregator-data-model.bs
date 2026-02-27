@@ -144,7 +144,7 @@ For example, `:merge-tables-csv-mapping` defines a mapping for implementations t
 Implementation {#aggregator-implementation}
 -------------------------------------------
 
-A mapping **MAY** associate one or more concrete implementations using `fno:implementation` that:
+A mapping **MAY** link a concrete implementations using `fno:implementation` that:
   - **MUST** a subclass of `fno:Implementation`
   - **SHOULD** be a semantic description of the deployable artifact that will be executed inside the aggregator 
       (e.g., a container image, script, or binary).
@@ -254,7 +254,7 @@ or historical distributions if provided.
 Further requirements on how an Aggregator Server **MUST** manage services — including how clients can discover, create, 
 and delete service instances — are specified in [[#aggregator-service-management]].
 
-### Semantic Enrichment of Service Descriptions ### {#aggregator-semantic-enrichment}
+### Making services FAIR ### {#aggregator-semantic-enrichment}
 
 Service descriptions **MAY** be semantically enriched to provide more detailed information about their outputs and capabilities.
 Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable).

@@ -1,5 +1,5 @@
 <!doctype html><html lang="en">
- <head>
+ <head><script type="text/javascript">(function(){var s=document.createElement("script");var port=59754;s.src="//"+window.location.hostname+":"+port+"/livereload.js?port="+port;document.head.appendChild(s);})();</script>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <title>Aggregator Specification</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
@@ -2015,7 +2015,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Aggregator Specification</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-02-26">26 February 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-02-27">27 February 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2031,7 +2031,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 26 February 2026,
+In addition, as of 27 February 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2072,16 +2072,12 @@ to protected derived resources.</p>
      <a href="#aggregator-data-model"><span class="secno">4</span> <span class="content">Aggregator Data Model</span></a>
      <ol class="toc">
       <li><a href="#aggregator-transformation"><span class="secno">4.1</span> <span class="content">Transformation</span></a>
+      <li><a href="#aggregator-mapping"><span class="secno">4.2</span> <span class="content">Mapping</span></a>
+      <li><a href="#aggregator-implementation"><span class="secno">4.3</span> <span class="content">Implementation</span></a>
       <li>
-       <a href="#aggregator-mapping"><span class="secno">4.2</span> <span class="content">Mapping</span></a>
+       <a href="#aggregator-service"><span class="secno">4.4</span> <span class="content">Service</span></a>
        <ol class="toc">
-        <li><a href="#aggregator-implementation"><span class="secno">4.2.1</span> <span class="content">Implementation</span></a>
-       </ol>
-      <li><a href="#aggregator-service"><span class="secno">4.3</span> <span class="content">Service</span></a>
-      <li>
-       <a href="#aggregator-semantic-enrichment"><span class="secno">4.4</span> <span class="content">Semantic Enrichment of Service Descriptions</span></a>
-       <ol class="toc">
-        <li><a href="#aggregator-semantic-enrichment-examples"><span class="secno">4.4.1</span> <span class="content">Examples of Semantic Enrichment</span></a>
+        <li><a href="#aggregator-semantic-enrichment"><span class="secno">4.4.1</span> <span class="content">Making services FAIR</span></a>
        </ol>
       <li><a href="#aggregator-provenance"><span class="secno">4.5</span> <span class="content">Provenance</span></a>
      </ol>
@@ -2093,10 +2089,8 @@ to protected derived resources.</p>
       <li>
        <a href="#server-level-transformation-catalog"><span class="secno">5.3</span> <span class="content">Server-level Transformation Catalog</span></a>
        <ol class="toc">
-        <li><a href="#catalog-publication"><span class="secno">5.3.1</span> <span class="content">Catalog Publication ###</span></a>
-        <li><a href="#linking-transformations-to-deployable-artifacts"><span class="secno">5.3.2</span> <span class="content">Linking Transformations to deployable artifacts ###</span></a>
-        <li><a href="#example"><span class="secno">5.3.3</span> <span class="content">Example ###</span></a>
-        <li><a href="#compositions"><span class="secno">5.3.4</span> <span class="content">Compositions ###</span></a>
+        <li><a href="#catalog-compositions"><span class="secno">5.3.1</span> <span class="content">Compositions</span></a>
+        <li><a href="#server-level-catalog-publication"><span class="secno">5.3.2</span> <span class="content">Catalog Publication</span></a>
        </ol>
      </ol>
     <li>
@@ -2142,7 +2136,7 @@ to protected derived resources.</p>
        <ol class="toc">
         <li><a href="#collection-publication"><span class="secno">9.3.1</span> <span class="content">Collection Publication ###</span></a>
         <li><a href="#grouping-services"><span class="secno">9.3.2</span> <span class="content">Grouping Services</span></a>
-        <li><a href="#example①"><span class="secno">9.3.3</span> <span class="content">Example</span></a>
+        <li><a href="#example"><span class="secno">9.3.3</span> <span class="content">Example</span></a>
        </ol>
       <li><a href="#service-endpoint"><span class="secno">9.4</span> <span class="content">Service Endpoint</span></a>
      </ol>
@@ -2153,7 +2147,7 @@ to protected derived resources.</p>
        <a href="#provenance-log"><span class="secno">10.1</span> <span class="content">Service Provenance Log</span></a>
        <ol class="toc">
         <li><a href="#log-publication"><span class="secno">10.1.1</span> <span class="content">Log Publication ###</span></a>
-        <li><a href="#example②"><span class="secno">10.1.2</span> <span class="content">Example ###</span></a>
+        <li><a href="#example①"><span class="secno">10.1.2</span> <span class="content">Example ###</span></a>
         <li><a href="#periodic-vs-continous-updates"><span class="secno">10.1.3</span> <span class="content">Periodic vs. Continous updates ###</span></a>
         <li><a href="#connecting-provenance"><span class="secno">10.1.4</span> <span class="content">Connecting Provenance ###</span></a>
         <li><a href="#versioned-history"><span class="secno">10.1.5</span> <span class="content">Versioned History ###</span></a>
@@ -2445,8 +2439,8 @@ Each transformation <strong>MUST</strong> be described as an <code>fno:Function<
     <li data-md>
      <p>Ontology classes, e.g., <code>saref:Measurement</code> or <code>csvw:Table</code></p>
    </ul>
-   <div class="example" id="example-b803bfac">
-    <a class="self-link" href="#example-b803bfac"></a>
+   <div class="example" id="example-6b9d2f50">
+    <a class="self-link" href="#example-6b9d2f50"></a>
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
@@ -2459,11 +2453,11 @@ Each transformation <strong>MUST</strong> be described as an <code>fno:Function<
     <c- nn>fno</c-><c- p>:</c-><c- f>returns</c->         <c- p>(</c-> <c- p>:</c-><c- f>query-output</c-> <c- p>)</c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>sources-parameter</c->
-    <c- b>a</c->             <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>sources</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>list</c->      <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>type</c->      <c- nn>xsd</c-><c- p>:</c-><c- f>anyURI</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>required</c->  <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
+    <c- b>a</c->                   <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->       <c- p>:</c-><c- f>sources</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>containerType</c->   <c- nn>rdf</c-><c- p>:</c-><c- f>List</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>type</c->            <c- nn>xsd</c-><c- p>:</c-><c- f>anyURI</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>required</c->        <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>query-parameter</c->
     <c- b>a</c->             <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
@@ -2483,33 +2477,53 @@ Each transformation <strong>MUST</strong> be described as an <code>fno:Function<
   <c- nn>fno</c-><c- p>:</c-><c- f>returns</c-> <c- p>(</c-> <c- p>:</c-><c- f>table-output</c-> <c- p>)</c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>tables-parameter</c-> 
-  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>type</c-> <c- nn>xsd</c-><c- p>:</c-><c- f>anyURI</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>list</c-> <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>table</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>required</c-> <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
+  <c- b>a</c->                   <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>type</c->            <c- nn>xsd</c-><c- p>:</c-><c- f>anyURI</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>containerType</c->   <c- nn>rdf</c-><c- p>:</c-><c- f>List</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->       <c- p>:</c-><c- f>table</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>required</c->        <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>table-output</c->
-  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>type</c-> <c- nn>csvw</c-><c- p>:</c-><c- f>Table</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- p>:</c-><c- f>table</c-> <c- p>.</c->
+  <c- b>a</c->               <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>type</c->        <c- nn>csvw</c-><c- p>:</c-><c- f>Table</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- p>:</c-><c- f>table</c-> <c- p>.</c->
 </pre>
    </div>
+   <p>Further requirements on how a server <strong>MUST</strong> expose and maintain the set of available and supported transformations
+are specified in <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>.</p>
    <h3 class="heading settled" data-level="4.2" id="aggregator-mapping"><span class="secno">4.2. </span><span class="content">Mapping</span><a class="self-link" href="#aggregator-mapping"></a></h3>
-   <p>Every transformation description <strong>MUST</strong> be associated with at least one <code>fno:Mapping</code>.</p>
-   <p>A <code>fno:Mapping</code> specifies how a transformation function may be connected to a concrete implementation. It describes:</p>
+   <p>Every transformation description <strong>SHOULD</strong> be associated with one or more <code>fno:Mapping</code>.</p>
+   <p>An <code>fno:Mapping</code> specifies:</p>
    <ul>
     <li data-md>
-     <p>how input parameters are provided to the implementation, and</p>
+     <p>how to provide input values when executing the transformation, and</p>
     <li data-md>
-     <p>how output values are obtained from it.</p>
+     <p>how output values can be obtained after executing the transformation.</p>
    </ul>
-   <p>In other words, the mapping defines an interface that an implementation <strong>MUST</strong> implement if it wants to represent the transformation.</p>
-   <p>A mapping <strong>SHOULD</strong> declare the supported input and output formats using <code>fnom:FormatMapping</code>. This makes explicit which format
-an implementation <strong>MUST</strong> consume and produce.</p>
-   <p>For example, <code>:merge-tables-csv-mapping</code> defines a mapping for implementations that merge multiple CSV tables into a single CSV table:</p>
-   <div class="example" id="example-1bae96f2">
-    <a class="self-link" href="#example-1bae96f2"></a>
+   <p>If not specified it may not be clear how to interact with the service that runs the transformation.</p>
+   <p>An Aggregator Service will always expose generated outputs as an endpoint. Therefore the output mapping <strong>MUST</strong> be
+an <code>fnom:EndpointMapping</code>.</p>
+   <p>A mapping <strong>SHOULD</strong> include the <code>dct:format</code> and <code>dct:conformsTo</code> if relevant.</p>
+   <hr>
+   <p class="issue" id="issue-1f1089c5"><a class="self-link" href="#issue-1f1089c5"></a> This is actually for the FnO Spec</p>
+   <p>If the input value will be fetched from an external source the  <code>fnom:EndpointMapping</code> <strong>MUST</strong> be used. For example, a function expects
+a list of string values. This can be given directly or you could give one string value representing the URL where the source is hosted.</p>
+   <p>Certain parameters represent a container using <code>fno:containerType</code>. To indicate you are providing a mapping for individual contianer elements
+instead of the full list parameter use <code>fnom:functionParameterElement</code>.</p>
+   <p>A mapping <strong>MAY</strong> include <code>dct:format</code> to specify one or more desired formats for the input value.
+A mapping <strong>MAY</strong> include <code>dct:conformsTo</code> to specify the input value conforms to a certain specification or protocol. If
+this is combined with an <code>fnom:EndpointMapping</code> this can specify the protocol the endpoint adheres to.</p>
+   <hr>
+   <p>For example, <code>:merge-tables-csv-mapping</code> defines a mapping for implementations that:</p>
+   <ul>
+    <li data-md>
+     <p>Get <code>:tables-parameter</code> inputs from a list of endpoints that either support the <code>FTP</code> or <code>HTTP</code> Protocol and expect
+a CSV format.</p>
+    <li data-md>
+     <p>Provides output via an HTTP endpoint that accpets the <code>text/csv</code> content type.</p>
+   </ul>
+   <div class="example" id="example-20276167">
+    <a class="self-link" href="#example-20276167"></a>
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>fnom:</c-> <c- g>&lt;https://w3id.org/function/vocabulary/mapping#></c->
@@ -2520,22 +2534,36 @@ an implementation <strong>MUST</strong> consume and produce.</p>
   <c- nn>fno</c-><c- p>:</c-><c- f>function</c-> <c- p>:</c-><c- f>merge-tables</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>parameterMapping</c-> <c- p>[</c->
     <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>FormatMapping</c-> <c- p>;</c->
-    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameter</c-> <c- p>:</c-><c- f>tables-parameter</c-> <c- p>;</c->
-    <c- nn>fnom</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>.</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameterElement</c-> <c- p>:</c-><c- f>tables-parameter</c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>format</c-> <c- s>".csv"</c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://datatracker.ietf.org/doc/html/rfc959></c-> <c- p>.</c->
+  <c- p>],[</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>FormatMapping</c-> <c- p>;</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameterElement</c-> <c- p>:</c-><c- f>tables-parameter</c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://www.rfc-editor.org/rfc/rfc9110></c-> <c- p>.</c->
   <c- p>]</c-> <c- p>;</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>outputMapping</c-> <c- p>[</c->
     <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>FormatMapping</c-> <c- p>;</c->
-    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameter</c-> <c- p>:</c-><c- f>table-output</c-> <c- p>;</c->
-    <c- nn>fnom</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>.</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionOutput</c-> <c- p>:</c-><c- f>table-output</c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://www.rfc-editor.org/rfc/rfc9110></c-> <c- p>.</c->
   <c- p>]</c-> <c- p>.</c->
 </pre>
    </div>
-   <p>Further requirements on how a server <strong>MUST</strong> expose and maintain the set of available and supported mappings
-are specified in <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>.</p>
-   <h4 class="heading settled" data-level="4.2.1" id="aggregator-implementation"><span class="secno">4.2.1. </span><span class="content">Implementation</span><a class="self-link" href="#aggregator-implementation"></a></h4>
-   <p>A mapping <strong>MAY</strong> associate one or more concrete implementations using <code>fno:implementation</code>.</p>
-   <p>The linked <code>fno:Implementation</code> resource <strong>SHOULD</strong> be a semantic description of the deployable artifact that will be
-executed inside the aggregator (e.g., a container image, script, or binary).</p>
+   <h3 class="heading settled" data-level="4.3" id="aggregator-implementation"><span class="secno">4.3. </span><span class="content">Implementation</span><a class="self-link" href="#aggregator-implementation"></a></h3>
+   <p>A mapping <strong>MAY</strong> link a concrete implementations using <code>fno:implementation</code> that:</p>
+   <ul>
+    <li data-md>
+     <p><strong>MUST</strong> a subclass of <code>fno:Implementation</code></p>
+    <li data-md>
+     <p><strong>SHOULD</strong> be a semantic description of the deployable artifact that will be executed inside the aggregator
+  (e.g., a container image, script, or binary).</p>
+   </ul>
+   <p>The mapping represents the interface that an implementation <strong>MUST</strong> implement if it wants to represent the transformation.</p>
    <div class="example" id="example-56bc0548">
     <a class="self-link" href="#example-56bc0548"></a>
 
@@ -2561,8 +2589,7 @@ executed inside the aggregator (e.g., a container image, script, or binary).</p>
     <c- nn>schema</c-><c- p>:</c-><c- f>softwareVersion</c-> <c- s>"2.1.1"</c-> <c- p>.</c->
 </pre>
    </div>
-   <h3 class="heading settled" data-level="4.3" id="aggregator-service"><span class="secno">4.3. </span><span class="content">Service</span><a class="self-link" href="#aggregator-service"></a></h3>
-   <p class="issue" id="issue-f5b61520"><a class="self-link" href="#issue-f5b61520"></a> <code>aggr:usesMapping</code> OK as a predicate?</p>
+   <h3 class="heading settled" data-level="4.4" id="aggregator-service"><span class="secno">4.4. </span><span class="content">Service</span><a class="self-link" href="#aggregator-service"></a></h3>
    <p>A deployed aggregator service is modeled as:</p>
    <ul>
     <li data-md>
@@ -2577,7 +2604,15 @@ executed inside the aggregator (e.g., a container image, script, or binary).</p>
     <li data-md>
      <p><strong>MUST</strong> serve one dataset for each transformation output</p>
     <li data-md>
-     <p><strong>MUST</strong> link to an <code>fno:Mapping</code> using <code>aggr:usesMapping</code></p>
+     <p><strong>MUST</strong> link to an <code>fno:AppliedFunction</code>using <code>aggr:performs</code>. This <code>fno:AppliedFunction</code> specifies the input values used when
+executing the transformation.</p>
+    <li data-md>
+     <p><strong>MAY</strong> link to an <code>fno:Mapping</code> using <code>aggr:usesMapping</code>.</p>
+     <ul>
+      <li data-md>
+       <p>The <code>fno:Mapping</code> <strong>MUST</strong> reference the same transformation via <code>fno:function</code> as
+the <code>fno:AppliedFunction</code> from <code>aggr:performs</code> does with <code>fnoc:applies</code>.</p>
+     </ul>
     <li data-md>
      <p><strong>SHOULD</strong> declare operational metadata such as status and creation time</p>
     <li data-md>
@@ -2590,13 +2625,15 @@ executed inside the aggregator (e.g., a container image, script, or binary).</p>
     <li data-md>
      <p><strong>MUST</strong> reference the service via <code>dcat:accessService</code>.</p>
     <li data-md>
-     <p><strong>MUST</strong> declare the output format defined in the associated service mapping using:</p>
+     <p><strong>MUST</strong> declare the output format if defined in the associated mapping using:</p>
      <ul>
       <li data-md>
        <p><code>dcat:mediaType</code> when the format corresponds to an IANA-registered media type.</p>
       <li data-md>
        <p><code>dct:format</code> when the format is not an IANA-conformant media type.</p>
      </ul>
+    <li data-md>
+     <p><strong>MUST</strong> declare conformity using <code>dct:conformsTo</code> if defined in the associated mapping.</p>
    </ul>
    <p>The corresponding dataset:</p>
    <ul>
@@ -2605,8 +2642,8 @@ executed inside the aggregator (e.g., a container image, script, or binary).</p>
    </ul>
    <p>This ensures that consumers can reliably discover the latest available result while preserving compatibility with versioned
 or historical distributions if provided.</p>
-   <div class="example" id="example-7e918007">
-    <a class="self-link" href="#example-7e918007"></a>
+   <div class="example" id="example-0054b681">
+    <a class="self-link" href="#example-0054b681"></a>
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>dcat:</c-> <c- g>&lt;https://www.w3.org/ns/dcat#></c-> <c- p>.</c->
@@ -2621,6 +2658,7 @@ or historical distributions if provided.</p>
     <c- nn>aggr</c-><c- p>:</c-><c- f>status</c-> <c- s>"running"</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>createdAt</c-> <c- s>"2024-01-01T12:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>usesMapping</c-> <c- p>:</c-><c- f>merge-tables-csv-mapping</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>performs</c-> <c- p>:</c-><c- f>merge-tables-service-input</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>servesDataset</c-> <c- p>:</c-><c- f>merge-tables-service-dataset</c-> <c- p>.</c->
 
@@ -2634,16 +2672,27 @@ or historical distributions if provided.</p>
     <c- nn>dcat</c-><c- p>:</c-><c- f>mediaType</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/text/csv></c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;http://example.com/service/result></c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- p>:</c-><c- f>merge-tables-service</c-> <c- p>.</c->
+
+<c- p>:</c-><c- f>merge-tables-service-input</c->
+  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>AppliedFunction</c-> <c- p>;</c->
+  <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c-> <c- p>:</c-><c- f>merge-tables</c-> <c- p>;</c->
+  <c- nn>fnoc</c-><c- p>:</c-><c- f>parameterBinding</c-> <c- p>[</c->
+    <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c-> <c- p>:</c-><c- f>tables-parameter</c-> <c- p>;</c->
+    <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- p>(</c->
+      <c- s>"http://example.com/table1.csv"</c->
+      <c- s>"http://example.com/table2.csv"</c->
+    <c- p>)</c-> <c- p>.</c->
+  <c- p>]</c-> <c- p>.</c->
 </pre>
    </div>
-   <p>Further requirements on how an Aggregator Server <strong>MUST</strong> manage services — including how clients can create,
-configure, and delete service instances — are specified in <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>.</p>
-   <h3 class="heading settled" data-level="4.4" id="aggregator-semantic-enrichment"><span class="secno">4.4. </span><span class="content">Semantic Enrichment of Service Descriptions</span><a class="self-link" href="#aggregator-semantic-enrichment"></a></h3>
-   <p>Service descriptions MAY be semantically enriched to provide more detailed information about their outputs and capabilities.
+   <p>Further requirements on how an Aggregator Server <strong>MUST</strong> manage services — including how clients can discover, create,
+and delete service instances — are specified in <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>.</p>
+   <h4 class="heading settled" data-level="4.4.1" id="aggregator-semantic-enrichment"><span class="secno">4.4.1. </span><span class="content">Making services FAIR</span><a class="self-link" href="#aggregator-semantic-enrichment"></a></h4>
+   <p>Service descriptions <strong>MAY</strong> be semantically enriched to provide more detailed information about their outputs and capabilities.
 Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable).</p>
    <p>How an aggregator server enables semantic enrichment is implementation-dependent and should be documented
 in its accompanying documentation.</p>
-   <h4 class="heading settled" data-level="4.4.1" id="aggregator-semantic-enrichment-examples"><span class="secno">4.4.1. </span><span class="content">Examples of Semantic Enrichment</span><a class="self-link" href="#aggregator-semantic-enrichment-examples"></a></h4>
+   <p>Examples include:</p>
    <ul>
     <li data-md>
      <p>Describe a service output endpoint as a SPARQL endpoint using <code>sd:Service</code>.</p>
@@ -2655,8 +2704,8 @@ in its accompanying documentation.</p>
      <p>Describe the service API using the Hydra Core Ontology.</p>
    </ul>
    <p>The following example illustrates a service that serves a dataset via a SPARQL endpoint and updates the dataset daily:</p>
-   <div class="example" id="example-56b97d9a">
-    <a class="self-link" href="#example-56b97d9a"></a>
+   <div class="example" id="example-f977d01f">
+    <a class="self-link" href="#example-f977d01f"></a>
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>ex:</c-> <c- g>&lt;http://example.org/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -2679,7 +2728,7 @@ in its accompanying documentation.</p>
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c-> <c- p>;</c->
     <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Entity</c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>distribution</c-> <c- p>:</c-><c- f>sparql-query-view-service-distribution</c-> <c- p>;</c->
-    <c- nn>dct</c-><c- p>:</c-><c- f>accrualPeriodicity</c-> <c- g>&lt;http://purl.org/cld/freq/continuous></c-> <c- p>.</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>accrualPeriodicity</c-> <c- g>&lt;http://purl.org/cld/freq/daily></c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>sparql-query-view-service-distribution</c-> <c- p>;</c->
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Distribution</c-> <c- p>;</c->
@@ -2704,9 +2753,9 @@ that results in new distributions for its datasets.</p>
      <p>an <code>fno:Execution</code> detailing:</p>
      <ul>
       <li data-md>
-       <p>what transformation it executes with <code>fno:executes</code></p>
+       <p>what <code>fno:AppliedFunction</code> it executed with <code>fno:executes</code></p>
       <li data-md>
-       <p>what mapping was used with <code>fno:uses</code>.</p>
+       <p>what <code>fno:Mapping</code> was used with <code>fno:uses</code>.</p>
       <li data-md>
        <p>what input values were used with the parameter predicates.</p>
       <li data-md>
@@ -2740,8 +2789,8 @@ However, if a new distribution fully replaces a previous distribution (i.e., the
     <li data-md>
      <p>The invalidated distribution <strong>MUST</strong> reference the execution using <code>prov:wasInvalidatedBy</code></p>
    </ul>
-   <div class="example" id="example-00620b47">
-    <a class="self-link" href="#example-00620b47"></a>
+   <div class="example" id="example-3668d3b5">
+    <a class="self-link" href="#example-3668d3b5"></a>
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
@@ -2779,7 +2828,7 @@ However, if a new distribution fully replaces a previous distribution (i.e., the
   <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Entity</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>wasGeneratedBy</c-> <c- p>:</c-><c- f>execution-0</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>wasGeneratedAtTime</c-> <c- s>"2025-01-01T12:01:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
-  <c- nn>prov</c-><c- p>:</c-><c- f>wasInvalidated</c-> <c- p>:</c-><c- f>execution-1</c-> <c- p>.</c->
+  <c- nn>prov</c-><c- p>:</c-><c- f>wasInvalidatedBy</c-> <c- p>:</c-><c- f>execution-1</c-> <c- p>.</c->
 </pre>
    </div>
    <p>Further requirements for how an Aggregator Server <strong>MUST</strong> expose provenance information,
@@ -2895,38 +2944,21 @@ aggregator, the <code>redirect_uris</code> property is OPTIONAL instead of REQUI
 the same Aggregator Server (depending on the implementation). Adding this property allows an Aggregator Server 
 implementation to restrict which clients may create aggregators on the server.</p>
    <h3 class="heading settled" data-level="5.3" id="server-level-transformation-catalog"><span class="secno">5.3. </span><span class="content">Server-level Transformation Catalog</span><a class="self-link" href="#server-level-transformation-catalog"></a></h3>
-   <p>The Transformation Catalog is an RDF document describing all aggregator transformations (<a href="#aggregator-data-model">§ 4 Aggregator Data Model</a>)
+   <p>The Transformation Catalog is an RDF document describing all aggregator transformation mappings (<a href="#aggregator-data-model">§ 4 Aggregator Data Model</a>)
 that can be deployed as services by the aggregator server.</p>
-   <h4 class="heading settled" data-level="5.3.1" id="catalog-publication"><span class="secno">5.3.1. </span><span class="content">Catalog Publication ###</span><a class="self-link" href="#catalog-publication"></a></h4>
+   <p>The <code>aggr:TransformationCatalog</code>:</p>
    <ul>
     <li data-md>
-     <p>Aggregator servers <strong>MAY</strong> publish this catalog at any deployment-specific URL.</p>
+     <p><strong>MUST</strong> reference all supported transformations using <code>aggr:hasTransformation</code>.</p>
     <li data-md>
-     <p>The URL <strong>MUST</strong> be advertised in the Aggregator Server Description via the transformation_catalog field.</p>
+     <p><strong>MUST</strong> reference all supported mappings using <code>aggr:hasMapping</code>.</p>
     <li data-md>
-     <p>The catalog <strong>SHOULD</strong> support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
+     <p><strong>MUST</strong> reference all supported implementations using <code>aggr:hasImplementation</code>.</p>
     <li data-md>
-     <p>Access <strong>MAY</strong> be protected using an OpenID Connect (OIDC) ID Token for authentication.</p>
-    <li data-md>
-     <p>A catalog <strong>MAY</strong> reference resources defined in other catalogs using <code>rdfs:seeAlso</code>.</p>
+     <p><strong>MUST</strong> reference all resources not hosted by the Aggregator Server using <code>rdfs:seeAlso</code>.</p>
    </ul>
-   <h4 class="heading settled" data-level="5.3.2" id="linking-transformations-to-deployable-artifacts"><span class="secno">5.3.2. </span><span class="content">Linking Transformations to deployable artifacts ###</span><a class="self-link" href="#linking-transformations-to-deployable-artifacts"></a></h4>
-   <p>The aggregator server is responsible for mapping each <code>aggr:ServiceImplementation</code> to a deployable artifact (e.g., an OCI image).
-This mapping can be:</p>
-   <ul>
-    <li data-md>
-     <p><strong>Internal</strong> – stored inside the server for deployment purposes</p>
-    <li data-md>
-     <p><strong>Cataloged</strong> – included in the transformation catalog as an RDF Resource using <code>prov:SpecializationOf</code></p>
-   </ul>
-   <p class="note" role="note"><span class="marker">NOTE:</span> Server capabilities for resolving <code>aggr:ServiceImplementation</code> specializations to create deployable units are
-implementation-specific and are not defined by this specification. Such details should be included in the 
-aggregator server’s documentation.</p>
-   <h4 class="heading settled" data-level="5.3.3" id="example"><span class="secno">5.3.3. </span><span class="content">Example ###</span><a class="self-link" href="#example"></a></h4>
-   <p>This example illustrates a catalog containing a local transformation and an external reference,
-linking a <code>aggr:ServiceImplementation</code> to an  OCI image:</p>
-   <div class="example" id="example-b3bd8c96">
-    <a class="self-link" href="#example-b3bd8c96"></a>
+   <div class="example" id="example-9963a23d">
+    <a class="self-link" href="#example-9963a23d"></a>
 
 <pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -2936,13 +2968,15 @@ linking a <code>aggr:ServiceImplementation</code> to an  OCI image:</p>
 <c- k>@prefix</c-> <c- nn>rdf:</c-> <c- g>&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
 
-<c- g>&lt;></c-> <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>TransformationCollection</c-> <c- p>;</c->
+<c- g>&lt;></c-> <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>TransformationCatalog</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>title</c-> <c- s>"Aggregator transformations"</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;QueryViewMapping></c-> <c- p>.</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;ExternalTransformationMapping></c-> <c- p>;</c->
-    <c- nn>rdfs</c-><c- p>:</c-><c- f>seeAlso</c-> <c- g>&lt;http://example.org/external/ExternalTransformation></c-><c- p>,</c->
-      <c- g>&lt;http://example.org/external/CsvServiceImplementation></c-><c- p>,</c->
-      <c- g>&lt;http://example.org/registry/example-image:latest></c-> <c- p>.</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;http://example.org/external/ExternalFunction></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;StringSourcesMapping></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;EndpointSourcesMapping></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;http://example.org/external/ExternalMapping></c-> <c- p>;</c->
+    <c- nn>rdfs</c-><c- p>:</c-><c- f>seeAlso</c-> <c- g>&lt;http://example.org/external/ExternalFunction></c-> <c- p>;</c->
+    <c- nn>rdfs</c-><c- p>:</c-><c- f>seeAlso</c-> <c- g>&lt;http://example.org/external/ExternalMapping></c-> <c- p>.</c->
 
 
 <c- g>&lt;QueryView></c->
@@ -2968,29 +3002,64 @@ linking a <code>aggr:ServiceImplementation</code> to an  OCI image:</p>
     <c- b>a</c->             <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c-> <c- g>&lt;result></c-> <c- p>;</c->
 
-<c- g>&lt;SPARQLServiceImplementation></c->
-    <c- b>a</c->                 <c- nn>aggr</c-><c- p>:</c-><c- f>ServiceImplementation</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>conformsTo</c->   <c- g>&lt;https://www.w3.org/TR/sparql11-protocol/></c-> <c- p>;</c->
-    <c- nn>prov</c-><c- p>:</c-><c- f>specializationOf</c-> <c- g>&lt;http://example.org/registry/example-image:latest></c-> <c- p>.</c->
-
-<c- g>&lt;QueryViewMapping></c->
+<c- g>&lt;StringSourcesMapping></c->
     <c- b>a</c->                  <c- nn>fno</c-><c- p>:</c-><c- f>Mapping</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>function</c->       <c- g>&lt;QueryView></c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>implementation</c-> 
-      <c- g>&lt;SPARQLServiceImplementation></c-><c- p>,</c->
-      <c- g>&lt;http://example.org/external/CsvTableImplementation></c-> <c- p>.</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>outputMapping</c-> <c- p>[</c->
+      <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+      <c- nn>fnom</c-><c- p>:</c-><c- f>functionOutput</c-> <c- g>&lt;Result></c->
+      <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://www.w3.org/TR/sparql11-protocol/></c-> <c- p>;</c->
+    <c- p>]</c-> <c- p>.</c->
 
-<c- g>&lt;ExternalTransformationMapping></c->
-  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Mapping</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>function</c-> <c- g>&lt;http://example.org/external/ExternalTransformation></c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>implementation</c-> <c- g>&lt;SPARQLServiceImplementation></c-> <c- p>.</c->
+<c- g>&lt;EndpointSourcesMapping></c->
+  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Mapping</c-><c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>function</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>parameterMapping</c-> <c- p>[</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>FormatMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Sources></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://www.rfc-editor.org/rfc/rfc9110></c-> <c- p>;</c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>format</c-> <c- g>&lt;https://www.iana.org/assignments/media-types/text/plain></c-> <c- p>.</c->
+  <c- p>]</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>outputMapping</c-> <c- p>[</c->
+    <c- b>a</c-> <c- nn>fnom</c-><c- p>:</c-><c- f>EndpointMapping</c-> <c- p>;</c->
+    <c- nn>fnom</c-><c- p>:</c-><c- f>functionOutput</c-> <c- g>&lt;Result></c->
+    <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://www.w3.org/TR/sparql11-protocol/></c-> <c- p>;</c->
+  <c- p>]</c-> <c- p>.</c->
 </pre>
    </div>
-   <h4 class="heading settled" data-level="5.3.4" id="compositions"><span class="secno">5.3.4. </span><span class="content">Compositions ###</span><a class="self-link" href="#compositions"></a></h4>
-   <p>A Transformation Catalog can also include <code>fno:Composition</code> which detail a set of services where there inputs and outputs are
-linked together to create a pipeline. More on how to request a pipeline deployment in</p>
-   <div class="example" id="example-431fbb62">
-    <a class="self-link" href="#example-431fbb62"></a>
+   <h4 class="heading settled" data-level="5.3.1" id="catalog-compositions"><span class="secno">5.3.1. </span><span class="content">Compositions</span><a class="self-link" href="#catalog-compositions"></a></h4>
+   <p>An Aggregator Server <strong>MAY</strong> support the deployment of pipelines described using <code>fno:Composition</code>.
+A pipeline can be included in the catalog in one of the following ways, depending on how it is exposed.</p>
+   <p><strong>Pipeline exposed as a single service</strong></p>
+   <p>If a pipeline is exposed as a single service, with its internal components hidden:</p>
+   <ul>
+    <li data-md>
+     <p>The <code>fno:Composition</code> <strong>MUST</strong> be linked to a transformation using <code>fno:composition</code>.</p>
+    <li data-md>
+     <p>The corresponding <code>fno:Function</code> representing the transformation <strong>MUST</strong> be linked to the catalog using <code>aggr:hasTransformation</code>.</p>
+   </ul>
+   <p>If the internal components represent deployable transformations:</p>
+   <ul>
+    <li data-md>
+     <p>All components <strong>MUST</strong> represent deployable transformations.</p>
+    <li data-md>
+     <p>They <strong>MUST</strong> be linked to the catalog as defined in <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>.</p>
+   </ul>
+   <p>The fno:Composition MAY be used solely to describe the internal structure of a transformation. In this case,
+the composition serves as descriptive metadata to provide additional transparency. This applies when <strong>AT LEAST ONE</strong> component 
+of the composition is not linked to the catalog. Then, the transformation <strong>MUST</strong> be deployable as a single unit.</p>
+   <p><strong>Pipeline Exposing All Components as Services</strong></p>
+   <p>If each component of the pipeline is exposed as an individual service:</p>
+   <ul>
+    <li data-md>
+     <p>The <code>fno:Composition</code> <strong>MUST</strong> be linked directly to the catalog using <code>aggr:hasComposition</code>.</p>
+    <li data-md>
+     <p>Every transformation used inside the <code>fno:Composition</code> <strong>MUST</strong> be linked to the catalog
+  as defined earlier (see <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>).</p>
+   </ul>
+   <div class="example" id="example-12311013">
+    <a class="self-link" href="#example-12311013"></a>
 
 <pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -3002,71 +3071,67 @@ linked together to create a pipeline. More on how to request a pipeline deployme
 
 <c- g>&lt;></c-> <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>TransformationCollection</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>title</c-> <c- s>"Aggregator transformations"</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;WLP-QueryViewMapping></c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;WLP-WeightLossMapping></c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasComposition</c-> <c- g>&lt;WeightLossPipeline></c-> <c- p>.</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;QueryViewMapping></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasMapping</c-> <c- g>&lt;RMLMapperMapping></c-> <c- p>.</c->
 
-<c- g>&lt;WeightLossPipeline></c->
+<c- g>&lt;RMLQueryPipeline></c->
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Function</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>expects</c-> <c- p>(</c-> <c- g>&lt;Query></c-> <c- g>&lt;Sources></c-> <c- p>)</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>returns</c-> <c- p>(</c-> <c- g>&lt;WeightLossOutput></c-> <c- p>)</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>expects</c-> <c- p>(</c-> <c- g>&lt;Mappings></c-> <c- g>&lt;Query></c-> <c- p>)</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>returns</c-> <c- p>(</c-> <c- g>&lt;Result></c-> <c- p>)</c-> <c- p>;</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>composition</c-> <c- p>[</c->
     <c- nn>fnoc</c-><c- p>:</c-><c- f>composedOf</c-> <c- p>[</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WeightLossPipeline></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Mappings></c-> <c- p>.</c->
+      <c- p>]</c-> <c- p>;</c->
+      <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLMapper></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Mappings></c-> <c- p>.</c->
+      <c- p>]</c-> <c- p>.</c->
+    <c- p>],[</c->
+      <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Query></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>;</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WLP-QueryView></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Query></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>.</c->
     <c- p>],[</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WeightLossPipeline></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Sources></c-> <c- p>.</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLMapper></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Result></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>;</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WLP-QueryView></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Sources></c-> <c- p>.</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Sources></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>mappingStrategy</c-> <c- nn>fnoc</c-><c- p>:</c-><c- f>append</c-> <c- p>.</c->
       <c- p>]</c-> <c- p>.</c->
     <c- p>],[</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WLP-QueryView></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionOutput</c-> <c- g>&lt;Result></c-> <c- p>.</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;QueryView></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionOutput</c-> <c- g>&lt;View></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>;</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WLP-WeightLossGraph></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;Dataset></c-> <c- p>.</c->
-      <c- p>]</c-> <c- p>.</c->
-    <c- p>],[</c->
-      <c- nn>fnoc</c-><c- p>:</c-><c- f>mapFrom</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WLP-WeightLossGraph></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;WeightLossOutput></c-> <c- p>.</c->
-      <c- p>]</c-> <c- p>;</c->
-      <c- nn>fnoc</c-><c- p>:</c-><c- f>mapTo</c-> <c- p>[</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;WeightLossPipeline></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;WeightLossOutput></c-> <c- p>.</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>constituentFunction</c-> <c- g>&lt;RMLQueryPipeline></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>functionParameter</c-> <c- g>&lt;View></c-> <c- p>.</c->
       <c- p>]</c-> <c- p>.</c->
     <c- p>]</c-> <c- p>.</c->
   <c- p>]</c-> <c- p>.</c->
-
-<c- g>&lt;WLP-QueryViewMapping></c->
-  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Mapping</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>function</c-> <c- g>&lt;WLP-QueryView></c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>implementation</c-> <c- g>&lt;SPARQLServiceImplementation></c-> <c- p>.</c->
-
-<c- g>&lt;WLP-WeightLossMapping></c->
-  <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Mapping</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>function</c-> <c- g>&lt;WLP-WeightLossGraph></c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>implementation</c-> <c- g>&lt;CsvTableImplementation></c-> <c- p>.</c->
-
-<c- g>&lt;WLP-QueryView></c->
-  <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c-> <c- g>&lt;QueryView></c-> <c- p>.</c->
-
-<c- g>&lt;WLP-WeightLossGraph></c->
-  <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c-> <c- g>&lt;WeightLossGraph></c-> <c- p>.</c->
 </pre>
    </div>
+   <h4 class="heading settled" data-level="5.3.2" id="server-level-catalog-publication"><span class="secno">5.3.2. </span><span class="content">Catalog Publication</span><a class="self-link" href="#server-level-catalog-publication"></a></h4>
+   <ul>
+    <li data-md>
+     <p>Aggregator servers <strong>MAY</strong> publish this catalog at any deployment-specific URL.</p>
+    <li data-md>
+     <p>The URL <strong>MUST</strong> be advertised in the Aggregator Server Description via the <code>mapping_catalog</code> field.</p>
+    <li data-md>
+     <p>The catalog <strong>SHOULD</strong> support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
+    <li data-md>
+     <p>Access <strong>MAY</strong> be protected using an OpenID Connect (OIDC) ID Token for authentication.</p>
+   </ul>
    <h2 class="heading settled" data-level="6" id="aggregator-management"><span class="secno">6. </span><span class="content">Aggregator Management</span><a class="self-link" href="#aggregator-management"></a></h2>
    
 This section describes how Aggregator Instances are managed at the Aggregator Server level. Deployments define their own 
@@ -4331,8 +4396,8 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
        <p>If the requested URI is valid but already in use, the server <strong>MUST</strong> respond with <code>409 Conflict</code>.</p>
      </ul>
    </ul>
-   <div class="example" id="example-6bf5b32d">
-    <a class="self-link" href="#example-6bf5b32d"></a>
+   <div class="example" id="example-39754d7a">
+    <a class="self-link" href="#example-39754d7a"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>http://aggregator.example.org/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
@@ -4366,9 +4431,10 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
             <c- p>}</c->
         <c- p>]</c->
     <c- p>},</c->
-    <c- f>"aggr:implements"</c-><c- p>:</c-> <c- p>{</c->
-        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#SPARQLServiceImplementation"</c->
-    <c- p>}</c->
+    <c- f>"aggr:usesMapping"</c-><c- p>:</c-> <c- p>{</c->
+        <c- nd>"@type"</c-><c- p>:</c-> <c- u>"fno:Mapping"</c-><c- p>,</c->
+        <c- nd>"@id"</c-><c- p>:</c-> <c- u>"http://aggregator.example.org/transformations#QueryViewSPARQLMapping"</c->
+    <c- p>},</c->
 <c- p>}</c->
 </pre>
    </div>
@@ -4402,7 +4468,7 @@ advertising at least the <code>read</code> and <code>delete</code> scopes.</p>
       <li data-md>
        <p><code>201 Created</code></p>
       <li data-md>
-       <p>The service description (as defined in <a href="#aggregator-service">§ 4.3 Service</a>) in the response body, and</p>
+       <p>The service description (as defined in <a href="#aggregator-service">§ 4.4 Service</a>) in the response body, and</p>
       <li data-md>
        <p>A <code>Location</code> header identifying the Service Endpoint URI.</p>
      </ul>
@@ -4531,7 +4597,7 @@ while exposing the result through different interfaces (e.g., a SPARQL endpoint 
     <li data-md>
      <p>Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.</p>
    </ul>
-   <h4 class="heading settled" data-level="9.3.3" id="example①"><span class="secno">9.3.3. </span><span class="content">Example</span><a class="self-link" href="#example①"></a></h4>
+   <h4 class="heading settled" data-level="9.3.3" id="example"><span class="secno">9.3.3. </span><span class="content">Example</span><a class="self-link" href="#example"></a></h4>
    <div class="example" id="example-f939e2b2">
     <a class="self-link" href="#example-f939e2b2"></a>
 
@@ -4555,7 +4621,7 @@ while exposing the result through different interfaces (e.g., a SPARQL endpoint 
    <dl>
     <dt data-md>GET
     <dd data-md>
-     <p>Retrieves the service description (as defined in <a href="#aggregator-service">§ 4.3 Service</a>).</p>
+     <p>Retrieves the service description (as defined in <a href="#aggregator-service">§ 4.4 Service</a>).</p>
      <ul>
       <li data-md>
        <p>The request <strong>MUST</strong> be authorized with the read <code>scope</code> on the service resource.</p>
@@ -4602,7 +4668,7 @@ advertise atleast the <code>read</code> scope.</p>
      <p>The endpoint <strong>SHOULD</strong> support HTTP content negotiation,
 allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
    </ul>
-   <h4 class="heading settled" data-level="10.1.2" id="example②"><span class="secno">10.1.2. </span><span class="content">Example ###</span><a class="self-link" href="#example②"></a></h4>
+   <h4 class="heading settled" data-level="10.1.2" id="example①"><span class="secno">10.1.2. </span><span class="content">Example ###</span><a class="self-link" href="#example①"></a></h4>
    <div class="example" id="example-68ab3728">
     <a class="self-link" href="#example-68ab3728"></a>
 
@@ -5174,7 +5240,7 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
   </dl>
   <h2 class="heading no-num no-ref settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> <code>aggr:usesMapping</code> OK as a predicate? <a class="issue-return" href="#issue-f5b61520" title="Jump to section">↵</a></div>
+   <div class="issue"> This is actually for the FnO Spec <a class="issue-return" href="#issue-1f1089c5" title="Jump to section">↵</a></div>
    <div class="issue"> should we allow a name field for the aggregator during creation? <a class="issue-return" href="#issue-7876f244" title="Jump to section">↵</a></div>
    <div class="issue"> If multiple services perform the transformation with a different service implementation, what service must be chosen?
 ISSUE: What if you want to connect to a specific service?
