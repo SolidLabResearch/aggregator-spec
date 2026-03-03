@@ -368,7 +368,7 @@ A deployed aggregator service is responsible for (periodically) performing a tra
   - a `prov:SoftwareAgent` ([[!PROV-O]])
 
 The service:
-  - **MUST** serve one dataset for each transformation output defined for that function
+  - **MUST** serve one dataset for each transformation output
   - **MUST** link to an `fno:AppliedFunction` using `aggr:performs`
   - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`
   - **SHOULD** declare operational metadata such as status and creation time
@@ -431,8 +431,7 @@ or historical distributions if provided.
 
 Service descriptions **MAY** be semantically enriched to provide more detailed information about their outputs and capabilities.
 Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable). 
-Support for this functionality by an aggregator server is implementation-specific and must be clearly defined in the server’s 
-documentation.
+Support for this functionality by an aggregator server is implementation-specific.
 
 Examples include:
   - Describe a service output endpoint as a SPARQL endpoint using `sd:Service`.
@@ -2175,10 +2174,9 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
 
 <>
     a aggr:ServiceCollection ;
-    aggr:hasService (
-        <http://aggregator.example.com/agg1/my-query-view-service>
-        <http://aggregator.example.com/agg1/my-rml-service>
-    ) .
+    aggr:hasService
+        <http://aggregator.example.com/agg1/my-query-view-service>,
+        <http://aggregator.example.com/agg1/my-rml-service> .
 ```
 </div>
 

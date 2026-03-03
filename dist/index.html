@@ -2569,8 +2569,7 @@ or historical distributions if provided.</p>
    </div>
    <p>Service descriptions <strong>MAY</strong> be semantically enriched to provide more detailed information about their outputs and capabilities.
 Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable). 
-Support for this functionality by an aggregator server is implementation-specific and must be clearly defined in the server’s 
-documentation.</p>
+Support for this functionality by an aggregator server is implementation-specific.</p>
    <p>Examples include:</p>
    <ul>
     <li data-md>
@@ -4297,8 +4296,8 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
      </ul>
    </dl>
    <p>The <code>aggr:ServiceCollection</code> <strong>MUST</strong> reference all Service Description Endpoints using <code>aggr:hasService</code>.</p>
-   <div class="example" id="example-d2ad1abb">
-    <a class="self-link" href="#example-d2ad1abb"></a>
+   <div class="example" id="example-e51f806e">
+    <a class="self-link" href="#example-e51f806e"></a>
 
 <pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.com/agg1/services#></c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -4308,10 +4307,9 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
 
 <c- g>&lt;></c->
     <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>ServiceCollection</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>hasService</c-> <c- p>(</c->
-        <c- g>&lt;http://aggregator.example.com/agg1/my-query-view-service></c->
-        <c- g>&lt;http://aggregator.example.com/agg1/my-rml-service></c->
-    <c- p>)</c-> <c- p>.</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasService</c->
+        <c- g>&lt;http://aggregator.example.com/agg1/my-query-view-service></c-><c- p>,</c->
+        <c- g>&lt;http://aggregator.example.com/agg1/my-rml-service></c-> <c- p>.</c->
 </pre>
    </div>
    <p class="issue" id="issue-9417363e"><a class="self-link" href="#issue-9417363e"></a> This makes more sense if we also include <code>fno:Algorithm</code> in the spec?</p>

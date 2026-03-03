@@ -163,10 +163,9 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
 
 <>
     a aggr:ServiceCollection ;
-    aggr:hasService (
-        <http://aggregator.example.com/agg1/my-query-view-service>
-        <http://aggregator.example.com/agg1/my-rml-service>
-    ) .
+    aggr:hasService
+        <http://aggregator.example.com/agg1/my-query-view-service>,
+        <http://aggregator.example.com/agg1/my-rml-service> .
 ```
 </div>
 
