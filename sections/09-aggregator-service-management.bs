@@ -102,10 +102,6 @@ Content-Type: application/ld+json
             }
         ]
     },
-    "aggr:usesMapping": {
-        "@type": "fno:Mapping",
-        "@id": "http://aggregator.example.org/transformations#QueryViewMapping"
-    },
 }
 ```
 </div>
@@ -120,7 +116,7 @@ When all transformations referenced in the `fno:Composition` are included in the
         - If the output of such a transformation is mapped to the output of the composite transformation, 
             the corresponding Service Output Endpoint **MUST** be exposed.
     - Expose a Service Description Endpoint for the composite service.
-        - This Service Description Endpoint **MUST** reference the Service Output Endpoints of the corresponding internal services.
+        - This Service Description Endpoint **MUST** use the Service Output Endpoints of the corresponding internal services.
 
 ### Service Discovery ### {#service-discovery}
 
@@ -165,16 +161,16 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
 ```
 </div>
 
-Services that perform the same transformation with identical input bindings **MUST** be mapped to the same `fno:AppliedFunction`. 
-For example, two services may maintain the same query over the same sources, while exposing the result through different interfaces 
-(e.g., a SPARQL endpoint or an event stream).
+ISSUE: This makes more sense if we also include `fno:Algorithm` in the spec?
+
+Services that perform the same transformation with identical input bindings **MUST** be linked to the same `fno:AppliedFunction`.
 
 This achieves the following:
     - Clients can discover services based on:
         - The transformation being executed
         - The bound input parameters
         - The mapping being used
-    - Different implementations (e.g., SPARQL endpoint vs. event stream) remain distinguishable while sharing the same semantic operation.
+    - Different implementations remain distinguishable while sharing the same semantic operation.
 
 Service Description Endpoint {#service-endpoint}
 ------------------------------------------------

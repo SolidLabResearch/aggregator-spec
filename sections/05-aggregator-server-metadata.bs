@@ -112,11 +112,14 @@ Server-level Transformation Catalog {#server-level-transformation-catalog}
 The Transformation Catalog is an RDF document describing all aggregator transformation mappings ([[#aggregator-data-model]]) 
 that can be deployed as services by the aggregator server.
 
+ISSUE: include `fno:Algorithm` with `aggr:supportsAlgorithm` ?
+
+ISSUE: support for `fno:Mapping`
+
 The `aggr:TransformationCatalog`:
   - **MUST** reference all supported transformations using `aggr:hasTransformation`.
-  - **MUST** reference all supported mappings using `aggr:hasMapping`.
-  - **MUST** reference all supported implementations using `aggr:hasImplementation`.
   - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
+  - **SHOULD** reference all supported mappings using `aggr:hasMapping`.
 
 <div class="example">
 ```turtle
@@ -130,62 +133,49 @@ The `aggr:TransformationCatalog`:
 
 <> a aggr:TransformationCatalog ;
     dct:title "Aggregator transformations" ;
-    aggr:hasTransformation <QueryView> ;
+    aggr:hasTransformation <StaticSourcesQueryView> ;
+    aggr:hasTransformation <DynamicSourcesQueryView> ;
     aggr:hasTransformation <http://example.org/external/ExternalFunction> ;
-    aggr:hasMapping <StringSourcesMapping> ;
-    aggr:hasMapping <EndpointSourcesMapping> ;
-    aggr:hasMapping <http://example.org/external/ExternalMapping> ;
-    rdfs:seeAlso <http://example.org/external/ExternalFunction> ;
-    rdfs:seeAlso <http://example.org/external/ExternalMapping> .
+    rdfs:seeAlso <http://example.org/external/ExternalFunction> .
 
 
-<QueryView>
+<StaticSourcesQueryView>
     a                   fno:Function ;
-    fno:name            "An Aggregator Service that performs a Query on a list of sources"^^xsd:string ;
-    fno:expects         ( <Sources> <Query> ) ;
+    dct:description     "Performs a query over a list of static sources and materializes results as a SPARQL endpoint"^^xsd:string ;
+    fno:expects         ( <StaticSources> <Query> ) ;
     fno:returns         ( <Result> ) .
 
-<Sources>
+<DynamicSourcesQueryView>
+    a                   fno:Function ;
+    dct:description     "Performs a query over a list of fetched sources and materializes results as a SPARQL endpoint"^^xsd:string ;
+    fno:expects         ( <SourcesEndpoint> <Query> ) ;
+    fno:returns         ( <Result> ) .
+
+<StaticSources>
+    a               fno:Parameter ;
+    fno:predicate   <sources> ;
+    fno:type        xsd:anyURI ;
+    fno:container   rdf:List ;
+    fno:required    "true"^^xsd:boolean .
+
+<SourcesEndpoint>
     a             fno:Parameter ;
     fno:predicate <sources> ;
     fno:type      xsd:anyURI ;
-    fno:list      "true"^^xsd:boolean ;
+    dct:format    <https://www.iana.org/assignments/media-types/text/plain> ;
     fno:required  "true"^^xsd:boolean .
 
 <Query>
-    a             fno:Parameter ;
-    fno:predicate <query> ;
-    fno:type      xsd:string ;
-    fno:required  "true"^^xsd:boolean .
+    a               fno:Parameter ;
+    fno:predicate   <query> ;
+    fno:type        xsd:string ;
+    dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
+    fno:required    "true"^^xsd:boolean .
 
 <Result>
-    a             fno:Output ;
-    fno:predicate <result> ;
-
-<StringSourcesMapping>
-    a                  fno:Mapping ;
-    fno:function       <QueryView> ;
-    fno:outputMapping [
-      a fnom:EndpointMapping ;
-      fnom:functionOutput <Result>
-      dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
-    ] .
-
-<EndpointSourcesMapping>
-  a fno:Mapping;
-  fno:function <QueryView> ;
-  fno:parameterMapping [
-    a fnom:EndpointMapping ;
-    a fnom:FormatMapping ;
-    fnom:functionParameter <Sources> ;
-    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> ;
-    dct:format <https://www.iana.org/assignments/media-types/text/plain> .
-  ] ;
-  fno:outputMapping [
-    a fnom:EndpointMapping ;
-    fnom:functionOutput <Result>
-    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
-  ] .
+    a               fno:Output ;
+    dct:conformsTo  <https://www.w3.org/TR/sparql11-protocol/> ;
+    fno:predicate   <result> ;
 ```
 </div>
 
@@ -202,7 +192,7 @@ each of them represents a deployable service. This enables an Aggregator to expo
 while internally orchestrating multiple individual services.
 
 The following example describes a pipeline that:
-  1. Uses RML to map a JSON source to RDF.
+  1. Uses RML to map a non-RDF source.
   2. Executes a query over the generated RDF.
   3. Exposes the resulting query output.
 
@@ -221,30 +211,20 @@ The following example describes a pipeline that:
     aggr:hasTransformation <RMLQueryPipeline> ;
     aggr:hasTransformation <QueryView> ;
     aggr:hasTransformation <RMLMapper> ;
-    aggr:hasMapping <RMLQueryMapping> .
-
+    
 <RMLQueryPipeline>
   a fno:Function ;
-  fno:expects ( <Mappings> <Query> ) ;
+  fno:expects ( <Mapping> <Query> ) ;
   fno:returns ( <Result> ) ;
   fno:composition [
     fnoc:composedOf [
       fnoc:mapFrom [
         fnoc:constituentFunction <RMLQueryPipeline> ;
-        fnoc:functionParameter <Mappings> .
+        fnoc:functionParameter <Mapping> .
       ] ;
       fnoc:mapTo [
         fnoc:constituentFunction <RMLMapper> ;
-        fnoc:functionParameter <Mappings> .
-      ] .
-    ],[
-      fnoc:mapFrom [
-        fnoc:constituentFunction <RMLQueryPipeline> ;
-        fnoc:functionParameter <Source> .
-      ] ;
-      fnoc:mapTo [
-        fnoc:constituentFunction <RMLMapper> ;
-        fnoc:functionParameter <Source> .
+        fnoc:functionParameter <Mapping> .
       ] .
     ],[
       fnoc:mapFrom [
@@ -275,23 +255,6 @@ The following example describes a pipeline that:
         fnoc:functionParameter <Result> .
       ] .
     ] .
-  ] .
-
-<RMLQueryMapping>
-  a fno:Mapping ;
-  fno:parameterMapping [
-    a fnom:EndpointMapping ;
-    fnom:functionParameter <Source> ;
-    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> ;
-    dct:format <https://www.iana.org/assignments/media-types/application/json> .
-  ],[
-    fnom:functionParameter <Mappings> ;
-    dct:format <http://www.w3.org/ns/formats/Turtle> .
-  ] ;
-  fno:outputMapping [
-    a fnom:EndpointMapping ;
-    fnom:functionOutput <Result> ;
-    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> .
   ] .
 ```
 </div>

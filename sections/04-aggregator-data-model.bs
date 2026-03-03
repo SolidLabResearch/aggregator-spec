@@ -12,195 +12,97 @@ An aggregator transformation defines a well-described functional interface using
 Each transformation **MUST** be described as an `fno:Function` that:
   - **MAY** define zero or more outputs
   - **MAY** define zero or more parameters
-  - **MAY** use `fno:type`to describe what type a parameter or output value must represent.
-
-Examples of `fno:type` usage:
-  - Literal datatypes such as `xsd:string`, `xsd:integer`, etc.
-  - URIs, e.g., `xsd:anyURI`
-  - Ontology classes, e.g., `saref:Measurement` or `csvw:Table` 
+  - **MAY** use `fno:type` to describe the input/output type
+  - **MAY** use `fno:container` to signify the parameter expects multiple inputs instead of one
+  - **MAY** use `dct:format` to describe input/output format
+  - **MAY** use `dct:conformsTo` to signify the input/output must follow a specification/protocol
+  - **SHOULD** use `dct:description` to provide a human-readable description of the transformation
 
 <div class="example">
 ```turtle
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:query-view
+:sparql-query-view
     a                   fno:Function ;
-    fno:name            "The QueryView function"^^xsd:string ;
-    dct:description     "A maintained view of a query over a list of sources"^^xsd:string ;
-    fno:expects         ( :sources-parameter :query-parameter ) ;
-    fno:returns         ( :query-output ) .
+    fno:name            "The SPARQL QueryView function"^^xsd:string ;
+    dct:description     "Performs a query on a list of sources and materializes view as a SPARQL endpoint"^^xsd:string ;
+    fno:expects         ( :query-sources :sparql-query-string ) ;
+    fno:returns         ( :sparql-query-view ) .
 
-:sources-parameter
+:query-sources
     a                   fno:Parameter ;
     fno:predicate       :sources ;
-    fno:containerType   rdf:List ;
+    fno:container       rdf:List ;
     fno:type            xsd:anyURI ;
     fno:required        "true"^^xsd:boolean .
 
-:query-parameter
-    a             fno:Parameter ;
-    fno:predicate :query ; 
-    fno:type      xsd:string ;
-    fno:required  "true"^^xsd:boolean .
+:sparql-query-string
+    a               fno:Parameter ;
+    fno:predicate   :query ; 
+    fno:type        xsd:string ;
+    dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
+    fno:required    "true"^^xsd:boolean .
 
-:query-output
-    a             fno:Output ;
-    fno:predicate :view .
+:sparql-query-view
+    a               fno:Output ;
+    dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/> ;
+    fno:predicate   :view .
 
-:merge-tables
+:rml-mapper
   a fno:Function ;
-  fno:name "The Merge-CSV Function"^^xsd:string
-  dct:description "A function that merges multiple source tables into one table"^^xsd:string ;
-  fno:expects ( :tables-parameter ) ;
-  fno:returns ( :table-output ) .
+  fno:name "The RML Mapper Function"^^xsd:string
+  dct:description "Performs RML mappings on a source and materializes results as a SPARQL endpoint"^^xsd:string ;
+  fno:expects ( :rml-mapping ) ;
+  fno:returns ( :rml-output ) .
 
-:tables-parameter 
+:rml-mapping 
   a                   fno:Parameter ;
-  fno:type            xsd:anyURI ;
-  fno:containerType   rdf:List ;
-  fno:predicate       :table ;
+  fno:type            rr:TriplesMap ;
+  dct:format          <http://www.w3.org/ns/formats/Turtle> ;
+  fno:predicate       :mapping ;
   fno:required        "true"^^xsd:boolean .
 
-:table-output
+:rml-output
   a               fno:Output ;
-  fno:type        csvw:Table ;
+  fno:type        xsd:anyURI ;
+  dct:conformsTo  <https://www.w3.org/TR/sparql11-protocol/> ;
   fno:predicate   :table .
 ```
 </div>
 
+An transformation **MAY** be linked to an `fno:Implementation` using an `fno:Mapping` as specified in the [[!FNO]]. This can provide
+extra metadata about the actual implementation an Aggregator Service will use.
+
+ISSUE: Do we include `fno:Algorithm` in the spec?
+
 Further requirements on how a server **MUST** expose and maintain the set of available and supported transformations
 are specified in [[#server-level-transformation-catalog]].
-
-Mapping {#aggregator-mapping}
------------------------------
-
-Every transformation description **SHOULD** be associated with one or more `fno:Mapping`.
-
-An `fno:Mapping` specifies:
-  - how to provide input values when executing the transformation, and
-  - how output values can be obtained after executing the transformation.
-
-If not specified it may not be clear how to interact with the service that runs the transformation.
-
-An Aggregator Service will always expose generated outputs as an endpoint. Therefore the output mapping **MUST** be
-an `fnom:EndpointMapping`.
-
-A mapping **SHOULD** include the `dct:format` and `dct:conformsTo` if relevant.
-
-----------------------------------------
-
-ISSUE: This is actually for the FnO Spec
-
-If the input value will be fetched from an external source the  `fnom:EndpointMapping` **MUST** be used. For example, a function expects
-a list of string values. This can be given directly or you could give one string value representing the URL where the source is hosted.
-
-Certain parameters represent a container using `fno:containerType`. To indicate you are providing a mapping for individual contianer elements
-instead of the full list parameter use `fnom:functionParameterElement`.
-
-A mapping **MAY** include `dct:format` to specify one or more desired formats for the input value.
-A mapping **MAY** include `dct:conformsTo` to specify the input value conforms to a certain specification or protocol. If
-this is combined with an `fnom:EndpointMapping` this can specify the protocol the endpoint adheres to.
-
--------------------------------------
-
-For example, `:merge-tables-csv-mapping` defines a mapping for implementations that:
-  - Get `:tables-parameter` inputs from a list of endpoints that either support the `FTP` or `HTTP` Protocol and expect
-    a CSV format.
-  - Provides output via an HTTP endpoint that accpets the `text/csv` content type.
-
-<div class="example">
-```turtle
-@prefix fno: <https://w3id.org/function/ontology#> .
-@prefix fnom: <https://w3id.org/function/vocabulary/mapping#>
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-:merge-tables-csv-mapping
-  a fno:Mapping ;
-  fno:function :merge-tables
-  fno:parameterMapping [
-    a fnom:FormatMapping ;
-    a fnom:EndpointMapping ;
-    fnom:functionParameterElement :tables-parameter ;
-    dct:format ".csv" ;
-    dct:conformsTo <https://datatracker.ietf.org/doc/html/rfc959> .
-  ],[
-    a fnom:FormatMapping ;
-    a fnom:EndpointMapping ;
-    fnom:functionParameterElement :tables-parameter ;
-    dct:format <http://www.iana.org/assignments/media-types/text/csv> ;
-    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> .
-  ] ;
-  fno:outputMapping [
-    a fnom:FormatMapping ;
-    a fnom:EndpointMapping ;
-    fnom:functionOutput :table-output ;
-    dct:format <http://www.iana.org/assignments/media-types/text/csv> ;
-    dct:conformsTo <https://www.rfc-editor.org/rfc/rfc9110> .
-  ] .
-```
-</div>
-
-Implementation {#aggregator-implementation}
--------------------------------------------
-
-A mapping **MAY** link a concrete implementations using `fno:implementation` that:
-  - **MUST** a subclass of `fno:Implementation`
-  - **SHOULD** be a semantic description of the deployable artifact that will be executed inside the aggregator 
-      (e.g., a container image, script, or binary).
-
-The mapping represents the interface that an implementation **MUST** implement if it wants to represent the transformation.
-
-<div class="example">
-```turtle
-@prefix fno: <https://w3id.org/function/ontology#> .
-@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-:merge-tables-csv-image
-  a fnoi:DockerImage ;
-  schema:name "acme/merge-tables-csv" ;
-  schema:version "1.0.0" ;
-  schema:downloadUrl "ghcr.io/acme/merge-tables-csv" ;
-  fnoi:contains :numpy , :pandas ;
-  rdfs:label "Merge Tables CSV Container" ;
-  dct:description "Containerized API to merge CSV tables using numpy and pandas" .
-
-:numpy a fnoi:PythonPackage ;
-    schema:name "numpy" ;
-    schema:softwareVersion "1.26.2" .
-
-:pandas a fnoi:PythonPackage ;
-    schema:name "pandas" ;
-    schema:softwareVersion "2.1.1" .
-```
-</div>
 
 Service {#aggregator-service}
 -----------------------------
 
-A deployed aggregator service is modeled as:
+A deployed aggregator service is responsible for (periodically) performing a transformation and is modeled as:
   - an `aggr:Service`
   - a `dcat:DataService` ([[!Data-Catalog]])
   - a `prov:SoftwareAgent` ([[!PROV-O]])
 
+ISSUE: support for `fno:Mapping`
+
 The service:
   - **MUST** serve one dataset for each transformation output
-  - **MUST** link to an `fno:AppliedFunction`using `aggr:performs`. This `fno:AppliedFunction` specifies the input values used when 
-    executing the transformation.
-  - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`.
-    - The `fno:Mapping` **MUST** reference the same transformation via `fno:function` as 
-        the `fno:AppliedFunction` from `aggr:performs` does with `fnoc:applies`.
+  - **MUST** link to an `fno:AppliedFunction` using `aggr:performs`
+  - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`
   - **SHOULD** declare operational metadata such as status and creation time
   - **SHOULD** indicate it adheres to the aggregator protocol using `dct:conformsTo`
 
 Outputs generated by a running service **MUST** be described as a `dcat:Distribution`. Each `dcat:Distribution`:
   - **MUST** reference the corresponding output endpoint using `dcat:accessURL`.
   - **MUST** reference the service via `dcat:accessService`.
-  - **MUST** declare the output format if defined in the associated mapping using:
+  - **SHOULD** declare the output format if defined using:
     - `dcat:mediaType` when the format corresponds to an IANA-registered media type.
     - `dct:format` when the format is not an IANA-conformant media type.
-  - **MUST** declare conformity using `dct:conformsTo` if defined in the associated mapping.
+  - **SHOULD** declare conformity using `dct:conformsTo` if defined.
 
 The corresponding dataset:
   - **MUST AT LEAST** reference the most recently generated output using `dcat:distribution`.
@@ -216,98 +118,52 @@ or historical distributions if provided.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 
-:merge-tables-service
+:rml-mapper-service
     a aggr:Service ;
     a dcat:DataService ;
     a prov:SoftwareAgent ;
     aggr:status "running" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    aggr:usesMapping :merge-tables-csv-mapping ;
-    aggr:performs :merge-tables-service-input ;
+    aggr:performs :rml-mapper-service-input ;
     dct:conformsTo <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> ;
-    dcat:servesDataset :merge-tables-service-dataset .
+    dcat:servesDataset :rml-mapper-service-dataset .
 
-:merge-tables-service-dataset
+:rml-mapper-service-dataset
     a dcat:Dataset ;
-    dcat:distribution :merge-tables-service-distribution ;
-    dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
+    dcat:distribution :rml-mapper-service-distribution ;
 
-:merge-tables-service-distribution
+:rml-mapper-service-distribution
     a dcat:Distribution ;
-    dcat:mediaType <http://www.iana.org/assignments/media-types/text/csv> ;
-    dcat:accessURL <http://example.com/service/result> ;
-    dcat:accessService :merge-tables-service .
+    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
+    dcat:accessURL <http://example.com/rml-mapper-service/view> ;
+    dcat:accessService :rml-mapper-service .
 
-:merge-tables-service-input
+:rml-mapper-service-input
   a fno:AppliedFunction ;
-  fnoc:applies :merge-tables ;
+  fnoc:applies :rml-mapper ;
   fnoc:parameterBinding [
-    fnoc:boundParameter :tables-parameter ;
-    fnoc:boundToTerm (
-      "http://example.com/table1.csv"
-      "http://example.com/table2.csv"
-    ) .
+    fnoc:boundParameter :rml-mapping ;
+    fnoc:boundToTerm [
+      a rr:TriplesMap ;
+      ...
+    ]
   ] .
 ```
 </div>
 
-Further requirements on how an Aggregator Server **MUST** manage services — including how clients can discover, create, 
-and delete service instances — are specified in [[#aggregator-service-management]].
-
-### Making services FAIR ### {#aggregator-semantic-enrichment}
-
 Service descriptions **MAY** be semantically enriched to provide more detailed information about their outputs and capabilities.
-Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable).
-
-How an aggregator server enables semantic enrichment is implementation-dependent and should be documented 
-in its accompanying documentation.
+Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable). 
+Support for this functionality by an aggregator server is implementation-specific and must be clearly defined in the server’s 
+documentation.
 
 Examples include:
   - Describe a service output endpoint as a SPARQL endpoint using `sd:Service`.
-  - Use `dct:conformsTo` to specify the protocol that a service output endpoint adheres to.
   - Use `dct:accrualPeriodicity` on the dataset to indicate the frequency of updates.
   - Describe the service API using the Hydra Core Ontology.
+  - ...
 
-The following example illustrates a service that serves a dataset via a SPARQL endpoint and updates the dataset daily:
-
-<div class="example">
-```turtle
-@prefix ex: <http://example.org/> .
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix dcat: <https://www.w3.org/ns/dcat#>
-@prefix fno: <https://w3id.org/function/ontology#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-:sparql-query-view-service
-    a aggr:Service
-    a dcat:DataService ;
-    a prov:SoftwareAgent ;
-    aggr:status "running" ;
-    aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    aggr:usesMapping :sparql-query-view-mapping ;
-    dct:conformsTo <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> ;
-    dcat:servesDataset :sparql-query-view-service-dataset .
-    
-:sparql-query-view-service-dataset
-    a dcat:Dataset ;
-    a prov:Entity ;
-    dcat:distribution :sparql-query-view-service-distribution ;
-    dct:accrualPeriodicity <http://purl.org/cld/freq/daily> .
- 
-:sparql-query-view-service-distribution ;
-    a dcat:Distribution ;
-    sd:Service ;
-    dcat:accessURL <http://example.com/service/result> ;
-    dcat:accessService :sparql-query-view-service ;
-    sd:endpoint <http://example.com/service/result> ;
-    dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
-    sd:format <http://www.w3.org/ns/formats/Turtle> ;
-    sd:resultFormat <http://www.w3.org/ns/formats/SPARQL_Results_JSON> ;
-    dct:format <http://www.w3.org/ns/formats/SPARQL_Results_JSON>,
-      <http://www.w3.org/ns/formats/Turtle> .
-```
-</div> 
+Further requirements on how an Aggregator Server **MUST** manage services — including how clients can discover, create, 
+and delete service instances — are specified in [[#aggregator-service-management]].
 
 Provenance {#aggregator-provenance}
 -----------------------------------
@@ -319,8 +175,8 @@ that results in new distributions for its datasets.
 
 This execution **MUST** be typed as:
   - an `fno:Execution` detailing:
-    - what `fno:AppliedFunction` it executed with `fno:executes`
-    - what `fno:Mapping` was used with `fno:uses`. 
+    - what transformation it executed with `fno:executes`
+    - what `fno:Mapping` was used with `fno:uses` if it uses a mapping. 
     - what input values were used with the parameter predicates. 
     - the newly created distribution with the output predicate.
   - a `prov:Activity` that:
@@ -347,8 +203,7 @@ However, if a new distribution fully replaces a previous distribution (i.e., the
 :execution-1
   a fno:Execution ;
   a prov:Activity ;
-  fno:executes :query-view ;
-  fno:uses :sparql-query-view-mapping
+  fno:executes :sparql-query-view ;
   :query "SELECT * WHERE { ?s ?p ?o }" ;
   :sources (
     "http://example.org/source1",
@@ -359,9 +214,9 @@ However, if a new distribution fully replaces a previous distribution (i.e., the
   prov:quallifiedAssociation [
     a prov:Association ;
     prov:agent :sparql-query-view-service ;
-    prov:hadPlan :query-view .
+    prov:hadPlan :sparql-query-view .
   ] ;
-  prov:used :query-view ;
+  prov:used :sparql-query-view ;
   prov:invalidated :old-distribution ;
   prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
   prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
