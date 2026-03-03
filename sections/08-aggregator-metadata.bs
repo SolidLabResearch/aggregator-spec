@@ -42,7 +42,7 @@ that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-c
     `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
 : **service_collection_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
-    Services ([[#service-discovery]]); in the RDF representations, this member maps to the predicate
+    Services ([[#service-collection-endpoint]]); in the RDF representations, this member maps to the predicate
     `aggr:serviceCollectionEndpoint` ([[#aggr-service-discovery-endpoint-property]]).
  
 This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 

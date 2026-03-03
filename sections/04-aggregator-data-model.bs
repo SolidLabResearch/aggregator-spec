@@ -9,14 +9,15 @@ Transformation {#aggregator-transformation}
 -------------------------------------------
 
 An aggregator transformation defines a well-described functional interface using the Function Ontology [[!FNO]].
-Each transformation **MUST** be described as an `fno:Function` that:
-  - **MAY** define zero or more outputs
-  - **MAY** define zero or more parameters
+Each transformation **MUST** be described as an `fno:Function` that **MAY** describe zero or more `fno:Parameters` and
+`fno:Outputs` using the `fno:expects` and `fno:returns` properties respectively. Each parameter and output:
+  - **SHOULD** use `dct:description` to provide a human-readable description of the transformation
   - **MAY** use `fno:type` to describe the input/output type
   - **MAY** use `fno:container` to signify the parameter expects multiple inputs instead of one
   - **MAY** use `dct:format` to describe input/output format
   - **MAY** use `dct:conformsTo` to signify the input/output must follow a specification/protocol
-  - **SHOULD** use `dct:description` to provide a human-readable description of the transformation
+
+ISSUE: TODO check all prefixes
 
 <div class="example">
 ```turtle
@@ -71,23 +72,18 @@ Each transformation **MUST** be described as an `fno:Function` that:
 ```
 </div>
 
-An transformation **MAY** be linked to an `fno:Implementation` using an `fno:Mapping` as specified in the [[!FNO]]. This can provide
-extra metadata about the actual implementation an Aggregator Service will use.
-
-ISSUE: Do we include `fno:Algorithm` in the spec?
-
-Further requirements on how a server **MUST** expose and maintain the set of available and supported transformations
-are specified in [[#server-level-transformation-catalog]].
+Additional metadata **MAY** be linked to a transformation, such as an `fno:Implementation` using an `fno:Mapping` as
+specified in the [[!FNO]], or the algorithm it implements using `fno:Algorithm`. Further requirements on how a server
+**MUST** expose and maintain the set of available and supported transformations are specified in
+[[#server-level-transformation-catalog]].
 
 Service {#aggregator-service}
 -----------------------------
 
-A deployed aggregator service is responsible for (periodically) performing a transformation and is modeled as:
+A deployed aggregator service is responsible for (periodically) performing a transformation and is modelled as:
   - an `aggr:Service`
   - a `dcat:DataService` ([[!Data-Catalog]])
   - a `prov:SoftwareAgent` ([[!PROV-O]])
-
-ISSUE: support for `fno:Mapping`
 
 The service:
   - **MUST** serve one dataset for each transformation output
@@ -153,14 +149,12 @@ or historical distributions if provided.
 
 Service descriptions **MAY** be semantically enriched to provide more detailed information about their outputs and capabilities.
 Semantic enrichment helps make services and their outputs even more FAIR (Findable, Accessible, Interoperable, and Reusable). 
-Support for this functionality by an aggregator server is implementation-specific and must be clearly defined in the server’s 
-documentation.
+Support for this functionality by an aggregator server is implementation-specific.
 
 Examples include:
   - Describe a service output endpoint as a SPARQL endpoint using `sd:Service`.
   - Use `dct:accrualPeriodicity` on the dataset to indicate the frequency of updates.
   - Describe the service API using the Hydra Core Ontology.
-  - ...
 
 Further requirements on how an Aggregator Server **MUST** manage services — including how clients can discover, create, 
 and delete service instances — are specified in [[#aggregator-service-management]].
@@ -168,19 +162,16 @@ and delete service instances — are specified in [[#aggregator-service-manageme
 Provenance {#aggregator-provenance}
 -----------------------------------
 
-This section specifies how provenance information of running Aggregator Services **MUST** be described.
-
-A running service **MUST** be described as a `prov:SoftwareAgent`. This Agent is responsible for executing the transformation
-that results in new distributions for its datasets.
-
-This execution **MUST** be typed as:
+This section specifies how provenance information of running Aggregator Services **MUST** be described. A running service
+**MUST** be described as a `prov:SoftwareAgent` as mentioned in [[#aggregator-service]]. This Agent is responsible for
+executing the transformation that results in new distributions for its datasets. This execution **MUST** be typed as:
   - an `fno:Execution` detailing:
     - what transformation it executed with `fno:executes`
     - what `fno:Mapping` was used with `fno:uses` if it uses a mapping. 
     - what input values were used with the parameter predicates. 
     - the newly created distribution with the output predicate.
   - a `prov:Activity` that:
-    - generated the new destribution
+    - generated the new distribution
     - includes start and end time with `prov:startedAtTime` and `prov:endedAtTime`
 
 The resulting distribution:

@@ -3,9 +3,9 @@ Aggregator Service Management {#aggregator-service-management}
 
 This section describes how users manage services deployed on an aggregator.
 
-The Service Collection endpoint ([[#service-discovery-endpoint]]), which allows client to:
+The Service Collection endpoint ([[#service-collection-endpoint]]), which allows client to:
     - Discover running services on an aggregator ([[#service-discovery]])
-    - Deploy new services on an aggregator
+    - Deploy new services on an aggregator ([[#service-deployment]])
 
 Each deployed service **MUST** expose its own Service Description endpoint ([[#service-endpoint]]), which allows clients to:
     - Inspect the service metadata (e.g. status)
@@ -15,7 +15,7 @@ Each deployed service **MUST** expose its own Service Description endpoint ([[#s
 All endpoints described in this section **MUST** be protected using the authentication and authorization mechanisms defined in 
 [[#aggregator-security-model]].
 
-Service Collection Endpoint {#service-discovery-endpoint}
+Service Collection Endpoint {#service-collection-endpoint}
 ----------------------------------------------------------
 
 The location of this endpoint **MUST** be advertised in the Aggregator Description ([[#aggregator-description]]) 
@@ -27,16 +27,19 @@ atleast the `read` and `create` scopes.
 
 ### Deploying a Service ### {#service-deployment}
 
-The Service Collection Endpoint **MUST** allow `POST` requests to deploy new services. The supported content types must be advertised
-via the `Accept-Post` header defined in [[!LDP]].
+The Service Collection Endpoint **MAY** allow `POST` requests to deploy new services. The supported content types **MUST** be
+advertised via the `Accept-Post` header defined in [[!LDP]].
+
+ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured and easier to read?
 
 : `POST`
 :: Enables clients to deploy new Services.
     This request **MUST**:
         - be authorized with the `create` scope on the Service Collection Endpoint.
         - be an RDF Document containing `aggr:Service` descriptions that:
-            - **MUST** declare an `fno:AppliedFunction` with `aggr:performs`that:
-                - **MUST** apply a transformation from the server-level or instance-level transformation catalog.
+            - **MUST** declare an `fno:AppliedFunction` with `aggr:performs` that:
+                - **MUST** apply a transformation from the server-level or this aggregator's instance-level transformation
+                    catalog.
                 - bounds a value to **AT LEAST** each required parameter.
                 - **MUST** be a blank node. Any IRI value **MUST** be ignored.
             - **MAY** declare an `fno:Mapping` with `aggr:usesMapping`.
@@ -67,6 +70,12 @@ via the `Accept-Post` header defined in [[!LDP]].
     If the request is valid but the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
     
 The following example requests a service that performs the `QueryView` transformation using the `QueryViewMapping`:
+
+ISSUE: Put this in turtle and are the sources correct, shouldn't they be a list of IRIs? Also the boundParameter shouldn't
+be a string right?
+
+ISSUE: The fno:AppliedFunction doesn't need to be a blank node, we could use named node and rdfs:seeAlso to request an
+already existing applied function.
 
 <div class="example">
 ```http
@@ -101,7 +110,7 @@ Content-Type: application/ld+json
                 ]
             }
         ]
-    },
+    }
 }
 ```
 </div>
@@ -110,7 +119,7 @@ Content-Type: application/ld+json
 
 Deploying a service that performs a composite transformation **MUST** use the same request format as any other transformation service.
 
-When all transformations referenced in the `fno:Composition` are included in the Transformation Catalog, the server **MUST**:
+When all transformations referenced in the `fnoc:Composition` are included in the Transformation Catalog, the server **MUST**:
     - Deploy a service for each individual transformation referenced in the composition 
         without exposing a Service Description Endpoint for those internal services.
         - If the output of such a transformation is mapped to the output of the composite transformation, 
@@ -134,7 +143,7 @@ The endpoint **SHOULD** support HTTP content negotiation to allow clients to req
         - An `ETag` header whose value changes whenever a service is added to or removed from the collection.
 
 : `GET`
-:: Returns the service collection RDF Document ([[#service-discovery]]). 
+:: Returns the service collection RDF Document.
     This request **MUST** be authorized with a `read` scope on the Service Collection endpoint.
 
     The server **MUST** respond with:
@@ -188,14 +197,14 @@ This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC911
 : DELETE
 :: Deletes a running Aggregator Service.
     - The request **MUST** be authorized with the `delete` scope on the service resources.
-    - Upon successful processing, the server **MUST**:
-        1. Stop and remove the running service from the aggregator.
+    - Upon successful processing, the Aggregator **MUST**:
+        1. Stop and remove the running service from the Aggregator.
         2. Update the Service Collection and its associated `ETag`.
         3. Delete the corresponding UMA resources at the Authorization Server.
         4. Respond with either `200 OK` or `204 No Content`.
-    - If the service does not exist, the server **SHOULD** respond with `404 Not Found`.
+    - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
 
-If a composite service is being deleted the server **MUST** stop and remove every internal server if 
+If a composite service is being deleted the Aggregator **MUST** stop and remove every internal transformation if
 not part of any other composite service.
 
 ### Service Output Endpoint ### {#service-output}
@@ -231,7 +240,7 @@ An Aggregator **MAY** retain previously generated distributions and keep them ac
 If an Aggregator chooses to maintain versioned distributions, it **MUST** comply with the following requirements:
     - A separate endpoint for each distribution access URL **MUST** be created and registered as an UMA Resource.
 
-Each retained distribution MUST be included in the corresponding Service Description.
+Each retained distribution **MUST** be included in the corresponding Service Description.
 
 Provenance Log {#service-provenance}
 ---------------------------------
@@ -290,6 +299,8 @@ Aggregator servers **MAY** publish a services' Provenance Log at any deployment-
         allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
 
 ### Periodic vs. Continous updates ### {#periodic-vs-continous}
+
+ISSUE: TODO I think this section is not finished yet
 
 **Periodic Execution**
 

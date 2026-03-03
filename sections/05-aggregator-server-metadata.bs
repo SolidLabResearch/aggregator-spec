@@ -109,7 +109,8 @@ implementation to restrict which clients may create aggregators on the server.
 Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------
 
-The Transformation Catalog is an RDF document describing all aggregator transformation mappings ([[#aggregator-data-model]]) 
+The Transformation Catalog is an RDF document describing all aggregator transformation functions ([[#aggregator-data-model]])
+
 that can be deployed as services by the aggregator server.
 
 ISSUE: include `fno:Algorithm` with `aggr:supportsAlgorithm` ?
@@ -183,11 +184,11 @@ The `aggr:TransformationCatalog`:
 
 An Aggregator Server **MAY** support the deployment of composite transformations. 
 
-A transformation **MAY** be linked to an `fno:Composition` using `fno:composition`. This **MAY** be done
+A transformation **MAY** be linked to an `fnoc:Composition` using `fnoc:composition`. This **MAY** be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
 provide additional transparency.
 
-If all transformations referenced within the `fno:Composition` are also included in the catalog, 
+If all transformations referenced within the `fnoc:Composition` are also included in the catalog,
 each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
 while internally orchestrating multiple individual services.
 
@@ -263,7 +264,7 @@ The following example describes a pipeline that:
 
   - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
 
-  - The URL **MUST** be advertised in the Aggregator Server Description via the `mapping_catalog` field.
+  - The URL **MUST** be advertised in the [[#server-description]] via the `transformation_catalog` field.
 
   - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
 

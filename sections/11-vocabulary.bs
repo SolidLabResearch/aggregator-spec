@@ -137,7 +137,7 @@ Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 **range:** `aggr:Service`
 
 ### aggr:hasMapping ### {#aggr-has-mapping-property}
-Links an `aggr:TransformationCollection` to the transformation mappings it advertises.
+Links an `aggr:TransformationCollection` to the mappings it advertises that link functions and implementations.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:TransformationCollection`<br>

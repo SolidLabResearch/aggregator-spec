@@ -171,6 +171,7 @@ The following namespace prefixes are used throughout this specification and SHOU
 - `aggr:` → `https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#`
 - `dct:` → `http://purl.org/dc/terms/`
 - `fno:` → `https://w3id.org/function/ontology#`
+- `fnoc:` → `https://fno.io/vocabulary/composition/0.1.0/`
 - `dcat:` → `https://www.w3.org/ns/dcat#`
 - `dcterms:` → `http://purl.org/dc/terms/`
 - `owl:` → `http://www.w3.org/2002/07/owl#`
@@ -178,6 +179,8 @@ The following namespace prefixes are used throughout this specification and SHOU
 - `rdfs:` → `http://www.w3.org/2000/01/rdf-schema#`
 - `xsd:` → `http://www.w3.org/2001/XMLSchema#`
 - `prov:` → `http://www.w3.org/ns/prov#`
+
+ISSUE: duble check if all these namespaces are actually used in the spec, and remove those that are not. fnoi for example?
 
 
 
@@ -288,14 +291,15 @@ Transformation {#aggregator-transformation}
 -------------------------------------------
 
 An aggregator transformation defines a well-described functional interface using the Function Ontology [[!FNO]].
-Each transformation **MUST** be described as an `fno:Function` that:
-  - **MAY** define zero or more outputs
-  - **MAY** define zero or more parameters
+Each transformation **MUST** be described as an `fno:Function` that **MAY** describe zero or more `fno:Parameters` and
+`fno:Outputs` using the `fno:expects` and `fno:returns` properties respectively. Each parameter and output:
+  - **SHOULD** use `dct:description` to provide a human-readable description of the transformation
   - **MAY** use `fno:type` to describe the input/output type
   - **MAY** use `fno:container` to signify the parameter expects multiple inputs instead of one
   - **MAY** use `dct:format` to describe input/output format
   - **MAY** use `dct:conformsTo` to signify the input/output must follow a specification/protocol
-  - **SHOULD** use `dct:description` to provide a human-readable description of the transformation
+
+ISSUE: TODO check all prefixes
 
 <div class="example">
 ```turtle
@@ -350,26 +354,21 @@ Each transformation **MUST** be described as an `fno:Function` that:
 ```
 </div>
 
-An transformation **MAY** be linked to an `fno:Implementation` using an `fno:Mapping` as specified in the [[!FNO]]. This can provide
-extra metadata about the actual implementation an Aggregator Service will use.
-
-ISSUE: Do we include `fno:Algorithm` in the spec?
-
-Further requirements on how a server **MUST** expose and maintain the set of available and supported transformations
-are specified in [[#server-level-transformation-catalog]].
+Additional metadata **MAY** be linked to a transformation, such as an `fno:Implementation` using an `fno:Mapping` as
+specified in the [[!FNO]], or the algorithm it implements using `fno:Algorithm`. Further requirements on how a server
+**MUST** expose and maintain the set of available and supported transformations are specified in
+[[#server-level-transformation-catalog]].
 
 Service {#aggregator-service}
 -----------------------------
 
-A deployed aggregator service is responsible for (periodically) performing a transformation and is modeled as:
+A deployed aggregator service is responsible for (periodically) performing a transformation and is modelled as:
   - an `aggr:Service`
   - a `dcat:DataService` ([[!Data-Catalog]])
   - a `prov:SoftwareAgent` ([[!PROV-O]])
 
-ISSUE: support for `fno:Mapping`
-
 The service:
-  - **MUST** serve one dataset for each transformation output
+  - **MUST** serve one dataset for each transformation output defined for that function
   - **MUST** link to an `fno:AppliedFunction` using `aggr:performs`
   - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`
   - **SHOULD** declare operational metadata such as status and creation time
@@ -439,7 +438,6 @@ Examples include:
   - Describe a service output endpoint as a SPARQL endpoint using `sd:Service`.
   - Use `dct:accrualPeriodicity` on the dataset to indicate the frequency of updates.
   - Describe the service API using the Hydra Core Ontology.
-  - ...
 
 Further requirements on how an Aggregator Server **MUST** manage services — including how clients can discover, create, 
 and delete service instances — are specified in [[#aggregator-service-management]].
@@ -447,19 +445,16 @@ and delete service instances — are specified in [[#aggregator-service-manageme
 Provenance {#aggregator-provenance}
 -----------------------------------
 
-This section specifies how provenance information of running Aggregator Services **MUST** be described.
-
-A running service **MUST** be described as a `prov:SoftwareAgent`. This Agent is responsible for executing the transformation
-that results in new distributions for its datasets.
-
-This execution **MUST** be typed as:
+This section specifies how provenance information of running Aggregator Services **MUST** be described. A running service
+**MUST** be described as a `prov:SoftwareAgent` as mentioned in [[#aggregator-service]]. This Agent is responsible for
+executing the transformation that results in new distributions for its datasets. This execution **MUST** be typed as:
   - an `fno:Execution` detailing:
     - what transformation it executed with `fno:executes`
     - what `fno:Mapping` was used with `fno:uses` if it uses a mapping. 
     - what input values were used with the parameter predicates. 
     - the newly created distribution with the output predicate.
   - a `prov:Activity` that:
-    - generated the new destribution
+    - generated the new distribution
     - includes start and end time with `prov:startedAtTime` and `prov:endedAtTime`
 
 The resulting distribution:
@@ -623,7 +618,8 @@ implementation to restrict which clients may create aggregators on the server.
 Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------
 
-The Transformation Catalog is an RDF document describing all aggregator transformation mappings ([[#aggregator-data-model]]) 
+The Transformation Catalog is an RDF document describing all aggregator transformation functions ([[#aggregator-data-model]])
+
 that can be deployed as services by the aggregator server.
 
 ISSUE: include `fno:Algorithm` with `aggr:supportsAlgorithm` ?
@@ -697,11 +693,11 @@ The `aggr:TransformationCatalog`:
 
 An Aggregator Server **MAY** support the deployment of composite transformations. 
 
-A transformation **MAY** be linked to an `fno:Composition` using `fno:composition`. This **MAY** be done
+A transformation **MAY** be linked to an `fnoc:Composition` using `fnoc:composition`. This **MAY** be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
 provide additional transparency.
 
-If all transformations referenced within the `fno:Composition` are also included in the catalog, 
+If all transformations referenced within the `fnoc:Composition` are also included in the catalog,
 each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
 while internally orchestrating multiple individual services.
 
@@ -777,7 +773,7 @@ The following example describes a pipeline that:
 
   - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
 
-  - The URL **MUST** be advertised in the Aggregator Server Description via the `mapping_catalog` field.
+  - The URL **MUST** be advertised in the [[#server-description]] via the `transformation_catalog` field.
 
   - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
 
@@ -1950,7 +1946,7 @@ that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-c
     `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
 : **service_collection_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
-    Services ([[#service-discovery]]); in the RDF representations, this member maps to the predicate
+    Services ([[#service-collection-endpoint]]); in the RDF representations, this member maps to the predicate
     `aggr:serviceCollectionEndpoint` ([[#aggr-service-discovery-endpoint-property]]).
  
 This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 
@@ -2019,9 +2015,9 @@ Aggregator Service Management {#aggregator-service-management}
 
 This section describes how users manage services deployed on an aggregator.
 
-The Service Collection endpoint ([[#service-discovery-endpoint]]), which allows client to:
+The Service Collection endpoint ([[#service-collection-endpoint]]), which allows client to:
     - Discover running services on an aggregator ([[#service-discovery]])
-    - Deploy new services on an aggregator
+    - Deploy new services on an aggregator ([[#service-deployment]])
 
 Each deployed service **MUST** expose its own Service Description endpoint ([[#service-endpoint]]), which allows clients to:
     - Inspect the service metadata (e.g. status)
@@ -2031,7 +2027,7 @@ Each deployed service **MUST** expose its own Service Description endpoint ([[#s
 All endpoints described in this section **MUST** be protected using the authentication and authorization mechanisms defined in 
 [[#aggregator-security-model]].
 
-Service Collection Endpoint {#service-discovery-endpoint}
+Service Collection Endpoint {#service-collection-endpoint}
 ----------------------------------------------------------
 
 The location of this endpoint **MUST** be advertised in the Aggregator Description ([[#aggregator-description]]) 
@@ -2043,16 +2039,19 @@ atleast the `read` and `create` scopes.
 
 ### Deploying a Service ### {#service-deployment}
 
-The Service Collection Endpoint **MUST** allow `POST` requests to deploy new services. The supported content types must be advertised
-via the `Accept-Post` header defined in [[!LDP]].
+The Service Collection Endpoint **MAY** allow `POST` requests to deploy new services. The supported content types **MUST** be
+advertised via the `Accept-Post` header defined in [[!LDP]].
+
+ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured and easier to read?
 
 : `POST`
 :: Enables clients to deploy new Services.
     This request **MUST**:
         - be authorized with the `create` scope on the Service Collection Endpoint.
         - be an RDF Document containing `aggr:Service` descriptions that:
-            - **MUST** declare an `fno:AppliedFunction` with `aggr:performs`that:
-                - **MUST** apply a transformation from the server-level or instance-level transformation catalog.
+            - **MUST** declare an `fno:AppliedFunction` with `aggr:performs` that:
+                - **MUST** apply a transformation from the server-level or this aggregator's instance-level transformation
+                    catalog.
                 - bounds a value to **AT LEAST** each required parameter.
                 - **MUST** be a blank node. Any IRI value **MUST** be ignored.
             - **MAY** declare an `fno:Mapping` with `aggr:usesMapping`.
@@ -2083,6 +2082,12 @@ via the `Accept-Post` header defined in [[!LDP]].
     If the request is valid but the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
     
 The following example requests a service that performs the `QueryView` transformation using the `QueryViewMapping`:
+
+ISSUE: Put this in turtle and are the sources correct, shouldn't they be a list of IRIs? Also the boundParameter shouldn't
+be a string right?
+
+ISSUE: The fno:AppliedFunction doesn't need to be a blank node, we could use named node and rdfs:seeAlso to request an
+already existing applied function.
 
 <div class="example">
 ```http
@@ -2117,7 +2122,7 @@ Content-Type: application/ld+json
                 ]
             }
         ]
-    },
+    }
 }
 ```
 </div>
@@ -2126,7 +2131,7 @@ Content-Type: application/ld+json
 
 Deploying a service that performs a composite transformation **MUST** use the same request format as any other transformation service.
 
-When all transformations referenced in the `fno:Composition` are included in the Transformation Catalog, the server **MUST**:
+When all transformations referenced in the `fnoc:Composition` are included in the Transformation Catalog, the server **MUST**:
     - Deploy a service for each individual transformation referenced in the composition 
         without exposing a Service Description Endpoint for those internal services.
         - If the output of such a transformation is mapped to the output of the composite transformation, 
@@ -2150,7 +2155,7 @@ The endpoint **SHOULD** support HTTP content negotiation to allow clients to req
         - An `ETag` header whose value changes whenever a service is added to or removed from the collection.
 
 : `GET`
-:: Returns the service collection RDF Document ([[#service-discovery]]). 
+:: Returns the service collection RDF Document.
     This request **MUST** be authorized with a `read` scope on the Service Collection endpoint.
 
     The server **MUST** respond with:
@@ -2204,14 +2209,14 @@ This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC911
 : DELETE
 :: Deletes a running Aggregator Service.
     - The request **MUST** be authorized with the `delete` scope on the service resources.
-    - Upon successful processing, the server **MUST**:
-        1. Stop and remove the running service from the aggregator.
+    - Upon successful processing, the Aggregator **MUST**:
+        1. Stop and remove the running service from the Aggregator.
         2. Update the Service Collection and its associated `ETag`.
         3. Delete the corresponding UMA resources at the Authorization Server.
         4. Respond with either `200 OK` or `204 No Content`.
-    - If the service does not exist, the server **SHOULD** respond with `404 Not Found`.
+    - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
 
-If a composite service is being deleted the server **MUST** stop and remove every internal server if 
+If a composite service is being deleted the Aggregator **MUST** stop and remove every internal transformation if
 not part of any other composite service.
 
 ### Service Output Endpoint ### {#service-output}
@@ -2247,7 +2252,7 @@ An Aggregator **MAY** retain previously generated distributions and keep them ac
 If an Aggregator chooses to maintain versioned distributions, it **MUST** comply with the following requirements:
     - A separate endpoint for each distribution access URL **MUST** be created and registered as an UMA Resource.
 
-Each retained distribution MUST be included in the corresponding Service Description.
+Each retained distribution **MUST** be included in the corresponding Service Description.
 
 Provenance Log {#service-provenance}
 ---------------------------------
@@ -2306,6 +2311,8 @@ Aggregator servers **MAY** publish a services' Provenance Log at any deployment-
         allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
 
 ### Periodic vs. Continous updates ### {#periodic-vs-continous}
+
+ISSUE: TODO I think this section is not finished yet
 
 **Periodic Execution**
 
@@ -2471,7 +2478,7 @@ Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 **range:** `aggr:Service`
 
 ### aggr:hasMapping ### {#aggr-has-mapping-property}
-Links an `aggr:TransformationCollection` to the transformation mappings it advertises.
+Links an `aggr:TransformationCollection` to the mappings it advertises that link functions and implementations.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:TransformationCollection`<br>

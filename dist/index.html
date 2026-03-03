@@ -2118,7 +2118,7 @@ to protected derived resources.</p>
      <a href="#aggregator-service-management"><span class="secno">9</span> <span class="content">Aggregator Service Management</span></a>
      <ol class="toc">
       <li>
-       <a href="#service-discovery-endpoint"><span class="secno">9.1</span> <span class="content">Service Collection Endpoint</span></a>
+       <a href="#service-collection-endpoint"><span class="secno">9.1</span> <span class="content">Service Collection Endpoint</span></a>
        <ol class="toc">
         <li><a href="#service-deployment"><span class="secno">9.1.1</span> <span class="content">Deploying a Service</span></a>
         <li><a href="#composite-service-deployment"><span class="secno">9.1.2</span> <span class="content">Deploying a Composite Service</span></a>
@@ -2280,6 +2280,8 @@ Document specification <a data-link-type="biblio" href="#biblio-client-id" title
     <li data-md>
      <p><code>fno:</code> → <code>https://w3id.org/function/ontology#</code></p>
     <li data-md>
+     <p><code>fnoc:</code> → <code>https://fno.io/vocabulary/composition/0.1.0/</code></p>
+    <li data-md>
      <p><code>dcat:</code> → <code>https://www.w3.org/ns/dcat#</code></p>
     <li data-md>
      <p><code>dcterms:</code> → <code>http://purl.org/dc/terms/</code></p>
@@ -2294,6 +2296,7 @@ Document specification <a data-link-type="biblio" href="#biblio-client-id" title
     <li data-md>
      <p><code>prov:</code> → <code>http://www.w3.org/ns/prov#</code></p>
    </ul>
+   <p class="issue" id="issue-c7c8e470"><a class="self-link" href="#issue-c7c8e470"></a> duble check if all these namespaces are actually used in the spec, and remove those that are not. fnoi for example?</p>
    <h2 class="heading settled" data-level="3" id="architecture-resource-model"><span class="secno">3. </span><span class="content">Architecture &amp; Resource Model</span><a class="self-link" href="#architecture-resource-model"></a></h2>
    <p>This section describes the high-level architecture of an Aggregator deployment and the resource model exposed by this
 specification. It connects the terminology in <a href="#definitions">§ 2 Definitions</a> to the endpoint definitions in later sections.</p>
@@ -2404,12 +2407,11 @@ and the transformations they implement as well as the outputs they generate. By 
 model enables interoperable publication, discovery, execution, and provenance tracking of aggregator services.</p>
    <h3 class="heading settled" data-level="4.1" id="aggregator-transformation"><span class="secno">4.1. </span><span class="content">Transformation</span><a class="self-link" href="#aggregator-transformation"></a></h3>
    <p>An aggregator transformation defines a well-described functional interface using the Function Ontology <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>.
-Each transformation <strong>MUST</strong> be described as an <code>fno:Function</code> that:</p>
+Each transformation <strong>MUST</strong> be described as an <code>fno:Function</code> that <strong>MAY</strong> describe zero or more <code>fno:Parameters</code> and
+<code>fno:Outputs</code> using the <code>fno:expects</code> and <code>fno:returns</code> properties respectively. Each parameter and output:</p>
    <ul>
     <li data-md>
-     <p><strong>MAY</strong> define zero or more outputs</p>
-    <li data-md>
-     <p><strong>MAY</strong> define zero or more parameters</p>
+     <p><strong>SHOULD</strong> use <code>dct:description</code> to provide a human-readable description of the transformation</p>
     <li data-md>
      <p><strong>MAY</strong> use <code>fno:type</code> to describe the input/output type</p>
     <li data-md>
@@ -2418,9 +2420,8 @@ Each transformation <strong>MUST</strong> be described as an <code>fno:Function<
      <p><strong>MAY</strong> use <code>dct:format</code> to describe input/output format</p>
     <li data-md>
      <p><strong>MAY</strong> use <code>dct:conformsTo</code> to signify the input/output must follow a specification/protocol</p>
-    <li data-md>
-     <p><strong>SHOULD</strong> use <code>dct:description</code> to provide a human-readable description of the transformation</p>
    </ul>
+   <p class="issue" id="issue-c913e552"><a class="self-link" href="#issue-c913e552"></a> TODO check all prefixes</p>
    <div class="example" id="example-a00c0a63">
     <a class="self-link" href="#example-a00c0a63"></a>
 
@@ -2474,13 +2475,12 @@ Each transformation <strong>MUST</strong> be described as an <code>fno:Function<
   <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- p>:</c-><c- f>table</c-> <c- p>.</c->
 </pre>
    </div>
-   <p>An transformation <strong>MAY</strong> be linked to an <code>fno:Implementation</code> using an <code>fno:Mapping</code> as specified in the <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>. This can provide
-extra metadata about the actual implementation an Aggregator Service will use.</p>
-   <p class="issue" id="issue-4eed5834"><a class="self-link" href="#issue-4eed5834"></a> Do we include <code>fno:Algorithm</code> in the spec?</p>
-   <p>Further requirements on how a server <strong>MUST</strong> expose and maintain the set of available and supported transformations
-are specified in <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>.</p>
+   <p>Additional metadata <strong>MAY</strong> be linked to a transformation, such as an <code>fno:Implementation</code> using an <code>fno:Mapping</code> as
+specified in the <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>, or the algorithm it implements using <code>fno:Algorithm</code>. Further requirements on how a server
+<strong>MUST</strong> expose and maintain the set of available and supported transformations are specified in
+<a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>.</p>
    <h3 class="heading settled" data-level="4.2" id="aggregator-service"><span class="secno">4.2. </span><span class="content">Service</span><a class="self-link" href="#aggregator-service"></a></h3>
-   <p>A deployed aggregator service is responsible for (periodically) performing a transformation and is modeled as:</p>
+   <p>A deployed aggregator service is responsible for (periodically) performing a transformation and is modelled as:</p>
    <ul>
     <li data-md>
      <p>an <code>aggr:Service</code></p>
@@ -2489,7 +2489,6 @@ are specified in <a href="#server-level-transformation-catalog">§ 5.3 Server-
     <li data-md>
      <p>a <code>prov:SoftwareAgent</code> (<a data-link-type="biblio" href="#biblio-prov-o" title="The Provenance Ontology">[PROV-O]</a>)</p>
    </ul>
-   <p class="issue" id="issue-92182166"><a class="self-link" href="#issue-92182166"></a> support for <code>fno:Mapping</code></p>
    <p>The service:</p>
    <ul>
     <li data-md>
@@ -2580,16 +2579,13 @@ documentation.</p>
      <p>Use <code>dct:accrualPeriodicity</code> on the dataset to indicate the frequency of updates.</p>
     <li data-md>
      <p>Describe the service API using the Hydra Core Ontology.</p>
-    <li data-md>
-     <p>...</p>
    </ul>
    <p>Further requirements on how an Aggregator Server <strong>MUST</strong> manage services — including how clients can discover, create,
 and delete service instances — are specified in <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>.</p>
    <h3 class="heading settled" data-level="4.3" id="aggregator-provenance"><span class="secno">4.3. </span><span class="content">Provenance</span><a class="self-link" href="#aggregator-provenance"></a></h3>
-   <p>This section specifies how provenance information of running Aggregator Services <strong>MUST</strong> be described.</p>
-   <p>A running service <strong>MUST</strong> be described as a <code>prov:SoftwareAgent</code>. This Agent is responsible for executing the transformation
-that results in new distributions for its datasets.</p>
-   <p>This execution <strong>MUST</strong> be typed as:</p>
+   <p>This section specifies how provenance information of running Aggregator Services <strong>MUST</strong> be described. A running service
+<strong>MUST</strong> be described as a <code>prov:SoftwareAgent</code> as mentioned in <a href="#aggregator-service">§ 4.2 Service</a>. This Agent is responsible for
+executing the transformation that results in new distributions for its datasets. This execution <strong>MUST</strong> be typed as:</p>
    <ul>
     <li data-md>
      <p>an <code>fno:Execution</code> detailing:</p>
@@ -2607,7 +2603,7 @@ that results in new distributions for its datasets.</p>
      <p>a <code>prov:Activity</code> that:</p>
      <ul>
       <li data-md>
-       <p>generated the new destribution</p>
+       <p>generated the new distribution</p>
       <li data-md>
        <p>includes start and end time with <code>prov:startedAtTime</code> and <code>prov:endedAtTime</code></p>
      </ul>
@@ -2777,10 +2773,10 @@ aggregator, the <code>redirect_uris</code> property is OPTIONAL instead of REQUI
 the same Aggregator Server (depending on the implementation). Adding this property allows an Aggregator Server 
 implementation to restrict which clients may create aggregators on the server.</p>
    <h3 class="heading settled" data-level="5.3" id="server-level-transformation-catalog"><span class="secno">5.3. </span><span class="content">Server-level Transformation Catalog</span><a class="self-link" href="#server-level-transformation-catalog"></a></h3>
-   <p>The Transformation Catalog is an RDF document describing all aggregator transformation mappings (<a href="#aggregator-data-model">§ 4 Aggregator Data Model</a>)
-that can be deployed as services by the aggregator server.</p>
+   <p>The Transformation Catalog is an RDF document describing all aggregator transformation functions (<a href="#aggregator-data-model">§ 4 Aggregator Data Model</a>)</p>
+   <p>that can be deployed as services by the aggregator server.</p>
    <p class="issue" id="issue-fb4671f2"><a class="self-link" href="#issue-fb4671f2"></a> include <code>fno:Algorithm</code> with <code>aggr:supportsAlgorithm</code> ?</p>
-   <p class="issue" id="issue-92182166①"><a class="self-link" href="#issue-92182166①"></a> support for <code>fno:Mapping</code></p>
+   <p class="issue" id="issue-92182166"><a class="self-link" href="#issue-92182166"></a> support for <code>fno:Mapping</code></p>
    <p>The <code>aggr:TransformationCatalog</code>:</p>
    <ul>
     <li data-md>
@@ -2850,10 +2846,10 @@ that can be deployed as services by the aggregator server.</p>
    </div>
    <h4 class="heading settled" data-level="5.3.1" id="catalog-composite-transformations"><span class="secno">5.3.1. </span><span class="content">Composite Transformations</span><a class="self-link" href="#catalog-composite-transformations"></a></h4>
    <p>An Aggregator Server <strong>MAY</strong> support the deployment of composite transformations.</p>
-   <p>A transformation <strong>MAY</strong> be linked to an <code>fno:Composition</code> using <code>fno:composition</code>. This <strong>MAY</strong> be done
+   <p>A transformation <strong>MAY</strong> be linked to an <code>fnoc:Composition</code> using <code>fnoc:composition</code>. This <strong>MAY</strong> be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
 provide additional transparency.</p>
-   <p>If all transformations referenced within the <code>fno:Composition</code> are also included in the catalog,
+   <p>If all transformations referenced within the <code>fnoc:Composition</code> are also included in the catalog,
 each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
 while internally orchestrating multiple individual services.</p>
    <p>The following example describes a pipeline that:</p>
@@ -2933,7 +2929,7 @@ while internally orchestrating multiple individual services.</p>
     <li data-md>
      <p>Aggregator servers <strong>MAY</strong> publish this catalog at any deployment-specific URL.</p>
     <li data-md>
-     <p>The URL <strong>MUST</strong> be advertised in the Aggregator Server Description via the <code>mapping_catalog</code> field.</p>
+     <p>The URL <strong>MUST</strong> be advertised in the <a href="#server-description">§ 5.1 Aggregator Server Description</a> via the <code>transformation_catalog</code> field.</p>
     <li data-md>
      <p>The catalog <strong>SHOULD</strong> support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
     <li data-md>
@@ -4045,7 +4041,7 @@ the predicate <code>aggr:tokenExpiry</code> (<a href="#aggr-token-expiry-propert
     <dt data-md><strong>service_collection_endpoint</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator
-Services (<a href="#service-discovery">§ 9.1.3 Service Discovery</a>); in the RDF representations, this member maps to the predicate
+Services (<a href="#service-collection-endpoint">§ 9.1 Service Collection Endpoint</a>); in the RDF representations, this member maps to the predicate
 <code>aggr:serviceCollectionEndpoint</code> (<a href="#aggr-service-discovery-endpoint-property">§ 10.2.5 aggr:serviceCollectionEndpoint</a>).</p>
    </dl>
    <p>This document MAY be the WebID of the Aggregator Instance when the <code>provision</code> flow <a href="#creation-provision">§ 6.2.1 Creation provision Flow</a> was used. In
@@ -4105,12 +4101,12 @@ transformations in different resources so different policies can be added, and l
 endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.</p>
    <h2 class="heading settled" data-level="9" id="aggregator-service-management"><span class="secno">9. </span><span class="content">Aggregator Service Management</span><a class="self-link" href="#aggregator-service-management"></a></h2>
    <p>This section describes how users manage services deployed on an aggregator.</p>
-   <p>The Service Collection endpoint (<a href="#service-discovery-endpoint">§ 9.1 Service Collection Endpoint</a>), which allows client to:</p>
+   <p>The Service Collection endpoint (<a href="#service-collection-endpoint">§ 9.1 Service Collection Endpoint</a>), which allows client to:</p>
    <ul>
     <li data-md>
      <p>Discover running services on an aggregator (<a href="#service-discovery">§ 9.1.3 Service Discovery</a>)</p>
     <li data-md>
-     <p>Deploy new services on an aggregator</p>
+     <p>Deploy new services on an aggregator (<a href="#service-deployment">§ 9.1.1 Deploying a Service</a>)</p>
    </ul>
    <p>Each deployed service <strong>MUST</strong> expose its own Service Description endpoint (<a href="#service-endpoint">§ 9.2 Service Description Endpoint</a>), which allows clients to:</p>
    <ul>
@@ -4123,15 +4119,16 @@ endpoint MUST at least return a list of transformations that are directly availa
    </ul>
    <p>All endpoints described in this section <strong>MUST</strong> be protected using the authentication and authorization mechanisms defined in
 <a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
-   <h3 class="heading settled" data-level="9.1" id="service-discovery-endpoint"><span class="secno">9.1. </span><span class="content">Service Collection Endpoint</span><a class="self-link" href="#service-discovery-endpoint"></a></h3>
+   <h3 class="heading settled" data-level="9.1" id="service-collection-endpoint"><span class="secno">9.1. </span><span class="content">Service Collection Endpoint</span><a class="self-link" href="#service-collection-endpoint"></a></h3>
    <p>The location of this endpoint <strong>MUST</strong> be advertised in the Aggregator Description (<a href="#aggregator-description">§ 8.1 Aggregator Description</a>)
 using the <code>service_collection_endpoint</code> field. Clients <strong>MUST</strong> treat the advertised URL as authoritative and <strong>MUST NOT</strong>
 assume a fixed path. Examples shown in this section use <code>http://aggregator.example.org/agg1/services</code> for illustation purposes only.</p>
    <p>The Aggregator <strong>MUST</strong> register this endpoint as an UMA resource with the Authorization Server and <strong>MUST</strong> advertise
 atleast the <code>read</code> and <code>create</code> scopes.</p>
    <h4 class="heading settled" data-level="9.1.1" id="service-deployment"><span class="secno">9.1.1. </span><span class="content">Deploying a Service</span><a class="self-link" href="#service-deployment"></a></h4>
-   <p>The Service Collection Endpoint <strong>MUST</strong> allow <code>POST</code> requests to deploy new services. The supported content types must be advertised
-via the <code>Accept-Post</code> header defined in <a data-link-type="biblio" href="#biblio-ldp" title="Linked Data Platform">[LDP]</a>.</p>
+   <p>The Service Collection Endpoint <strong>MAY</strong> allow <code>POST</code> requests to deploy new services. The supported content types <strong>MUST</strong> be
+advertised via the <code>Accept-Post</code> header defined in <a data-link-type="biblio" href="#biblio-ldp" title="Linked Data Platform">[LDP]</a>.</p>
+   <p class="issue" id="issue-48caa997"><a class="self-link" href="#issue-48caa997"></a> TODO maybe rewrite the below requirements so it is a bit more structured and easier to read?</p>
    <dl>
     <dt data-md><code>POST</code>
     <dd data-md>
@@ -4144,10 +4141,11 @@ This request <strong>MUST</strong>:</p>
        <p>be an RDF Document containing <code>aggr:Service</code> descriptions that:</p>
        <ul>
         <li data-md>
-         <p><strong>MUST</strong> declare an <code>fno:AppliedFunction</code> with <code>aggr:performs</code>that:</p>
+         <p><strong>MUST</strong> declare an <code>fno:AppliedFunction</code> with <code>aggr:performs</code> that:</p>
          <ul>
           <li data-md>
-           <p><strong>MUST</strong> apply a transformation from the server-level or instance-level transformation catalog.</p>
+           <p><strong>MUST</strong> apply a transformation from the server-level or this aggregator’s instance-level transformation
+catalog.</p>
           <li data-md>
            <p>bounds a value to <strong>AT LEAST</strong> each required parameter.</p>
           <li data-md>
@@ -4207,8 +4205,12 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
      <p>If the request is valid but the service fails to deploy the service, the server <strong>MUST</strong> respond with <code>500 Internal Server Error</code>.</p>
    </dl>
    <p>The following example requests a service that performs the <code>QueryView</code> transformation using the <code>QueryViewMapping</code>:</p>
-   <div class="example" id="example-277d1460">
-    <a class="self-link" href="#example-277d1460"></a>
+   <p class="issue" id="issue-7dffbf98"><a class="self-link" href="#issue-7dffbf98"></a> Put this in turtle and are the sources correct, shouldn’t they be a list of IRIs? Also the boundParameter shouldn’t
+be a string right?</p>
+   <p class="issue" id="issue-fb1ad222"><a class="self-link" href="#issue-fb1ad222"></a> The fno:AppliedFunction doesn’t need to be a blank node, we could use named node and rdfs:seeAlso to request an
+already existing applied function.</p>
+   <div class="example" id="example-5c2c4834">
+    <a class="self-link" href="#example-5c2c4834"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>http://aggregator.example.org/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
@@ -4241,13 +4243,13 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
                 <c- p>]</c->
             <c- p>}</c->
         <c- p>]</c->
-    <c- p>},</c->
+    <c- p>}</c->
 <c- p>}</c->
 </pre>
    </div>
    <h4 class="heading settled" data-level="9.1.2" id="composite-service-deployment"><span class="secno">9.1.2. </span><span class="content">Deploying a Composite Service</span><a class="self-link" href="#composite-service-deployment"></a></h4>
    <p>Deploying a service that performs a composite transformation <strong>MUST</strong> use the same request format as any other transformation service.</p>
-   <p>When all transformations referenced in the <code>fno:Composition</code> are included in the Transformation Catalog, the server <strong>MUST</strong>:</p>
+   <p>When all transformations referenced in the <code>fnoc:Composition</code> are included in the Transformation Catalog, the server <strong>MUST</strong>:</p>
    <ul>
     <li data-md>
      <p>Deploy a service for each individual transformation referenced in the composition
@@ -4282,7 +4284,7 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
      </ul>
     <dt data-md><code>GET</code>
     <dd data-md>
-     <p>Returns the service collection RDF Document (<a href="#service-discovery">§ 9.1.3 Service Discovery</a>).
+     <p>Returns the service collection RDF Document.
 This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection endpoint.</p>
      <p>The server <strong>MUST</strong> respond with:</p>
      <ul>
@@ -4350,10 +4352,10 @@ It is also used to delete the corresponding service.</p>
       <li data-md>
        <p>The request <strong>MUST</strong> be authorized with the <code>delete</code> scope on the service resources.</p>
       <li data-md>
-       <p>Upon successful processing, the server <strong>MUST</strong>:</p>
+       <p>Upon successful processing, the Aggregator <strong>MUST</strong>:</p>
        <ol>
         <li data-md>
-         <p>Stop and remove the running service from the aggregator.</p>
+         <p>Stop and remove the running service from the Aggregator.</p>
         <li data-md>
          <p>Update the Service Collection and its associated <code>ETag</code>.</p>
         <li data-md>
@@ -4362,10 +4364,10 @@ It is also used to delete the corresponding service.</p>
          <p>Respond with either <code>200 OK</code> or <code>204 No Content</code>.</p>
        </ol>
       <li data-md>
-       <p>If the service does not exist, the server <strong>SHOULD</strong> respond with <code>404 Not Found</code>.</p>
+       <p>If the service does not exist, the Aggregator <strong>SHOULD</strong> respond with <code>404 Not Found</code>.</p>
      </ul>
    </dl>
-   <p>If a composite service is being deleted the server <strong>MUST</strong> stop and remove every internal server if
+   <p>If a composite service is being deleted the Aggregator <strong>MUST</strong> stop and remove every internal transformation if
 not part of any other composite service.</p>
    <h4 class="heading settled" data-level="9.2.1" id="service-output"><span class="secno">9.2.1. </span><span class="content">Service Output Endpoint</span><a class="self-link" href="#service-output"></a></h4>
    <p>The Service Output Endpoint <strong>MUST</strong> be hosted at the same URL as the one referenced via <code>dcat:accessURL</code>
@@ -4393,7 +4395,7 @@ output distribution using <code>prov:wasDerivedFrom</code>.</p>
     <li data-md>
      <p>A separate endpoint for each distribution access URL <strong>MUST</strong> be created and registered as an UMA Resource.</p>
    </ul>
-   <p>Each retained distribution MUST be included in the corresponding Service Description.</p>
+   <p>Each retained distribution <strong>MUST</strong> be included in the corresponding Service Description.</p>
    <h3 class="heading settled" data-level="9.3" id="service-provenance"><span class="secno">9.3. </span><span class="content">Provenance Log</span><a class="self-link" href="#service-provenance"></a></h3>
    <p>This section describes how an Aggregator <strong>SHOULD</strong> store, expose, and maintain provenance metadata describing service executions.</p>
    <p>An Aggregator is not required to manage provenance data. However, if it does, it <strong>MUST</strong> conform to this specification.</p>
@@ -4451,6 +4453,7 @@ This prevents unbounded growth of the log over time and ensures manageable stora
 allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
    </ul>
    <h4 class="heading settled" data-level="9.3.2" id="periodic-vs-continous"><span class="secno">9.3.2. </span><span class="content">Periodic vs. Continous updates</span><a class="self-link" href="#periodic-vs-continous"></a></h4>
+   <p class="issue" id="issue-f565057c"><a class="self-link" href="#issue-f565057c"></a> TODO I think this section is not finished yet</p>
    <p><strong>Periodic Execution</strong></p>
    <p>When a service executes a transformation periodically (e.g., scheduled batch processing), a new resource <strong>MUST</strong>
 be created for each execution and added to the Provenance Log.</p>
@@ -4624,7 +4627,7 @@ Links an <code>aggr:ServiceCollection</code> to the <code>aggr:Service</code> in
 <strong>range:</strong> <code>aggr:Service</code></p>
    <h4 class="heading settled" data-level="10.2.7" id="aggr-has-mapping-property"><span class="secno">10.2.7. </span><span class="content">aggr:hasMapping</span><a class="self-link" href="#aggr-has-mapping-property"></a></h4>
    
-Links an <code>aggr:TransformationCollection</code> to the transformation mappings it advertises.
+Links an <code>aggr:TransformationCollection</code> to the mappings it advertises that link functions and implementations.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
@@ -4963,10 +4966,16 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
   </dl>
   <h2 class="heading no-num no-ref settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> Do we include <code>fno:Algorithm</code> in the spec? <a class="issue-return" href="#issue-4eed5834" title="Jump to section">↵</a></div>
-   <div class="issue"> support for <code>fno:Mapping</code> <a class="issue-return" href="#issue-92182166" title="Jump to section">↵</a></div>
+   <div class="issue"> duble check if all these namespaces are actually used in the spec, and remove those that are not. fnoi for example? <a class="issue-return" href="#issue-c7c8e470" title="Jump to section">↵</a></div>
+   <div class="issue"> TODO check all prefixes <a class="issue-return" href="#issue-c913e552" title="Jump to section">↵</a></div>
    <div class="issue"> include <code>fno:Algorithm</code> with <code>aggr:supportsAlgorithm</code> ? <a class="issue-return" href="#issue-fb4671f2" title="Jump to section">↵</a></div>
-   <div class="issue"> support for <code>fno:Mapping</code> <a class="issue-return" href="#issue-92182166①" title="Jump to section">↵</a></div>
+   <div class="issue"> support for <code>fno:Mapping</code> <a class="issue-return" href="#issue-92182166" title="Jump to section">↵</a></div>
    <div class="issue"> should we allow a name field for the aggregator during creation? <a class="issue-return" href="#issue-7876f244" title="Jump to section">↵</a></div>
+   <div class="issue"> TODO maybe rewrite the below requirements so it is a bit more structured and easier to read? <a class="issue-return" href="#issue-48caa997" title="Jump to section">↵</a></div>
+   <div class="issue"> Put this in turtle and are the sources correct, shouldn’t they be a list of IRIs? Also the boundParameter shouldn’t
+be a string right? <a class="issue-return" href="#issue-7dffbf98" title="Jump to section">↵</a></div>
+   <div class="issue"> The fno:AppliedFunction doesn’t need to be a blank node, we could use named node and rdfs:seeAlso to request an
+already existing applied function. <a class="issue-return" href="#issue-fb1ad222" title="Jump to section">↵</a></div>
    <div class="issue"> This makes more sense if we also include <code>fno:Algorithm</code> in the spec? <a class="issue-return" href="#issue-9417363e" title="Jump to section">↵</a></div>
+   <div class="issue"> TODO I think this section is not finished yet <a class="issue-return" href="#issue-f565057c" title="Jump to section">↵</a></div>
   </div>
