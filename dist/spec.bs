@@ -828,8 +828,8 @@ ISSUE: should we allow a name field for the aggregator during creation?
     - **registration_type: "provision"**
         - No additional members are required.
 
-        In this flow the Aggregator server MUST provision an identity for the Aggregator Instance that is
-        registered at the Identity Provider (IdP).
+        In this flow the Aggregator server MUST provision an new identity for the Aggregator Instance that is
+        registered at an Identity Provider (IdP).
 
     - **registration_type: "authorization_code"**
         The `authorization_code` flow uses two `POST` messages to the `registration_endpoint`. It is based on the OAuth 
