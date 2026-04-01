@@ -1,4 +1,4 @@
-Aggregator Management {#aggregator-management-overview}
+Aggregator Management {#aggregator-management}
 ==================================================================
 This section describes how Aggregator Instances are managed at the Aggregator Server level. Deployments define their own 
 authorization policy for these endpoints, but they MUST require authenticated requests so the Aggregator provider can 
@@ -6,7 +6,7 @@ authorize a user to manage their aggregators. The tokens used in these requests 
 the user and the client (Client ID Document) used to access the Aggregator Server. Deployments MAY expose the same 
 functionality at different paths, provided that the Aggregator Server Description advertises the authoritative URLs.
 
-Aggregator Management Endpoint {#aggregator-management}
+Aggregator Management Endpoint {#aggregator-management-endpoint}
 --------------------------------------------------------
 This section specifies the behavior of the `management_endpoint` advertised by the Aggregator Server Description 
 ([[#server-description]]). The endpoint supports creating Aggregator Instances, replacing the stored token set for an 

@@ -169,7 +169,6 @@ The following namespace prefixes are used throughout this specification and SHOU
 
 - `aggr:` → `https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#`
 - `dct:` → `http://purl.org/dc/terms/`
-- `freq:` → `http://purl.org/cld/freq/
 - `fno:` → `https://w3id.org/function/ontology#`
 - `fnoc:` → `https://fno.io/vocabulary/composition/0.1.0/`
 - `dcat:` → `https://www.w3.org/ns/dcat#`
@@ -521,14 +520,14 @@ type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@ty
 in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
 
 : **management_endpoint** (REQUIRED):
-:: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management]]); 
+:: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management-endpoint]]); 
     in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` 
     ([[#aggr-registration-endpoint-property]]).
 : **supported_management_flows** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported management flow tokens at `management_endpoint`; in 
     the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
     ([[#aggr-supported-registration-type-property]]) whose object is the corresponding flow class IRI.
-:: Each member MUST be one of the management flow tokens defined in [[#aggregator-management]]:
+:: Each member MUST be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
     - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]]))
     - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]]))
     - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]]))
@@ -767,7 +766,7 @@ The following example describes a pipeline that:
 
 
 
-Aggregator Management {#aggregator-management-overview}
+Aggregator Management {#aggregator-management}
 ==================================================================
 This section describes how Aggregator Instances are managed at the Aggregator Server level. Deployments define their own 
 authorization policy for these endpoints, but they MUST require authenticated requests so the Aggregator provider can 
@@ -775,7 +774,7 @@ authorize a user to manage their aggregators. The tokens used in these requests 
 the user and the client (Client ID Document) used to access the Aggregator Server. Deployments MAY expose the same 
 functionality at different paths, provided that the Aggregator Server Description advertises the authoritative URLs.
 
-Aggregator Management Endpoint {#aggregator-management}
+Aggregator Management Endpoint {#aggregator-management-endpoint}
 --------------------------------------------------------
 This section specifies the behavior of the `management_endpoint` advertised by the Aggregator Server Description 
 ([[#server-description]]). The endpoint supports creating Aggregator Instances, replacing the stored token set for an 
@@ -1432,7 +1431,7 @@ Upstream Access (Requesting) {#requesting-flow}
 **Normative requirements**
 
 The Aggregator Service MUST obtain upstream access tokens according to A4DS and UMA and if asked for a proof of identity MUST
-present the ID token (`IDP_aggregator_token`) obtained during aggregator management ([[#aggregator-management]]). When
+present the ID token (`IDP_aggregator_token`) obtained during aggregator creation ([[#aggregator-management]]). When
 the Aggregator Service intends to create derived resources, it MUST request a global scope of
 `urn:knows:uma:scopes:derivation-creation`. The Aggregator Service MAY include a transformation description claim token
 ([[!A4DS]]). The `claim_type` for this description MUST be

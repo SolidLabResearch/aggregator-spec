@@ -24,7 +24,7 @@ Upstream Access (Requesting) {#requesting-flow}
 **Normative requirements**
 
 The Aggregator Service MUST obtain upstream access tokens according to A4DS and UMA and if asked for a proof of identity MUST
-present the ID token (`IDP_aggregator_token`) obtained during aggregator management ([[#aggregator-management]]). When
+present the ID token (`IDP_aggregator_token`) obtained during aggregator creation ([[#aggregator-management]]). When
 the Aggregator Service intends to create derived resources, it MUST request a global scope of
 `urn:knows:uma:scopes:derivation-creation`. The Aggregator Service MAY include a transformation description claim token
 ([[!A4DS]]). The `claim_type` for this description MUST be
