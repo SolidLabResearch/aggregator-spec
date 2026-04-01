@@ -225,21 +225,12 @@ and its corresponding service description.
 
 One example of how this relationship **MAY** be used is in provenance tracking across Aggregator Services. 
 When an Aggregator Service dereferences a Service Output Endpoint and encounters the required `Link` header, it **MAY**
-use this information to establish a provenance relationship between distributions.
+use this information to establish a provenance relationship between datasets.
 
-More specifically, the Aggregator Service **MAY** link the consumed service output distribution to the newly generated 
-output distribution using `prov:wasDerivedFrom`.
+More specifically, the Aggregator Service **MAY** link the consumed service output dataset to the newly generated 
+output dataset using `prov:wasDerivedFrom`.
 
 This enables explicit provenance chains to be constructed across multiple Aggregator Services
-
-### Versioned History ### {#versioned-history}
-
-An Aggregator **MAY** retain previously generated distributions and keep them accessible.
-
-If an Aggregator chooses to maintain versioned distributions, it **MUST** comply with the following requirements:
-    - A separate endpoint for each distribution access URL **MUST** be created and registered as an UMA Resource.
-
-Each retained distribution **MUST** be included in the corresponding Service Description.
 
 Provenance Log {#service-provenance}
 ---------------------------------
@@ -248,15 +239,64 @@ This section describes how an Aggregator **SHOULD** store, expose, and maintain 
 
 An Aggregator is not required to manage provenance data. However, if it does, it **MUST** conform to this specification.
 
-A service’s Provenance Log is an RDF document that references all executions performed by the service using `aggr:hasExecution`.
-The execution resources:
+A service’s Provenance Log is an RDF document that references **AT LEAST** the most recent execution performed by the service using `aggr:hasExecution`.
+An execution resource:
     - **MAY** be embedded in the Provenance Log document, or
     - **MAY** be hosted on separate endpoints as individual RDF documents.
 
-The Provenance Log **SHOULD** be subject to a retention policy defining how long execution records remain included in the log. 
-This prevents unbounded growth of the log over time and ensures manageable storage and query performance.
+An Aggregator **MAY** retain provenance information across multiple executions. When provenance is retained, the resulting service dataset 
+**MUST** be modeled as a versioned dataset, following the versioning approach defined in [[!Data-Catalog]].
+
+In such cases:
+    - The Service Description **MUST** include a `dcat:Dataset` representing the logical (abstract) dataset.
+    - This dataset MUST reference its concrete versions using:
+        - `dcat:hasVersion` to list all known versions.
+        - `dcat:hasCurrentVersion` to indicate the most recent version.
+    - Each version **MUST** be represented as a separate `dcat:Dataset` resource.
+
+Additionally:
+    - All versioned dataset resources **MUST** be included in the Provenance Log.
+    - Versioned datasets **MAY%% include relevant version metadata (e.g., relationships to previous versions).
+    - Executions in the Provenance Log **MUST NOT** link to the abstract dataset. Instead, they **MUST** link to the specific 
+        dataset version they produced.
+
+This ensures that:
+    - The Service Description provides a stable, high-level view of the dataset.
+    - The Provenance Log captures the full evolution of the dataset over time.
 
 <div class="example">
+This example shows a Service Description for a service that updates its dataset on a daily basis. 
+The dataset is modeled as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
+```turtle
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix tfc: <http://aggregator.example.org/transformations#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:dataset
+    a dcat:Dataset
+    dcat:distribution :distribution ;
+    dcat:hasVersion <http://aggregator.example.org/agg1/svc1/provenance#dataset-0>,
+        <http://aggregator.example.org/agg1/svc1/provenance#dataset-1> ;
+    dcat:hasCurrentVersion <http://aggregator.example.org/agg1/svc1/provenance#dataset-1> ;
+    dct:accrualPeriodicity dct:daily ;
+    dct:modified "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:service
+    a aggr:Service ;
+    a dcat:DataService ;
+    a prov:SoftwareAgent ;
+    dcat:servesDataset :dataset .
+
+:distribution
+    a dcat:Distribution ;
+    dcat:accessURL <http://aggregator.example.org/agg1/svc1/output> ;
+    dcat:accessService :service .
+```
+</div>
+
+<div class="example">
+The Provenance Log below illustrates two executions of a service and how they relate to versioned dataset resources.
 ```turtle
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
@@ -265,9 +305,9 @@ This prevents unbounded growth of the log over time and ensures manageable stora
 
 <>
   a aggr:provenanceLog ;
-  aggr:hasExecution :execution .
+  aggr:hasExecution :execution-0, :execution-1 .
 
-:execution
+:execution-0
   a fno:Execution ;
   a prov:Activity ;
   fno:executes :query-view ;
@@ -276,7 +316,7 @@ This prevents unbounded growth of the log over time and ensures manageable stora
     "http://example.org/source1",
     "http://example.org/source2",
   ) ;
-  :result :distribution-1 ;
+  :result :dataset-1 ;
   prov:associatedWith :example-service ;
   prov:quallifiedAssociation [
     a prov:Association ;
@@ -284,11 +324,46 @@ This prevents unbounded growth of the log over time and ensures manageable stora
     prov:hadPlan :query-view .
   ] ;
   prov:used :query-view ;
-  prov:invalidated :distribution-0 ;
+  prov:startedAtTime "2025-01-01T12:00:00Z"^^xsd:dateTime ;
+  prov:endedAtTime "2025-01-01T12:02:00Z"^^xsd:dateTime .
+
+:execution-1
+  a fno:Execution ;
+  a prov:Activity ;
+  fno:executes :query-view ;
+  :query "SELECT * WHERE { ?s ?p ?o }" ;
+  :sources (
+    "http://example.org/source1",
+    "http://example.org/source2",
+  ) ;
+  :result :dataset-1 ;
+  prov:associatedWith :example-service ;
+  prov:quallifiedAssociation [
+    a prov:Association ;
+    prov:agent :example-service ;
+    prov:hadPlan :query-view .
+  ] ;
+  prov:used :query-view ;
+  prov:invalidated :dataset-0 ;
   prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
   prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+
+:dataset-0
+    a dcat:Dataset ;
+    prov:wasGeneratedBy :execution-0 ;
+    prov:wasInvalidatedBy :execution-1 ;
+    dcat:isVersionOf :dataset .
+
+:dataset-1
+    a dcat:Dataset ;
+    prov:wasGeneratedBy :execution-1 ;
+    dcat:isVersionOf :dataset ;
+    dcat:previousVersion :dataset-0 .
 ```
 </div>
+
+If the Provenance Log keeps a history log, it **SHOULD** be subject to a retention policy defining how long execution records remain included in the log. 
+This prevents unbounded growth of the log over time and ensures manageable storage and query performance.
 
 ### Log Publication ### {#provlog-publication}
 
@@ -297,22 +372,13 @@ Aggregator servers **MAY** publish a services' Provenance Log at any deployment-
     - The endpoint **SHOULD** support HTTP content negotiation, 
         allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
 
-### Periodic vs. Continous updates ### {#periodic-vs-continous}
-
-ISSUE: TODO I think this section is not finished yet
-
-**Periodic Execution**
-
-When a service executes a transformation periodically (e.g., scheduled batch processing), a new resource **MUST** 
-be created for each execution and added to the Provenance Log.
-
-Each resulting `dcat:Distribution` **SHOULD** reference the corresponding execution activity.
+### Continous updates ### {#continous}
 
 For services that continuously update their data (e.g., event-driven or streaming updates):
-  - The transformation activity **SHOULD NOT** include `prov:endedAtTime`
-  - All newly generated distributions **SHOULD** reference the same ongoing `prov:Activity`
+  - The execution **SHOULD NOT** include `prov:endedAtTime`
+  - All newly generated datasets **SHOULD** reference the same ongoing `prov:Activity`
 
-Creating a new `dcat:Distribution` for every minor change may lead to excessive provenance granularity and operational overhead. 
+Creating a new `dcat:Dataset` for every minor change may lead to excessive provenance granularity and operational overhead. 
 Therefore, an Aggregator Server **SHOULD** determine an appropriate provenance granularity level based on its use case, 
 performance constraints, and retention policy.
 
@@ -320,6 +386,6 @@ The server **MAY** choose, for example, to:
 
   - Apply time-based grouping (e.g., hourly or daily snapshots)
 
-  - Only materialize provenance for externally visible distributions (e.g., when used by another service provenance log)
+  - Only materialize provenance when used externally (e.g., when used by another service provenance log)
 
 The chosen strategy **SHOULD** be documented and consistently applied to ensure predictable provenance semantics.
