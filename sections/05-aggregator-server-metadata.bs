@@ -1,7 +1,7 @@
 Aggregator Server Metadata {#aggregator-server-metadata}
 ===============================================================
 
-This section describes the public endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except 
+This section describes the endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except 
 for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at 
 deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can 
 discover them.
@@ -9,11 +9,11 @@ discover them.
 Aggregator Server Description {#server-description}
 ---------------------------------------------------
 
-The Aggregator Server Description is a public document that allows clients to discover the Aggregator Server’s 
-endpoints and capabilities. This document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MUST 
-be accessible without authentication, and MUST provide at least the following information. Each JSON member is paired with 
-an RDF predicate from [[#vocabulary]] so the document can also be served as JSON-LD or other RDF formats using content 
-negotiation based on [[RFC9110]]:
+The Aggregator Server Description allows clients to discover the Aggregator Server’s endpoints and capabilities. This 
+document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MAY be accessible without 
+authentication or MAY require an OpenID Connect (OIDC) ID Token depending on deployment policy, and MUST provide at least 
+the following information. Each JSON member is paired with an RDF predicate from [[#vocabulary]] so the document can also 
+be served as JSON-LD or other RDF formats using content negotiation based on [[RFC9110]]:
 
 In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF 
 type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` 
@@ -45,7 +45,7 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
     the RDF representations, this member maps to the predicate `aggr:clientIdentifier` 
     ([[#aggr-client-id-property]]).
 : **transformation_catalog** (REQUIRED):
-:: The value is a string containing the absolute URL of the Public Transformation Catalog 
+:: The value is a string containing the absolute URL of the server-level Transformation Catalog 
     ([[#server-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
     `aggr:transformationCatalog` ([[#aggr-transformation-catalog-property]]).
 

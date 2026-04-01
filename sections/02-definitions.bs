@@ -11,7 +11,7 @@ Core Roles and Components {#definitions-core}
 - **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator 
     Services.
 
-- **Aggregator Server:** The server deployment that exposes public discovery metadata and a management API used to create 
+- **Aggregator Server:** The server deployment that exposes discovery metadata and a management API used to create 
     and manage Aggregator Instances.
 
 - **Aggregator Instance** (or “Aggregator”): A user- or tenant-scoped logical instance created via the management endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.

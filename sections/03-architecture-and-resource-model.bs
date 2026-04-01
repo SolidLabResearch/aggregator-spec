@@ -4,24 +4,6 @@ Architecture & Resource Model {#architecture-resource-model}
 This section describes the high-level architecture of an Aggregator deployment and the resource model exposed by this 
 specification. It connects the terminology in [[#definitions]] to the endpoint definitions in later sections.
 
-Actors and Responsibilities {#architecture-actors}
--------------------------------------------------
-
-The protocol distinguishes the following parties:
-
-- **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator 
-    Services.
-- **Aggregator Server:** The server that exposes public discovery information and a management API to create Aggregator 
-    Instances.
-- **Aggregator Instance:** A user-specific (or tenant-specific) logical instance created via management, exposing instance 
-    metadata and a management API.
-- **Aggregator Service:** A configured data-processing pipeline created and managed within an Aggregator Instance.
-- **Identity Provider (IdP):** Issues OIDC tokens used to prove identity as part of management and upstream authorization
-    flows.
-- **Authorization Server (AS):** A UMA-capable OAuth2 Authorization Server that issues RPTs for protected resources.
-- **Resource Server (RS):** An upstream resource server hosting data that the Aggregator Service may access on behalf of the 
-    user.
-
 Resource Types {#resource-types}
 -------------------------------
 
@@ -34,60 +16,53 @@ This specification defines HTTP resources at three levels:
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
     [[#service-discovery]] and service resource and provenance).
 
-Base URLs and Addressing {#base-urls-and-addressing}
----------------------------------------------------
-
-An implementation MUST define a stable base URL for:
-
-- the Aggregator Server (the `aggregator-server-url`); and
-- each Aggregator Instance (the `aggregator-url`).
+Addressing and URL Discovery {#base-urls-and-addressing}
+-------------------------------------------------------
 
 An implementation MAY use either of the following instance addressing patterns:
 
 - **Host-based instances:** `https://{instance-id}.aggregator.example/`
 - **Path-based instances:** `https://aggregator.example/{instance-id}/`
 
-Clients SHOULD treat server-provided URLs as authoritative and avoid constructing URLs by string concatenation. Unless a 
-path is explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use 
-different locations as long as the relevant metadata resources advertise the authoritative links.
-
-Discovery and Entry Points {#discovery-and-entry-points}
---------------------------------------------------------
-
-- The Aggregator Server exposes a public discovery resource at its server base URL (see [[#server-description]]).
-- Clients create (or obtain access to) an Aggregator Instance via the management API (see [[#aggregator-management]]).
-- The resulting instance base URL is the entry point for instance metadata (see [[#aggregator-metadata]]) 
-    and instance service management (see [[#aggregator-service-management]]).
+Clients SHOULD treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and SHOULD NOT
+construct resource URLs by string concatenation unless this specification explicitly fixes the path. Unless a path is
+explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use different
+locations as long as the relevant metadata resources advertise the authoritative links.
 
 Security Boundaries {#security-boundaries}
 -----------------------------------------
 
 All security requirements are defined in [[#aggregator-security-model]]. At a high level:
 
-- Public (no authentication): the server description (see [[#server-description]]) and the resources it links to, such as 
-    the server level transformation catalog and Client ID Document (see [[#server-level-transformation-catalog]] and 
-    [[#client-id-document]]).
-- Protected (OIDC): the management endpoint (see [[#aggregator-management]]), and possibly the server description and 
-    server level transformation catalog depending on the implementation.
-- Protected (UMA): the instance metadata resource (see [[#aggregator-metadata]]) and all resources under the service 
-    management API (see [[#aggregator-service-management]]).
+- **Server-level discovery resources:** deployments MAY expose the server description (see [[#server-description]]) and
+    the server-level transformation catalog (see [[#server-level-transformation-catalog]]) without authentication, or MAY
+    protect them using an OpenID Connect (OIDC) ID Token. The Client ID Document (see [[#client-id-document]]) is
+    typically accessible without authentication.
+- **Management endpoint:** deployments MAY protect the management endpoint (see [[#aggregator-management]]) using OIDC.
+    Some management flows explicitly allow unauthenticated requests; in those cases, the endpoint MAY accept requests
+    without authentication as defined in [[#aggregator-management]].
+- **Instance-level resources:** the Aggregator Description (see [[#aggregator-metadata]]) and all resources under the
+    service management API (see [[#aggregator-service-management]]) are protected resources governed by the
+    authentication and authorization mechanisms defined in [[#aggregator-security-model]].
 
-The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP tokens
-wherever possible to bind tokens to the client. Aggregator endpoints intended for browser-based clients MUST support CORS. 
-Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST answer `OPTIONS` 
-preflight requests and include appropriate `Access-Control-Allow-*` headers for the methods and headers used by this 
-specification (including `Authorization`, `Content-Type`, and `Accept`). Implementations MAY restrict allowed origins to 
-trusted client origins.
+The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPoP wherever 
+possible to sender-constrain access tokens to the client. Aggregator endpoints intended for browser-based clients MUST 
+support CORS. Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST 
+answer `OPTIONS` preflight requests and include appropriate `Access-Control-Allow-*` headers for the methods and headers 
+used by this specification. Implementations MAY restrict allowed origins to trusted client origins.
 
 Example URL Layout (Non-normative) {#example-url-layout}
 -------------------------------------------------------
 
-Given an Aggregator Server at `https://aggregator.example/` and a path-based Aggregator instance at 
-`https://aggregator.example/abc123/`:
+This non-normative example illustrates one possible URL layout for the Aggregator Server, an Aggregator Instance, and a
+Service in a path-based deployment:
 
 - Server description: `https://aggregator.example/`
-- Management: `https://aggregator.example/registration`
+- Aggregator Management: `https://aggregator.example/registration`
+- Client ID Document: `https://aggregator.example/client.jsonld`
 - Transformation catalog: `https://aggregator.example/transformations`
-- Instance description: `https://aggregator.example/abc123/`
-- Instance Transformation catalog: `https://aggregator.example/abc123/transformations`
-- Service collection: `https://aggregator.example/abc123/services`
+- Instance description: `https://aggregator.example/agg1/`
+- Instance Transformation catalog: `https://aggregator.example/agg1/transformations`
+- Service collection: `https://aggregator.example/agg1/services`
+- Service description: `https://aggregator.example/agg1/services/service1/`
+- Service output: `https://aggregator.example/agg1/services/service1/output`

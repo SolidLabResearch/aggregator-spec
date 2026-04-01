@@ -12,9 +12,9 @@ endpoint, a client creates (or manages) an Aggregator Instance ([[#aggregator-ma
 instance’s Aggregator Description to find the instance’s service collection and transformations endpoint 
 ([[#aggregator-description]] and [[#aggregator-service-management]]).
 
-All management operations are authenticated and authorized. This protocol integrates with OpenID Connect [[!OIDC-Core]] for 
-identity and uses UMA-style authorization [[!UMA]] for protected resources, scopes, and tickets as described in 
-[[#aggregator-security-model]].
+Management operations are authenticated and authorized unless a specific management flow explicitly allows unauthenticated
+requests. This protocol integrates with OpenID Connect [[!OIDC-Core]] for identity and uses UMA-style authorization [[!UMA]] 
+for protected resources, scopes, and tickets as described in [[#aggregator-security-model]].
 
 Servers MUST support JSON (`application/json`) where specified and MAY additionally provide semantically annotated RDF 
 representations (e.g., JSON-LD or Turtle) via HTTP content negotiation. The Aggregator vocabulary ([[#vocabulary]]) provides 

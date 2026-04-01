@@ -243,7 +243,7 @@ Links an `aggr:AggregatorServer` to its Client ID Document.
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
 ### aggr:transformationCatalog ### {#aggr-transformation-catalog-property}
-References the Aggregator Server’s public transformation catalog.
+References the Aggregator Server’s server-level transformation catalog.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:AggregatorServer`<br>

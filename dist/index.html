@@ -2061,12 +2061,10 @@ to protected derived resources.</p>
     <li>
      <a href="#architecture-resource-model"><span class="secno">3</span> <span class="content">Architecture &amp; Resource Model</span></a>
      <ol class="toc">
-      <li><a href="#architecture-actors"><span class="secno">3.1</span> <span class="content">Actors and Responsibilities</span></a>
-      <li><a href="#resource-types"><span class="secno">3.2</span> <span class="content">Resource Types</span></a>
-      <li><a href="#base-urls-and-addressing"><span class="secno">3.3</span> <span class="content">Base URLs and Addressing</span></a>
-      <li><a href="#discovery-and-entry-points"><span class="secno">3.4</span> <span class="content">Discovery and Entry Points</span></a>
-      <li><a href="#security-boundaries"><span class="secno">3.5</span> <span class="content">Security Boundaries</span></a>
-      <li><a href="#example-url-layout"><span class="secno">3.6</span> <span class="content">Example URL Layout (Non-normative)</span></a>
+      <li><a href="#resource-types"><span class="secno">3.1</span> <span class="content">Resource Types</span></a>
+      <li><a href="#base-urls-and-addressing"><span class="secno">3.2</span> <span class="content">Addressing and URL Discovery</span></a>
+      <li><a href="#security-boundaries"><span class="secno">3.3</span> <span class="content">Security Boundaries</span></a>
+      <li><a href="#example-url-layout"><span class="secno">3.4</span> <span class="content">Example URL Layout (Non-normative)</span></a>
      </ol>
     <li>
      <a href="#aggregator-data-model"><span class="secno">4</span> <span class="content">Aggregator Data Model</span></a>
@@ -2210,9 +2208,9 @@ management flows, and the server’s transformation catalog (<a href="#aggregato
 endpoint, a client creates (or manages) an Aggregator Instance (<a href="#aggregator-management">§ 6 Aggregator Management</a>) and then follows the 
 instance’s Aggregator Description to find the instance’s service collection and transformations endpoint 
 (<a href="#aggregator-description">§ 8.1 Aggregator Description</a> and <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
-   <p>All management operations are authenticated and authorized. This protocol integrates with OpenID Connect <a data-link-type="biblio" href="#biblio-oidc-core" title="OpenID Connect Core 1.0">[OIDC-Core]</a> for
-identity and uses UMA-style authorization <a data-link-type="biblio" href="#biblio-uma" title="User-Managed Access (UMA) 2.0">[UMA]</a> for protected resources, scopes, and tickets as described in 
-<a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
+   <p>Management operations are authenticated and authorized unless a specific management flow explicitly allows unauthenticated
+requests. This protocol integrates with OpenID Connect <a data-link-type="biblio" href="#biblio-oidc-core" title="OpenID Connect Core 1.0">[OIDC-Core]</a> for identity and uses UMA-style authorization <a data-link-type="biblio" href="#biblio-uma" title="User-Managed Access (UMA) 2.0">[UMA]</a> 
+for protected resources, scopes, and tickets as described in <a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
    <p>Servers MUST support JSON (<code>application/json</code>) where specified and MAY additionally provide semantically annotated RDF
 representations (e.g., JSON-LD or Turtle) via HTTP content negotiation. The Aggregator vocabulary (<a href="#vocabulary">§ 10 Vocabulary</a>) provides 
 stable IRIs for classes and predicates used throughout the specification.</p>
@@ -2226,7 +2224,7 @@ User-Managed Access (UMA) <a data-link-type="biblio" href="#biblio-uma" title="U
      <p><strong>Client:</strong> An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator
 Services.</p>
     <li data-md>
-     <p><strong>Aggregator Server:</strong> The server deployment that exposes public discovery metadata and a management API used to create
+     <p><strong>Aggregator Server:</strong> The server deployment that exposes discovery metadata and a management API used to create
 and manage Aggregator Instances.</p>
     <li data-md>
      <p><strong>Aggregator Instance</strong> (or “Aggregator”): A user- or tenant-scoped logical instance created via the management endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.</p>
@@ -2295,30 +2293,7 @@ Document specification <a data-link-type="biblio" href="#biblio-client-id" title
    <h2 class="heading settled" data-level="3" id="architecture-resource-model"><span class="secno">3. </span><span class="content">Architecture &amp; Resource Model</span><a class="self-link" href="#architecture-resource-model"></a></h2>
    <p>This section describes the high-level architecture of an Aggregator deployment and the resource model exposed by this
 specification. It connects the terminology in <a href="#definitions">§ 2 Definitions</a> to the endpoint definitions in later sections.</p>
-   <h3 class="heading settled" data-level="3.1" id="architecture-actors"><span class="secno">3.1. </span><span class="content">Actors and Responsibilities</span><a class="self-link" href="#architecture-actors"></a></h3>
-   <p>The protocol distinguishes the following parties:</p>
-   <ul>
-    <li data-md>
-     <p><strong>Client:</strong> An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator
-Services.</p>
-    <li data-md>
-     <p><strong>Aggregator Server:</strong> The server that exposes public discovery information and a management API to create Aggregator
-Instances.</p>
-    <li data-md>
-     <p><strong>Aggregator Instance:</strong> A user-specific (or tenant-specific) logical instance created via management, exposing instance
-metadata and a management API.</p>
-    <li data-md>
-     <p><strong>Aggregator Service:</strong> A configured data-processing pipeline created and managed within an Aggregator Instance.</p>
-    <li data-md>
-     <p><strong>Identity Provider (IdP):</strong> Issues OIDC tokens used to prove identity as part of management and upstream authorization
-flows.</p>
-    <li data-md>
-     <p><strong>Authorization Server (AS):</strong> A UMA-capable OAuth2 Authorization Server that issues RPTs for protected resources.</p>
-    <li data-md>
-     <p><strong>Resource Server (RS):</strong> An upstream resource server hosting data that the Aggregator Service may access on behalf of the
-user.</p>
-   </ul>
-   <h3 class="heading settled" data-level="3.2" id="resource-types"><span class="secno">3.2. </span><span class="content">Resource Types</span><a class="self-link" href="#resource-types"></a></h3>
+   <h3 class="heading settled" data-level="3.1" id="resource-types"><span class="secno">3.1. </span><span class="content">Resource Types</span><a class="self-link" href="#resource-types"></a></h3>
    <p>This specification defines HTTP resources at three levels:</p>
    <ul>
     <li data-md>
@@ -2331,14 +2306,7 @@ user.</p>
      <p><strong>Aggregator Service resources:</strong> a service collection and individual services managed under the instance (see
 <a href="#service-discovery">§ 9.1.3 Service Discovery</a> and service resource and provenance).</p>
    </ul>
-   <h3 class="heading settled" data-level="3.3" id="base-urls-and-addressing"><span class="secno">3.3. </span><span class="content">Base URLs and Addressing</span><a class="self-link" href="#base-urls-and-addressing"></a></h3>
-   <p>An implementation MUST define a stable base URL for:</p>
-   <ul>
-    <li data-md>
-     <p>the Aggregator Server (the <code>aggregator-server-url</code>); and</p>
-    <li data-md>
-     <p>each Aggregator Instance (the <code>aggregator-url</code>).</p>
-   </ul>
+   <h3 class="heading settled" data-level="3.2" id="base-urls-and-addressing"><span class="secno">3.2. </span><span class="content">Addressing and URL Discovery</span><a class="self-link" href="#base-urls-and-addressing"></a></h3>
    <p>An implementation MAY use either of the following instance addressing patterns:</p>
    <ul>
     <li data-md>
@@ -2346,55 +2314,54 @@ user.</p>
     <li data-md>
      <p><strong>Path-based instances:</strong> <code>https://aggregator.example/{instance-id}/</code></p>
    </ul>
-   <p>Clients SHOULD treat server-provided URLs as authoritative and avoid constructing URLs by string concatenation. Unless a
-path is explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use 
-different locations as long as the relevant metadata resources advertise the authoritative links.</p>
-   <h3 class="heading settled" data-level="3.4" id="discovery-and-entry-points"><span class="secno">3.4. </span><span class="content">Discovery and Entry Points</span><a class="self-link" href="#discovery-and-entry-points"></a></h3>
-   <ul>
-    <li data-md>
-     <p>The Aggregator Server exposes a public discovery resource at its server base URL (see <a href="#server-description">§ 5.1 Aggregator Server Description</a>).</p>
-    <li data-md>
-     <p>Clients create (or obtain access to) an Aggregator Instance via the management API (see <a href="#aggregator-management">§ 6 Aggregator Management</a>).</p>
-    <li data-md>
-     <p>The resulting instance base URL is the entry point for instance metadata (see <a href="#aggregator-metadata">§ 8 Aggregator Metadata</a>)
-and instance service management (see <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
-   </ul>
-   <h3 class="heading settled" data-level="3.5" id="security-boundaries"><span class="secno">3.5. </span><span class="content">Security Boundaries</span><a class="self-link" href="#security-boundaries"></a></h3>
+   <p>Clients SHOULD treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and SHOULD NOT
+construct resource URLs by string concatenation unless this specification explicitly fixes the path. Unless a path is
+explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use different
+locations as long as the relevant metadata resources advertise the authoritative links.</p>
+   <h3 class="heading settled" data-level="3.3" id="security-boundaries"><span class="secno">3.3. </span><span class="content">Security Boundaries</span><a class="self-link" href="#security-boundaries"></a></h3>
    <p>All security requirements are defined in <a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>. At a high level:</p>
    <ul>
     <li data-md>
-     <p>Public (no authentication): the server description (see <a href="#server-description">§ 5.1 Aggregator Server Description</a>) and the resources it links to, such as
-the server level transformation catalog and Client ID Document (see <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a> and 
-<a href="#client-id-document">§ 5.2 Client ID Document</a>).</p>
+     <p><strong>Server-level discovery resources:</strong> deployments MAY expose the server description (see <a href="#server-description">§ 5.1 Aggregator Server Description</a>) and
+the server-level transformation catalog (see <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>) without authentication, or MAY
+protect them using an OpenID Connect (OIDC) ID Token. The Client ID Document (see <a href="#client-id-document">§ 5.2 Client ID Document</a>) is
+typically accessible without authentication.</p>
     <li data-md>
-     <p>Protected (OIDC): the management endpoint (see <a href="#aggregator-management">§ 6 Aggregator Management</a>), and possibly the server description and
-server level transformation catalog depending on the implementation.</p>
+     <p><strong>Management endpoint:</strong> deployments MAY protect the management endpoint (see <a href="#aggregator-management">§ 6 Aggregator Management</a>) using OIDC.
+Some management flows explicitly allow unauthenticated requests; in those cases, the endpoint MAY accept requests
+without authentication as defined in <a href="#aggregator-management">§ 6 Aggregator Management</a>.</p>
     <li data-md>
-     <p>Protected (UMA): the instance metadata resource (see <a href="#aggregator-metadata">§ 8 Aggregator Metadata</a>) and all resources under the service
-management API (see <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
+     <p><strong>Instance-level resources:</strong> the Aggregator Description (see <a href="#aggregator-metadata">§ 8 Aggregator Metadata</a>) and all resources under the
+service management API (see <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>) are protected resources governed by the
+authentication and authorization mechanisms defined in <a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
    </ul>
-   <p>The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPOP tokens
-wherever possible to bind tokens to the client. Aggregator endpoints intended for browser-based clients MUST support CORS. 
-Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST answer <code>OPTIONS</code> 
-preflight requests and include appropriate <code>Access-Control-Allow-*</code> headers for the methods and headers used by this 
-specification (including <code>Authorization</code>, <code>Content-Type</code>, and <code>Accept</code>). Implementations MAY restrict allowed origins to 
-trusted client origins.</p>
-   <h3 class="heading settled" data-level="3.6" id="example-url-layout"><span class="secno">3.6. </span><span class="content">Example URL Layout (Non-normative)</span><a class="self-link" href="#example-url-layout"></a></h3>
-   <p>Given an Aggregator Server at <code>https://aggregator.example/</code> and a path-based Aggregator instance at
-<code>https://aggregator.example/abc123/</code>:</p>
+   <p>The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPoP wherever
+possible to sender-constrain access tokens to the client. Aggregator endpoints intended for browser-based clients MUST 
+support CORS. Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST 
+answer <code>OPTIONS</code> preflight requests and include appropriate <code>Access-Control-Allow-*</code> headers for the methods and headers 
+used by this specification. Implementations MAY restrict allowed origins to trusted client origins.</p>
+   <h3 class="heading settled" data-level="3.4" id="example-url-layout"><span class="secno">3.4. </span><span class="content">Example URL Layout (Non-normative)</span><a class="self-link" href="#example-url-layout"></a></h3>
+   <p>This non-normative example illustrates one possible URL layout for the Aggregator Server, an Aggregator Instance, and a
+Service in a path-based deployment:</p>
    <ul>
     <li data-md>
      <p>Server description: <code>https://aggregator.example/</code></p>
     <li data-md>
-     <p>Management: <code>https://aggregator.example/registration</code></p>
+     <p>Aggregator Management: <code>https://aggregator.example/registration</code></p>
+    <li data-md>
+     <p>Client ID Document: <code>https://aggregator.example/client.jsonld</code></p>
     <li data-md>
      <p>Transformation catalog: <code>https://aggregator.example/transformations</code></p>
     <li data-md>
-     <p>Instance description: <code>https://aggregator.example/abc123/</code></p>
+     <p>Instance description: <code>https://aggregator.example/agg1/</code></p>
     <li data-md>
-     <p>Instance Transformation catalog: <code>https://aggregator.example/abc123/transformations</code></p>
+     <p>Instance Transformation catalog: <code>https://aggregator.example/agg1/transformations</code></p>
     <li data-md>
-     <p>Service collection: <code>https://aggregator.example/abc123/services</code></p>
+     <p>Service collection: <code>https://aggregator.example/agg1/services</code></p>
+    <li data-md>
+     <p>Service description: <code>https://aggregator.example/agg1/services/service1/</code></p>
+    <li data-md>
+     <p>Service output: <code>https://aggregator.example/agg1/services/service1/output</code></p>
    </ul>
    <h2 class="heading settled" data-level="4" id="aggregator-data-model"><span class="secno">4. </span><span class="content">Aggregator Data Model</span><a class="self-link" href="#aggregator-data-model"></a></h2>
    <p>This section specifies the data model used to describe the aggregator components like running aggregator services
@@ -2652,16 +2619,16 @@ executing the transformation that results in new distributions for its datasets.
    <p>Further requirements for how an Aggregator Server <strong>MUST</strong> expose provenance information,
 if it chooses to provide it, are specified in <a href="#service-provenance">§ 9.3 Provenance Log</a>.</p>
    <h2 class="heading settled" data-level="5" id="aggregator-server-metadata"><span class="secno">5. </span><span class="content">Aggregator Server Metadata</span><a class="self-link" href="#aggregator-server-metadata"></a></h2>
-   <p>This section describes the public endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except
+   <p>This section describes the endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except
 for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at 
 deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can 
 discover them.</p>
    <h3 class="heading settled" data-level="5.1" id="server-description"><span class="secno">5.1. </span><span class="content">Aggregator Server Description</span><a class="self-link" href="#server-description"></a></h3>
-   <p>The Aggregator Server Description is a public document that allows clients to discover the Aggregator Server’s
-endpoints and capabilities. This document MUST be available at the server base URL (i.e., <code>{aggregator-server-url}/</code>), MUST 
-be accessible without authentication, and MUST provide at least the following information. Each JSON member is paired with 
-an RDF predicate from <a href="#vocabulary">§ 10 Vocabulary</a> so the document can also be served as JSON-LD or other RDF formats using content 
-negotiation based on <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>:</p>
+   <p>The Aggregator Server Description allows clients to discover the Aggregator Server’s endpoints and capabilities. This
+document MUST be available at the server base URL (i.e., <code>{aggregator-server-url}/</code>), MAY be accessible without 
+authentication or MAY require an OpenID Connect (OIDC) ID Token depending on deployment policy, and MUST provide at least 
+the following information. Each JSON member is paired with an RDF predicate from <a href="#vocabulary">§ 10 Vocabulary</a> so the document can also 
+be served as JSON-LD or other RDF formats using content negotiation based on <a data-link-type="biblio" href="#biblio-rfc9110" title="HTTP Semantics">[RFC9110]</a>:</p>
    <p>In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF
 type <code>aggr:AggregatorServer</code> (<a href="#aggr-aggregator-server-class">§ 10.1.4 aggr:AggregatorServer</a>) (e.g., via <code>@type</code> in JSON-LD or <code>a aggr:AggregatorServer</code> 
 in Turtle). Clients MAY rely on this type statement when consuming semantic representations.</p>
@@ -2704,7 +2671,7 @@ the RDF representations, this member maps to the predicate <code>aggr:clientIden
 (<a href="#aggr-client-id-property">§ 10.2.21 aggr:clientIdentifier</a>).</p>
     <dt data-md><strong>transformation_catalog</strong> (REQUIRED):
     <dd data-md>
-     <p>The value is a string containing the absolute URL of the Public Transformation Catalog
+     <p>The value is a string containing the absolute URL of the server-level Transformation Catalog
 (<a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>); in the RDF representations, this member maps to the predicate
 <code>aggr:transformationCatalog</code> (<a href="#aggr-transformation-catalog-property">§ 10.2.22 aggr:transformationCatalog</a>).</p>
    </dl>
@@ -4076,14 +4043,14 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
 </pre>
    </div>
    <h3 class="heading settled" data-level="8.2" id="instance-level-transformation-catalog"><span class="secno">8.2. </span><span class="content">Instance-level Transformations Catalog</span><a class="self-link" href="#instance-level-transformation-catalog"></a></h3>
-   <p>This endpoint is the instance-level extension on the public Transformation Catalog defined in
+   <p>This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
 <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
 advertise the correct location via its <code>transformation_catalog</code> field (<code>aggr:transformationsEndpoint</code>). It allows aggregator 
-implementations to expose user-specific transformations, or protected/private transformations. This endpoint, contrasting 
-to the public Transformation Catalog, MAY be user specific and MUST require authentication. The endpoint MAY return a 404 
-Not Found if no user-specific transformations are available. A client SHOULD combine the information from this endpoint 
-with the public Transformation Catalog to get a complete view on the available transformations. The endpoint follows the 
-same content negotiation rules and other requirements as the public Transformation Catalog. The Aggregator MAY put the
+implementations to expose user-specific transformations, or protected/private transformations. This endpoint MAY be user 
+specific and MUST require authentication. The endpoint MAY return a 404 Not Found if no user-specific transformations are 
+available. A client SHOULD combine the information from this endpoint with the server-level Transformation Catalog to get a 
+complete view on the available transformations. The endpoint follows the same content negotiation rules and other 
+requirements as the server-level Transformation Catalog. The Aggregator MAY put the
 transformations in different resources so different policies can be added, and link to them using <code>rdfs:seeAlso</code>. The
 endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.</p>
    <h2 class="heading settled" data-level="9" id="aggregator-service-management"><span class="secno">9. </span><span class="content">Aggregator Service Management</span><a class="self-link" href="#aggregator-service-management"></a></h2>
@@ -4109,7 +4076,7 @@ endpoint MUST at least return a list of transformations that are directly availa
    <h3 class="heading settled" data-level="9.1" id="service-collection-endpoint"><span class="secno">9.1. </span><span class="content">Service Collection Endpoint</span><a class="self-link" href="#service-collection-endpoint"></a></h3>
    <p>The location of this endpoint <strong>MUST</strong> be advertised in the Aggregator Description (<a href="#aggregator-description">§ 8.1 Aggregator Description</a>)
 using the <code>service_collection_endpoint</code> field. Clients <strong>MUST</strong> treat the advertised URL as authoritative and <strong>MUST NOT</strong>
-assume a fixed path. Examples shown in this section use <code>http://aggregator.example.org/agg1/services</code> for illustation purposes only.</p>
+assume a fixed path. Examples shown in this section use <code>https://aggregator.example/agg1/services</code> for illustration purposes only.</p>
    <p>The Aggregator <strong>MUST</strong> register this endpoint as an UMA resource with the Authorization Server and <strong>MUST</strong> advertise
 atleast the <code>read</code> and <code>create</code> scopes.</p>
    <h4 class="heading settled" data-level="9.1.1" id="service-deployment"><span class="secno">9.1.1. </span><span class="content">Deploying a Service</span><a class="self-link" href="#service-deployment"></a></h4>
@@ -4190,11 +4157,11 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
      <p>If the request is valid but the service fails to deploy the service, the server <strong>MUST</strong> respond with <code>500 Internal Server Error</code>.</p>
    </dl>
    <p>The following example requests a service that performs the <code>QueryView</code> transformation using the <code>QueryViewMapping</code>:</p>
-   <div class="example" id="example-8e96686d">
-    <a class="self-link" href="#example-8e96686d"></a>
+   <div class="example" id="example-24b0507f">
+    <a class="self-link" href="#example-24b0507f"></a>
 
-<pre class="highlight language-http"><c- nf>POST</c-> <c- nn>http://aggregator.example.org/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
-<c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example.org</c->
+<pre class="highlight language-http"><c- nf>POST</c-> <c- nn>https://aggregator.example/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
+<c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example</c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>text/turtle</c->
 
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -4202,20 +4169,20 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
 <c- k>@prefix</c-> <c- nn>fnoc:</c-> <c- g>&lt;https://w3id.org/function/vocabulary/composition#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>prov:</c-> <c- g>&lt;http://www.w3.org/ns/prov#></c-> <c- p>.</c->
 
-<c- g>&lt;http://aggregator.example.org/agg1/query-service></c->
+<c- g>&lt;https://aggregator.example/agg1/services/service1/></c->
   <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>Service</c-> <c- p>;</c->
   <c- nn>aggr</c-><c- p>:</c-><c- f>performs</c-> <c- p>[</c->
     <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>AppliedFunction</c-> <c- p>;</c->
-    <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c-> <c- g>&lt;http://aggregator.example.org/transformations#QueryView></c-> <c- p>;</c->
+    <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c-> <c- g>&lt;https://aggregator.example/transformations#QueryView></c-> <c- p>;</c->
     <c- nn>fnoc</c-><c- p>:</c-><c- f>parameterBindings</c-> <c- p>(</c->
       <c- p>[</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c->
-          <c- g>&lt;http://aggregator.example.org/transformations#Query></c-> <c- p>;</c->
+          <c- g>&lt;https://aggregator.example/transformations#Query></c-> <c- p>;</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c->
       <c- p>]</c->
       <c- p>[</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c->
-          <c- g>&lt;http://aggregator.example.org/transformations#Sources></c-> <c- p>;</c->
+          <c- g>&lt;https://aggregator.example/transformations#Sources></c-> <c- p>;</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- p>(</c->
           <c- s>"http://example.com/source1"</c->
           <c- s>"http://example.com/source2"</c->
@@ -4223,7 +4190,7 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
       <c- p>]</c->
     <c- p>)</c->
   <c- p>]</c-> <c- p>;</c->
-  <c- nn>aggr</c-><c- p>:</c-><c- f>usesMapping</c-> <c- g>&lt;http://aggregator.example.org/transformations#QueryViewMapping></c-> <c- p>.</c->
+  <c- nn>aggr</c-><c- p>:</c-><c- f>usesMapping</c-> <c- g>&lt;https://aggregator.example/transformations#QueryViewMapping></c-> <c- p>.</c->
 </pre>
    </div>
    <h4 class="heading settled" data-level="9.1.2" id="composite-service-deployment"><span class="secno">9.1.2. </span><span class="content">Deploying a Composite Service</span><a class="self-link" href="#composite-service-deployment"></a></h4>
@@ -4276,17 +4243,17 @@ This request <strong>MUST</strong> be authorized with a <code>read</code> scope 
      </ul>
    </dl>
    <p>The <code>aggr:ServiceCollection</code> <strong>MUST</strong> reference all Service Description Endpoints using <code>aggr:hasService</code>.</p>
-   <div class="example" id="example-0f49362b">
-    <a class="self-link" href="#example-0f49362b"></a>
+   <div class="example" id="example-25a8045a">
+    <a class="self-link" href="#example-25a8045a"></a>
 
-<pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.com/agg1/services#></c->
+<pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;https://aggregator.example/agg1/services#></c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 
 <c- g>&lt;></c->
     <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>ServiceCollection</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasService</c->
-        <c- g>&lt;http://aggregator.example.com/agg1/my-query-view-service></c-><c- p>,</c->
-        <c- g>&lt;http://aggregator.example.com/agg1/my-rml-service></c-> <c- p>.</c->
+        <c- g>&lt;https://aggregator.example/agg1/services/service1/></c-><c- p>,</c->
+        <c- g>&lt;https://aggregator.example/agg1/services/service2/></c-> <c- p>.</c->
 </pre>
    </div>
    <h3 class="heading settled" data-level="9.2" id="service-endpoint"><span class="secno">9.2. </span><span class="content">Service Description Endpoint</span><a class="self-link" href="#service-endpoint"></a></h3>
@@ -4332,10 +4299,10 @@ not part of any other composite service.</p>
 in the corresponding service <code>dcat:Distribution</code>.</p>
    <p>When a client requests a Service Output Endpoint, the server <strong>MUST</strong> include an HTTP <code>Link</code> header (<a data-link-type="biblio" href="#biblio-web-linking" title="Web Linking">[Web-Linking]</a>) pointing to the
 Service Description Endpoint using <code>aggr:fromService</code>.</p>
-   <div class="example" id="example-15451c5d">
-    <a class="self-link" href="#example-15451c5d"></a>
+   <div class="example" id="example-06e8ae77">
+    <a class="self-link" href="#example-06e8ae77"></a>
 
-<pre class="highlight language-http">Link: &lt;http://aggregator.example.com/agg1/example-service>; rel="https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#fromService"
+<pre class="highlight language-http">Link: &lt;https://aggregator.example/agg1/services/service1/>; rel="https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#fromService"
 </pre>
    </div>
    <p>This requirement establishes an explicit and machine-readable relationship between a service output
@@ -4391,8 +4358,8 @@ dataset version they produced.</p>
     <li data-md>
      <p>The Provenance Log captures the full evolution of the dataset over time.</p>
    </ul>
-   <div class="example" id="example-13c5bee4">
-    <a class="self-link" href="#example-13c5bee4"></a>
+   <div class="example" id="example-611229f3">
+    <a class="self-link" href="#example-611229f3"></a>
 This example shows a Service Description for a service that updates its dataset on a daily basis. 
 The dataset is modeled as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
 
@@ -4405,9 +4372,9 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
 <c- p>:</c-><c- f>dataset</c->
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>distribution</c-> <c- p>:</c-><c- f>distribution</c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>hasVersion</c-> <c- g>&lt;http://aggregator.example.org/agg1/svc1/provenance#dataset-0></c-><c- p>,</c->
-        <c- g>&lt;http://aggregator.example.org/agg1/svc1/provenance#dataset-1></c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>hasCurrentVersion</c-> <c- g>&lt;http://aggregator.example.org/agg1/svc1/provenance#dataset-1></c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>hasVersion</c-> <c- g>&lt;https://aggregator.example/agg1/services/service1/provenance#dataset-0></c-><c- p>,</c->
+        <c- g>&lt;https://aggregator.example/agg1/services/service1/provenance#dataset-1></c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>hasCurrentVersion</c-> <c- g>&lt;https://aggregator.example/agg1/services/service1/provenance#dataset-1></c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>accrualPeriodicity</c-> <c- nn>freq</c-><c- p>:</c-><c- f>daily</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>modified</c-> <c- s>"2025-01-02T12:02:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>.</c->
 
@@ -4419,12 +4386,12 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
 
 <c- p>:</c-><c- f>distribution</c->
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Distribution</c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;http://aggregator.example.org/agg1/svc1/output></c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;https://aggregator.example/agg1/services/service1/output></c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- p>:</c-><c- f>service</c-> <c- p>.</c->
 </pre>
    </div>
-   <div class="example" id="example-898be4b9">
-    <a class="self-link" href="#example-898be4b9"></a>
+   <div class="example" id="example-33a6f81f">
+    <a class="self-link" href="#example-33a6f81f"></a>
 The Provenance Log below illustrates two executions of a service and how they relate to versioned dataset resources.
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -4447,10 +4414,10 @@ The Provenance Log below illustrates two executions of a service and how they re
     <c- s>"http://example.org/source2"</c-><c- p>,</c->
   <c- p>)</c-> <c- p>;</c->
   <c- p>:</c-><c- f>result</c-> <c- p>:</c-><c- f>dataset-1</c-> <c- p>;</c->
-  <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- p>:</c-><c- f>example-service</c-> <c- p>;</c->
+  <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>quallifiedAssociation</c-> <c- p>[</c->
     <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Association</c-> <c- p>;</c->
-    <c- nn>prov</c-><c- p>:</c-><c- f>agent</c-> <c- p>:</c-><c- f>example-service</c-> <c- p>;</c->
+    <c- nn>prov</c-><c- p>:</c-><c- f>agent</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
     <c- nn>prov</c-><c- p>:</c-><c- f>hadPlan</c-> <c- p>:</c-><c- f>query-view</c-> <c- p>.</c->
   <c- p>]</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>used</c-> <c- p>:</c-><c- f>query-view</c-> <c- p>;</c->
@@ -4467,10 +4434,10 @@ The Provenance Log below illustrates two executions of a service and how they re
     <c- s>"http://example.org/source2"</c-><c- p>,</c->
   <c- p>)</c-> <c- p>;</c->
   <c- p>:</c-><c- f>result</c-> <c- p>:</c-><c- f>dataset-1</c-> <c- p>;</c->
-  <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- p>:</c-><c- f>example-service</c-> <c- p>;</c->
+  <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>quallifiedAssociation</c-> <c- p>[</c->
     <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Association</c-> <c- p>;</c->
-    <c- nn>prov</c-><c- p>:</c-><c- f>agent</c-> <c- p>:</c-><c- f>example-service</c-> <c- p>;</c->
+    <c- nn>prov</c-><c- p>:</c-><c- f>agent</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
     <c- nn>prov</c-><c- p>:</c-><c- f>hadPlan</c-> <c- p>:</c-><c- f>query-view</c-> <c- p>.</c->
   <c- p>]</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>used</c-> <c- p>:</c-><c- f>query-view</c-> <c- p>;</c->
@@ -4793,7 +4760,7 @@ Links an <code>aggr:AggregatorServer</code> to its Client ID Document.
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
    <h4 class="heading settled" data-level="10.2.22" id="aggr-transformation-catalog-property"><span class="secno">10.2.22. </span><span class="content">aggr:transformationCatalog</span><a class="self-link" href="#aggr-transformation-catalog-property"></a></h4>
    
-References the Aggregator Server’s public transformation catalog.
+References the Aggregator Server’s server-level transformation catalog.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>

@@ -20,7 +20,7 @@ Service Collection Endpoint {#service-collection-endpoint}
 
 The location of this endpoint **MUST** be advertised in the Aggregator Description ([[#aggregator-description]]) 
 using the `service_collection_endpoint` field. Clients **MUST** treat the advertised URL as authoritative and **MUST NOT**
-assume a fixed path. Examples shown in this section use `http://aggregator.example.org/agg1/services` for illustation purposes only.
+assume a fixed path. Examples shown in this section use `https://aggregator.example/agg1/services` for illustration purposes only.
 
 The Aggregator **MUST** register this endpoint as an UMA resource with the Authorization Server and **MUST** advertise 
 atleast the `read` and `create` scopes.
@@ -72,8 +72,8 @@ The following example requests a service that performs the `QueryView` transform
 
 <div class="example">
 ```http
-POST http://aggregator.example.org/agg1/services HTTP/1.1
-Host: aggregator.example.org
+POST https://aggregator.example/agg1/services HTTP/1.1
+Host: aggregator.example
 Content-Type: text/turtle
 
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
@@ -81,20 +81,20 @@ Content-Type: text/turtle
 @prefix fnoc: <https://w3id.org/function/vocabulary/composition#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 
-<http://aggregator.example.org/agg1/query-service>
+<https://aggregator.example/agg1/services/service1/>
   a aggr:Service ;
   aggr:performs [
     a fno:AppliedFunction ;
-    fnoc:applies <http://aggregator.example.org/transformations#QueryView> ;
+    fnoc:applies <https://aggregator.example/transformations#QueryView> ;
     fnoc:parameterBindings (
       [
         fnoc:boundParameter
-          <http://aggregator.example.org/transformations#Query> ;
+          <https://aggregator.example/transformations#Query> ;
         fnoc:boundToTerm "SELECT * WHERE { ?s ?p ?o }"
       ]
       [
         fnoc:boundParameter
-          <http://aggregator.example.org/transformations#Sources> ;
+          <https://aggregator.example/transformations#Sources> ;
         fnoc:boundToTerm (
           "http://example.com/source1"
           "http://example.com/source2"
@@ -102,7 +102,7 @@ Content-Type: text/turtle
       ]
     )
   ] ;
-  aggr:usesMapping <http://aggregator.example.org/transformations#QueryViewMapping> .
+  aggr:usesMapping <https://aggregator.example/transformations#QueryViewMapping> .
 ```
 </div>
 
@@ -146,14 +146,14 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
 
 <div class="example">
 ```turtle
-@base <http://aggregator.example.com/agg1/services#>
+@base <https://aggregator.example/agg1/services#>
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 
 <>
     a aggr:ServiceCollection ;
     aggr:hasService
-        <http://aggregator.example.com/agg1/my-query-view-service>,
-        <http://aggregator.example.com/agg1/my-rml-service> .
+        <https://aggregator.example/agg1/services/service1/>,
+        <https://aggregator.example/agg1/services/service2/> .
 ```
 </div>
 
@@ -193,7 +193,7 @@ Service Description Endpoint using `aggr:fromService`.
 
 <div class="example">
 ```http
-Link: <http://aggregator.example.com/agg1/example-service>; rel="https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#fromService"
+Link: <https://aggregator.example/agg1/services/service1/>; rel="https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#fromService"
 ```
 </div>
 
@@ -254,9 +254,9 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
 :dataset
     a dcat:Dataset
     dcat:distribution :distribution ;
-    dcat:hasVersion <http://aggregator.example.org/agg1/svc1/provenance#dataset-0>,
-        <http://aggregator.example.org/agg1/svc1/provenance#dataset-1> ;
-    dcat:hasCurrentVersion <http://aggregator.example.org/agg1/svc1/provenance#dataset-1> ;
+    dcat:hasVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-0>,
+        <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
+    dcat:hasCurrentVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
     dct:accrualPeriodicity freq:daily ;
     dct:modified "2025-01-02T12:02:00Z"^^xsd:dateTime .
 
@@ -268,7 +268,7 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
 
 :distribution
     a dcat:Distribution ;
-    dcat:accessURL <http://aggregator.example.org/agg1/svc1/output> ;
+    dcat:accessURL <https://aggregator.example/agg1/services/service1/output> ;
     dcat:accessService :service .
 ```
 </div>
@@ -296,10 +296,10 @@ The Provenance Log below illustrates two executions of a service and how they re
     "http://example.org/source2",
   ) ;
   :result :dataset-1 ;
-  prov:associatedWith :example-service ;
+  prov:associatedWith :service ;
   prov:quallifiedAssociation [
     a prov:Association ;
-    prov:agent :example-service ;
+    prov:agent :service ;
     prov:hadPlan :query-view .
   ] ;
   prov:used :query-view ;
@@ -316,10 +316,10 @@ The Provenance Log below illustrates two executions of a service and how they re
     "http://example.org/source2",
   ) ;
   :result :dataset-1 ;
-  prov:associatedWith :example-service ;
+  prov:associatedWith :service ;
   prov:quallifiedAssociation [
     a prov:Association ;
-    prov:agent :example-service ;
+    prov:agent :service ;
     prov:hadPlan :query-view .
   ] ;
   prov:used :query-view ;
