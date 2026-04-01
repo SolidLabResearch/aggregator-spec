@@ -136,19 +136,33 @@ Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 **domain:** `aggr:ServiceCollection`<br>
 **range:** `aggr:Service`
 
+### aggr:hasTransformation ### {#aggr-has-transformation-property}
+Links an `aggr:TransformationCollection` to a transformation it supports.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:TransformationCollection`<br>
+**range:** [fno:Function](https://w3id.org/function/spec/#Function)
+
+### aggr:hasAlgorithm ### {#aggr-has-algorithm-property}
+Links an `aggr:TransformationCollection` to an algorithm it supports.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:TransformationCollection`<br>
+**range:** [fno:Algorithm](https://w3id.org/function/spec/#Algorithm)
+
 ### aggr:hasMapping ### {#aggr-has-mapping-property}
-Links an `aggr:TransformationCollection` to the mappings it advertises that link functions and implementations.
+Links an `aggr:TransformationCollection` to a mapping it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:TransformationCollection`<br>
 **range:** [fno:Mapping](https://w3id.org/function/spec/#Mapping)
 
 ### aggr:hasComposition ### {#aggr-has-composition-property}
-Links an `aggr:TransformationCollection` to the transformation mappings it advertises.
+Links an `aggr:TransformationCollection` to a composition it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:TransformationCollection`<br>
-**range:** [fno:Function](https://w3id.org/function/spec/#Function)
+**range:** [fno:Function](https://w3id.org/function/spec/#Composition)
 
 ### aggr:status ### {#aggr-status-property}
 Provides the lifecycle phase of an `aggr:Service` (values such as `running`, `stopped`, or `error`).
@@ -165,19 +179,19 @@ Provides a human-readable explanation of the current `aggr:Service` status (for 
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
 ### aggr:performs ### {#aggr-performs-property}
-Provides the applied transformation an `aggr:Service` performs.
+Provides the transformation an `aggr:Service` performs.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Function),
   [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
 
-### aggr:implements ### {#aggr-implements-property}
-Provides the service implementation an `aggr:Service` uses to execute its transformation.
+### aggr:usesMapping ### {#aggr-uses-mapping-property}
+Provides the mapping used by an `aggr:Service` to perform its transformation.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
-**range:** `aggr:ServiceImplementation`
+**range:** [fno:Mapping](https://w3id.org/function/spec/#Mapping)
 
 ### aggr:provenanceLog ### {#aggr-provlog-property}
 Provides the endpoint to `aggr:Service` its provenance log.
@@ -186,8 +200,8 @@ Provides the endpoint to `aggr:Service` its provenance log.
 **domain:** `aggr:Service`<br>
 **range:** `aggr:ProvenanceLog`
 
-### aggr:execution ### {#aggr-execution-property}
-Links an `aggr:ProvenanceLog` to the executions it includes.
+### aggr:hasActivity ### {#aggr-has-activity-property}
+Links an `aggr:ProvenanceLog` to an activity it includes.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:ProvenanceLog`<br>

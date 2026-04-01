@@ -173,7 +173,7 @@ The following namespace prefixes are used throughout this specification and SHOU
 - `fno:` → `https://w3id.org/function/ontology#`
 - `fnoc:` → `https://fno.io/vocabulary/composition/0.1.0/`
 - `dcat:` → `https://www.w3.org/ns/dcat#`
-- `dcterms:` → `http://purl.org/dc/terms/`
+- `dct:` → `http://purl.org/dc/terms/`
 - `owl:` → `http://www.w3.org/2002/07/owl#`
 - `rdf:` → `http://www.w3.org/1999/02/22-rdf-syntax-ns#`
 - `rdfs:` → `http://www.w3.org/2000/01/rdf-schema#`
@@ -369,8 +369,7 @@ A deployed aggregator service is responsible for (periodically) performing a tra
 
 The service:
   - **MUST** serve one dataset for each transformation output
-  - **MUST** link to an `fno:AppliedFunction` using `aggr:performs`
-  - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`
+  - **MUST** link to either an `fno:Function` or `fno:AppliedFunction` using `aggr:performs`
   - **SHOULD** declare operational metadata such as status and creation time
   - **SHOULD** indicate it adheres to the aggregator protocol using `dct:conformsTo`
 
@@ -448,7 +447,6 @@ This section specifies how provenance information of running Aggregator Services
 executing the transformation that results in new distributions for its datasets. This execution **MUST** be typed as:
   - an `fno:Execution` detailing:
     - what transformation it executed with `fno:executes`
-    - what `fno:Mapping` was used with `fno:uses` if it uses a mapping. 
     - what input values were used with the parameter predicates. 
     - the newly created distribution with the output predicate.
   - a `prov:Activity` that:
@@ -615,10 +613,6 @@ Server-level Transformation Catalog {#server-level-transformation-catalog}
 The Transformation Catalog is an RDF document describing all aggregator transformation functions ([[#aggregator-data-model]])
 
 that can be deployed as services by the aggregator server.
-
-ISSUE: include `fno:Algorithm` with `aggr:supportsAlgorithm` ?
-
-ISSUE: support for `fno:Mapping`
 
 The `aggr:TransformationCatalog`:
   - **MUST** reference all supported transformations using `aggr:hasTransformation`.
@@ -2048,7 +2042,6 @@ ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured 
                     catalog.
                 - bounds a value to **AT LEAST** each required parameter.
                 - **MUST** be a blank node. Any IRI value **MUST** be ignored.
-            - **MAY** declare an `fno:Mapping` with `aggr:usesMapping`.
             - **MAY** specify a URI indicating the requested service endpoint location.
                 - The Aggregator **MAY** ignore the requested URI and assign its own.
                 - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.

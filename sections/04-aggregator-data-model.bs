@@ -17,12 +17,12 @@ Each transformation **MUST** be described as an `fno:Function` that **MAY** desc
   - **MAY** use `dct:format` to describe input/output format
   - **MAY** use `dct:conformsTo` to signify the input/output must follow a specification/protocol
 
-ISSUE: TODO check all prefixes
-
 <div class="example">
 ```turtle
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 :sparql-query-view
     a                   fno:Function ;
@@ -87,7 +87,7 @@ A deployed aggregator service is responsible for (periodically) performing a tra
 
 The service:
   - **MUST** serve one dataset for each transformation output
-  - **MUST** link to an `fno:AppliedFunction` using `aggr:performs`
+  - **MUST** link to either an `fno:Function` or `fno:AppliedFunction` using `aggr:performs`
   - **MAY** link to an `fno:Mapping` using `aggr:usesMapping`
   - **SHOULD** declare operational metadata such as status and creation time
   - **SHOULD** indicate it adheres to the aggregator protocol using `dct:conformsTo`
@@ -109,9 +109,11 @@ This ensures that consumers can reliably discover and access the latest availabl
 ```turtle
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix dcat: <https://www.w3.org/ns/dcat#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :rml-mapper-service
     a aggr:Service ;
@@ -180,9 +182,9 @@ The resulting dataset:
 
 <div class="example">
 ```turtle
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix tfc: <http://aggregator.example.org/transformations#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :execution-1

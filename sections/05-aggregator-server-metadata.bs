@@ -110,25 +110,21 @@ Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------
 
 The Transformation Catalog is an RDF document describing all aggregator transformation functions ([[#aggregator-data-model]])
-
 that can be deployed as services by the aggregator server.
-
-ISSUE: include `fno:Algorithm` with `aggr:supportsAlgorithm` ?
-
-ISSUE: support for `fno:Mapping`
 
 The `aggr:TransformationCatalog`:
   - **MUST** reference all supported transformations using `aggr:hasTransformation`.
+  - **MAY** reference a supported algorithm using `aggr:hasAlgorithm`.
+  - **MAY** reference a supported mapping using `aggr:hasMapping`.
   - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
-  - **SHOULD** reference all supported mappings using `aggr:hasMapping`.
 
 <div class="example">
 ```turtle
 @base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -201,11 +197,9 @@ The following example describes a pipeline that:
 ```turtle
 @base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix dcat: <https://www.w3.org/ns/dcat#>
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#>
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
 
 <> a aggr:TransformationCollection ;
     dct:title "Aggregator transformations" ;

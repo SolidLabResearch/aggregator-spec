@@ -41,8 +41,7 @@ ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured 
                 - **MUST** apply a transformation from the server-level or this aggregator's instance-level transformation
                     catalog.
                 - bounds a value to **AT LEAST** each required parameter.
-                - **MUST** be a blank node. Any IRI value **MUST** be ignored.
-            - **MAY** declare an `fno:Mapping` with `aggr:usesMapping`.
+            - **MAY** specify a implementation to use with `aggr:usesMapping`.
             - **MAY** specify a URI indicating the requested service endpoint location.
                 - The Aggregator **MAY** ignore the requested URI and assign its own.
                 - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
@@ -52,9 +51,9 @@ ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured 
         1. Add an applied function to the instance-level Transformation Catalog if no applied function
             with the same parameter bindings exists.
         2. Deploy the new service on the aggregator and expose its Service Description Endpoint [[#service-endpoint]].
-            - `aggr:performs` **MUST** link to the fno:AppliedFunction IRI that either:
-                - Was created as part of the service deployment request, or
-                - Already existed in the instance-level Transformation Catalog.
+            - `aggr:performs` **MUST** link either:
+                - the `fno:AppliedFunction`
+                - the `fno:Function`
         3. Update the Service Collection and its associated `ETag`.
         4. Register the service endpoint as a UMA resource at the Authorization Server, 
             advertising at least the `read` and `delete` scopes.
@@ -71,47 +70,39 @@ ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured 
     
 The following example requests a service that performs the `QueryView` transformation using the `QueryViewMapping`:
 
-ISSUE: Put this in turtle and are the sources correct, shouldn't they be a list of IRIs? Also the boundParameter shouldn't
-be a string right?
-
-ISSUE: The fno:AppliedFunction doesn't need to be a blank node, we could use named node and rdfs:seeAlso to request an
-already existing applied function.
-
 <div class="example">
 ```http
 POST http://aggregator.example.org/agg1/services HTTP/1.1
 Host: aggregator.example.org
-Content-Type: application/ld+json
+Content-Type: text/turtle
 
-{
-    "@context": {
-        "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
-        "fno": "https://w3id.org/function/ontology#",
-        "fnoc": "https://w3id.org/function/vocabulary/composition#",
-        "prov": "http://www.w3.org/ns/prov#"
-    },
-    "@type": "aggr:Service",
-    "@id": "http://aggregator.example.org/agg1/query-service",
-    "aggr:performs": {
-        "@type": "fno:AppliedFunction",
-        "fnoc:applies": {
-            "@id": "http://aggregator.example.org/transformations#QueryView"
-        },
-        "fnoc:parameterBindings": [
-            {
-                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Query",
-                "fnoc:boundToTerm": "SELECT * WHERE { ?s ?p ?o }"
-            },
-            {
-                "fnoc:boundParameter": "http://aggregator.example.org/transformations#Sources",
-                "fnoc:boundToTerm": [
-                    "http://example.com/source1",
-                    "http://example.com/source2"
-                ]
-            }
-        ]
-    }
-}
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoc: <https://w3id.org/function/vocabulary/composition#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<http://aggregator.example.org/agg1/query-service>
+  a aggr:Service ;
+  aggr:performs [
+    a fno:AppliedFunction ;
+    fnoc:applies <http://aggregator.example.org/transformations#QueryView> ;
+    fnoc:parameterBindings (
+      [
+        fnoc:boundParameter
+          <http://aggregator.example.org/transformations#Query> ;
+        fnoc:boundToTerm "SELECT * WHERE { ?s ?p ?o }"
+      ]
+      [
+        fnoc:boundParameter
+          <http://aggregator.example.org/transformations#Sources> ;
+        fnoc:boundToTerm (
+          "http://example.com/source1"
+          "http://example.com/source2"
+        )
+      ]
+    )
+  ] ;
+  aggr:usesMapping <http://aggregator.example.org/transformations#QueryViewMapping> .
 ```
 </div>
 
@@ -157,9 +148,6 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
 ```turtle
 @base <http://aggregator.example.com/agg1/services#>
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix fno: <https://w3id.org/function/ontology#> .
-@prefix tfc: <http://aggregator.example.org/transformations#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <>
     a aggr:ServiceCollection ;
@@ -168,17 +156,6 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
         <http://aggregator.example.com/agg1/my-rml-service> .
 ```
 </div>
-
-ISSUE: This makes more sense if we also include `fno:Algorithm` in the spec?
-
-Services that perform the same transformation with identical input bindings **MUST** be linked to the same `fno:AppliedFunction`.
-
-This achieves the following:
-    - Clients can discover services based on:
-        - The transformation being executed
-        - The bound input parameters
-        - The mapping being used
-    - Different implementations remain distinguishable while sharing the same semantic operation.
 
 Service Description Endpoint {#service-endpoint}
 ------------------------------------------------
@@ -268,9 +245,10 @@ This ensures that:
 This example shows a Service Description for a service that updates its dataset on a daily basis. 
 The dataset is modeled as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
 ```turtle
+@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix freq: <http://purl.org/cld/freq/> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix fno: <https://w3id.org/function/ontology#> .
-@prefix tfc: <http://aggregator.example.org/transformations#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :dataset
@@ -279,7 +257,7 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
     dcat:hasVersion <http://aggregator.example.org/agg1/svc1/provenance#dataset-0>,
         <http://aggregator.example.org/agg1/svc1/provenance#dataset-1> ;
     dcat:hasCurrentVersion <http://aggregator.example.org/agg1/svc1/provenance#dataset-1> ;
-    dct:accrualPeriodicity dct:daily ;
+    dct:accrualPeriodicity freq:daily ;
     dct:modified "2025-01-02T12:02:00Z"^^xsd:dateTime .
 
 :service
@@ -300,12 +278,13 @@ The Provenance Log below illustrates two executions of a service and how they re
 ```turtle
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix tfc: <http://aggregator.example.org/transformations#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcat: <https://www.w3.org/ns/dcat#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <>
   a aggr:provenanceLog ;
-  aggr:hasExecution :execution-0, :execution-1 .
+  aggr:hasActivity :execution-0, :execution-1 .
 
 :execution-0
   a fno:Execution ;
