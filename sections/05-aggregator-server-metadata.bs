@@ -19,21 +19,21 @@ In semantically annotated representations, the Aggregator Server Description MUS
 type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` 
 in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
 
-: **registration_endpoint** (REQUIRED):
-:: The value is a string containing the absolute URL of the Aggregator Registration Endpoint ([[#aggregator-registration]]); 
+: **management_endpoint** (REQUIRED):
+:: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management]]); 
     in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` 
     ([[#aggr-registration-endpoint-property]]).
-: **supported_registration_types** (REQUIRED):
-:: The value is a JSON array of strings identifying the supported registration flow tokens at `registration_endpoint`; in 
+: **supported_management_flows** (REQUIRED):
+:: The value is a JSON array of strings identifying the supported management flow tokens at `management_endpoint`; in 
     the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
     ([[#aggr-supported-registration-type-property]]) whose object is the corresponding flow class IRI.
-:: Each member MUST be one of the registration flow tokens defined in [[#aggregator-registration]]:
+:: Each member MUST be one of the management flow tokens defined in [[#aggregator-management]]:
     - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]]))
     - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]]))
     - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]]))
-: **registration_request_formats_supported** (REQUIRED):
+: **supported_management_request_formats** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported request formats for the
-    `registration_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
+    `management_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
     an `aggr:registrationRequestFormatSupported` triple ([[#aggr-registration-request-format-supported-property]]).
     Servers MUST include either `application/json` or `application/x-www-form-urlencoded` or both.
 : **version** (REQUIRED):
@@ -56,12 +56,12 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
     "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
     "provision": "aggr:ProvisionFlow",
     "authorization_code": "aggr:AuthorizationCodeFlow",
-    "registration_request_formats_supported": "aggr:registrationRequestFormatSupported",
-    "registration_endpoint": {
+    "supported_management_request_formats": "aggr:registrationRequestFormatSupported",
+    "management_endpoint": {
       "@id": "aggr:registrationEndpoint",
       "@type": "@id"
     },
-    "supported_registration_types": {
+    "supported_management_flows": {
       "@id": "aggr:supportedRegistrationType",
       "@type": "@vocab"
     },
@@ -79,12 +79,12 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
   },
   "@id": "https://aggregator.example/",
   "@type": "aggr:AggregatorServer",
-  "registration_endpoint": "https://aggregator.example/registration",
-  "supported_registration_types": [
+  "management_endpoint": "https://aggregator.example/registration",
+  "supported_management_flows": [
     "provision",
     "authorization_code"
   ],
-  "registration_request_formats_supported": [
+  "supported_management_request_formats": [
     "application/json",
     "application/x-www-form-urlencoded"
   ],

@@ -6,9 +6,9 @@ Instances and configure Aggregator Services that execute data transformations. T
 using the Function Ontology (FnO) [[!FNO]]; a service is configured by referencing a transformation (a `fno:Execution`) and 
 providing its parameters, after which the client can retrieve the derived result from the output defined by that function.
 
-Clients start from the Aggregator Server Description at the server base URL to discover the registration endpoint, supported 
-registration flows, and the server’s transformation catalog ([[#aggregator-server-metadata]]). Using the registration 
-endpoint, a client creates (or manages) an Aggregator Instance ([[#aggregator-registration]]) and then follows the 
+Clients start from the Aggregator Server Description at the server base URL to discover the management endpoint, supported
+management flows, and the server’s transformation catalog ([[#aggregator-server-metadata]]). Using the management
+endpoint, a client creates (or manages) an Aggregator Instance ([[#aggregator-management]]) and then follows the 
 instance’s Aggregator Description to find the instance’s service collection and transformations endpoint 
 ([[#aggregator-description]] and [[#aggregator-service-management]]).
 

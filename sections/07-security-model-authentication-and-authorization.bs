@@ -24,7 +24,7 @@ Upstream Access (Requesting) {#requesting-flow}
 **Normative requirements**
 
 The Aggregator Service MUST obtain upstream access tokens according to A4DS and UMA and if asked for a proof of identity MUST
-present the ID token (`IDP_aggregator_token`) obtained during aggregator registration ([[#aggregator-registration]]). When
+present the ID token (`IDP_aggregator_token`) obtained during aggregator management ([[#aggregator-management]]). When
 the Aggregator Service intends to create derived resources, it MUST request a global scope of
 `urn:knows:uma:scopes:derivation-creation`. The Aggregator Service MAY include a transformation description claim token
 ([[!A4DS]]). The `claim_type` for this description MUST be
@@ -121,7 +121,7 @@ WWW-Authenticate: UMA as_uri="https://upstream.as.example.org/uma", ticket="tkt1
 
 **2. Requesting an access token from the UAS**
 
-Using the `IDP_aggregator_token` obtained during registration, the Aggregator Service requests an access token from the 
+Using the `IDP_aggregator_token` obtained during aggregator management, the Aggregator Service requests an access token from the 
 UAS. The request includes the derivation-creation scope to notify the UAS we want to create a derived resource. If the
 Aggregator has previously obtained a `derivation_resource_id` for the same upstream resource and transformation, it should
 include it as a hint using the `derivation_resource_id` parameter.
@@ -284,7 +284,7 @@ Client Access (Serving) {#serving-flow}
 
 **Normative requirements**
 
-All endpoints on the Aggregator SHOULD be protected using an AS defined during registration. The Aggregator acts as a 
+All endpoints on the Aggregator SHOULD be protected using an AS defined during management. The Aggregator acts as a 
 Resource Server in UMA terminology. So when the Aggregator receives a request without a valid Requesting Party Token (RPT) 
 from a client it MUST request a UMA ticket from its Authorization Server and return `401 Unauthorized` with that ticket.
 RPT validity is discussed in more detail in [[!A4DS]]. If this is a request for a derived resource, the Aggregator Service 

@@ -2088,9 +2088,9 @@ to protected derived resources.</p>
        </ol>
      </ol>
     <li>
-     <a href="#aggregator-management"><span class="secno">6</span> <span class="content">Aggregator Management</span></a>
+     <a href="#aggregator-management-overview"><span class="secno">6</span> <span class="content">Aggregator Management</span></a>
      <ol class="toc">
-      <li><a href="#aggregator-registration"><span class="secno">6.1</span> <span class="content">Aggregator Registration Endpoint</span></a>
+      <li><a href="#aggregator-management"><span class="secno">6.1</span> <span class="content">Aggregator Management Endpoint</span></a>
       <li>
        <a href="#aggregator-management-flows"><span class="secno">6.2</span> <span class="content">Aggregator Management Flows (Non-normative)</span></a>
        <ol class="toc">
@@ -2203,9 +2203,9 @@ to protected derived resources.</p>
 Instances and configure Aggregator Services that execute data transformations. Transformations are described and discovered 
 using the Function Ontology (FnO) <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>; a service is configured by referencing a transformation (a <code>fno:Execution</code>) and 
 providing its parameters, after which the client can retrieve the derived result from the output defined by that function.</p>
-   <p>Clients start from the Aggregator Server Description at the server base URL to discover the registration endpoint, supported
-registration flows, and the server’s transformation catalog (<a href="#aggregator-server-metadata">§ 5 Aggregator Server Metadata</a>). Using the registration 
-endpoint, a client creates (or manages) an Aggregator Instance (<a href="#aggregator-registration">§ 6.1 Aggregator Registration Endpoint</a>) and then follows the 
+   <p>Clients start from the Aggregator Server Description at the server base URL to discover the management endpoint, supported
+management flows, and the server’s transformation catalog (<a href="#aggregator-server-metadata">§ 5 Aggregator Server Metadata</a>). Using the management
+endpoint, a client creates (or manages) an Aggregator Instance (<a href="#aggregator-management">§ 6.1 Aggregator Management Endpoint</a>) and then follows the 
 instance’s Aggregator Description to find the instance’s service collection and transformations endpoint 
 (<a href="#aggregator-description">§ 8.1 Aggregator Description</a> and <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
    <p>All management operations are authenticated and authorized. This protocol integrates with OpenID Connect <a data-link-type="biblio" href="#biblio-oidc-core" title="OpenID Connect Core 1.0">[OIDC-Core]</a> for
@@ -2224,11 +2224,10 @@ User-Managed Access (UMA) <a data-link-type="biblio" href="#biblio-uma" title="U
      <p><strong>Client:</strong> An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator
 Services.</p>
     <li data-md>
-     <p><strong>Aggregator Server:</strong> The server deployment that exposes public discovery metadata and a registration API used to create
+     <p><strong>Aggregator Server:</strong> The server deployment that exposes public discovery metadata and a management API used to create
 and manage Aggregator Instances.</p>
     <li data-md>
-     <p><strong>Aggregator Instance</strong> (or “Aggregator”): A user- or tenant-scoped logical instance created via the registration
-endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.</p>
+     <p><strong>Aggregator Instance</strong> (or “Aggregator”): A user- or tenant-scoped logical instance created via the management endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.</p>
     <li data-md>
      <p><strong>Aggregator Service</strong> (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service is
 represented as an FnO Implementation (<code>fno:Implementation</code>) that implements an FnO AppliedFunction (<code>fno:AppliedFunction</code>), 
@@ -2247,7 +2246,7 @@ deployment.</p>
 discover the user’s IdP (defined in <a data-link-type="biblio" href="#biblio-webid-profile" title="WebID Profile">[WEBID-PROFILE]</a>).</p>
     <li data-md>
      <p><strong>Identity Provider (IdP):</strong> An OpenID Connect Provider following the OIDC spec (<a data-link-type="biblio" href="#biblio-oidc-core" title="OpenID Connect Core 1.0">[OIDC-Core]</a>) that authenticates a user
-based on it’s userID and issues ID tokens used by this protocol during registration and authorization workflows.</p>
+based on it’s userID and issues ID tokens used by this protocol during management and authorization workflows.</p>
     <li data-md>
      <p><strong>Authorization Server (AS):</strong> An OAuth 2.0 Authorization Server that supports UMA as defined in (<a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>) and issues
 Requesting Party Tokens (RPTs) for protected resources.</p>
@@ -2262,7 +2261,7 @@ without sufficient authorization. The client presents the ticket to the Authoriz
 permissions/scopes for a protected resource (see <a data-link-type="biblio" href="#biblio-rfc6750" title="The OAuth 2.0 Authorization Framework: Bearer Token Usage">[RFC6750]</a>).</p>
     <li data-md>
      <p><strong>ID Token:</strong> An OpenID Connect ID token representing the authenticated user (and, depending on the deployment,
-the client). The protocol uses ID tokens as claim tokens in UMA exchanges and during registration flows as described in 
+the client). The protocol uses ID tokens as claim tokens in UMA exchanges and during management flows as described in 
 <a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
     <li data-md>
      <p><strong>Client ID Document:</strong> A dereferenceable client metadata document that follows the OAuth Client ID Metadata
@@ -2306,15 +2305,15 @@ specification. It connects the terminology in <a href="#definitions">§ 2 Defi
      <p><strong>Client:</strong> An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator
 Services.</p>
     <li data-md>
-     <p><strong>Aggregator Server:</strong> The server that exposes public discovery information and a registration API to create Aggregator
+     <p><strong>Aggregator Server:</strong> The server that exposes public discovery information and a management API to create Aggregator
 Instances.</p>
     <li data-md>
-     <p><strong>Aggregator Instance:</strong> A user-specific (or tenant-specific) logical instance created via registration, exposing instance
+     <p><strong>Aggregator Instance:</strong> A user-specific (or tenant-specific) logical instance created via management, exposing instance
 metadata and a management API.</p>
     <li data-md>
      <p><strong>Aggregator Service:</strong> A configured data-processing pipeline created and managed within an Aggregator Instance.</p>
     <li data-md>
-     <p><strong>Identity Provider (IdP):</strong> Issues OIDC tokens used to prove identity as part of registration and upstream authorization
+     <p><strong>Identity Provider (IdP):</strong> Issues OIDC tokens used to prove identity as part of management and upstream authorization
 flows.</p>
     <li data-md>
      <p><strong>Authorization Server (AS):</strong> A UMA-capable OAuth2 Authorization Server that issues RPTs for protected resources.</p>
@@ -2326,8 +2325,8 @@ user.</p>
    <p>This specification defines HTTP resources at three levels:</p>
    <ul>
     <li data-md>
-     <p><strong>Aggregator Server resources:</strong> metadata and instance registration (see <a href="#aggregator-server-metadata">§ 5 Aggregator Server Metadata</a> and
-<a href="#aggregator-registration">§ 6.1 Aggregator Registration Endpoint</a>).</p>
+     <p><strong>Aggregator Server resources:</strong> metadata and instance management (see <a href="#aggregator-server-metadata">§ 5 Aggregator Server Metadata</a> and
+<a href="#aggregator-management">§ 6.1 Aggregator Management Endpoint</a>).</p>
     <li data-md>
      <p><strong>Aggregator Instance resources:</strong> instance metadata and service management (see <a href="#aggregator-metadata">§ 8 Aggregator Metadata</a> and
 <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
@@ -2358,7 +2357,7 @@ different locations as long as the relevant metadata resources advertise the aut
     <li data-md>
      <p>The Aggregator Server exposes a public discovery resource at its server base URL (see <a href="#server-description">§ 5.1 Aggregator Server Description</a>).</p>
     <li data-md>
-     <p>Clients create (or obtain access to) an Aggregator Instance via the registration API (see <a href="#aggregator-registration">§ 6.1 Aggregator Registration Endpoint</a>).</p>
+     <p>Clients create (or obtain access to) an Aggregator Instance via the management API (see <a href="#aggregator-management">§ 6.1 Aggregator Management Endpoint</a>).</p>
     <li data-md>
      <p>The resulting instance base URL is the entry point for instance metadata (see <a href="#aggregator-metadata">§ 8 Aggregator Metadata</a>)
 and instance service management (see <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
@@ -2371,7 +2370,7 @@ and instance service management (see <a href="#aggregator-service-management">§
 the server level transformation catalog and Client ID Document (see <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a> and 
 <a href="#client-id-document">§ 5.2 Client ID Document</a>).</p>
     <li data-md>
-     <p>Protected (OIDC): the registration endpoint (see <a href="#aggregator-registration">§ 6.1 Aggregator Registration Endpoint</a>), and possibly the server description and
+     <p>Protected (OIDC): the management endpoint (see <a href="#aggregator-management">§ 6.1 Aggregator Management Endpoint</a>), and possibly the server description and
 server level transformation catalog depending on the implementation.</p>
     <li data-md>
      <p>Protected (UMA): the instance metadata resource (see <a href="#aggregator-metadata">§ 8 Aggregator Metadata</a>) and all resources under the service
@@ -2390,7 +2389,7 @@ trusted client origins.</p>
     <li data-md>
      <p>Server description: <code>https://aggregator.example/</code></p>
     <li data-md>
-     <p>Registration: <code>https://aggregator.example/registration</code></p>
+     <p>Management: <code>https://aggregator.example/registration</code></p>
     <li data-md>
      <p>Transformation catalog: <code>https://aggregator.example/transformations</code></p>
     <li data-md>
@@ -2667,18 +2666,18 @@ negotiation based on <a data-link-type="biblio" href="#biblio-rfc9110" title="HT
 type <code>aggr:AggregatorServer</code> (<a href="#aggr-aggregator-server-class">§ 10.1.4 aggr:AggregatorServer</a>) (e.g., via <code>@type</code> in JSON-LD or <code>a aggr:AggregatorServer</code> 
 in Turtle). Clients MAY rely on this type statement when consuming semantic representations.</p>
    <dl>
-    <dt data-md><strong>registration_endpoint</strong> (REQUIRED):
+    <dt data-md><strong>management_endpoint</strong> (REQUIRED):
     <dd data-md>
-     <p>The value is a string containing the absolute URL of the Aggregator Registration Endpoint (<a href="#aggregator-registration">§ 6.1 Aggregator Registration Endpoint</a>);
+     <p>The value is a string containing the absolute URL of the Aggregator Management Endpoint (<a href="#aggregator-management">§ 6.1 Aggregator Management Endpoint</a>);
 in the RDF representations, this member maps to the predicate <code>aggr:registrationEndpoint</code> 
 (<a href="#aggr-registration-endpoint-property">§ 10.2.15 aggr:registrationEndpoint</a>).</p>
-    <dt data-md><strong>supported_registration_types</strong> (REQUIRED):
+    <dt data-md><strong>supported_management_flows</strong> (REQUIRED):
     <dd data-md>
-     <p>The value is a JSON array of strings identifying the supported registration flow tokens at <code>registration_endpoint</code>; in
+     <p>The value is a JSON array of strings identifying the supported management flow tokens at <code>management_endpoint</code>; in
 the RDF representations, each entry maps to an <code>aggr:supportedRegistrationType</code> triple 
 (<a href="#aggr-supported-registration-type-property">§ 10.2.16 aggr:supportedRegistrationType</a>) whose object is the corresponding flow class IRI.</p>
     <dd data-md>
-     <p>Each member MUST be one of the registration flow tokens defined in <a href="#aggregator-registration">§ 6.1 Aggregator Registration Endpoint</a>:</p>
+     <p>Each member MUST be one of the management flow tokens defined in <a href="#aggregator-management">§ 6.1 Aggregator Management Endpoint</a>:</p>
      <ul>
       <li data-md>
        <p><code>"provision"</code> (RDF class <code>aggr:ProvisionFlow</code> (<a href="#aggr-provision-flow-class">§ 10.1.10 aggr:ProvisionFlow</a>))</p>
@@ -2687,10 +2686,10 @@ the RDF representations, each entry maps to an <code>aggr:supportedRegistrationT
       <li data-md>
        <p><code>"device_code"</code> (RDF class <code>aggr:DeviceCodeFlow</code> (<a href="#aggr-device-code-flow-class">§ 10.1.12 aggr:DeviceCodeFlow</a>))</p>
      </ul>
-    <dt data-md><strong>registration_request_formats_supported</strong> (REQUIRED):
+    <dt data-md><strong>supported_management_request_formats</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a JSON array of strings identifying the supported request formats for the
-<code>registration_endpoint</code>. Each entry MUST be a media type; in RDF representations, each entry maps to
+<code>management_endpoint</code>. Each entry MUST be a media type; in RDF representations, each entry maps to
 an <code>aggr:registrationRequestFormatSupported</code> triple (<a href="#aggr-registration-request-format-supported-property">§ 10.2.17 aggr:registrationRequestFormatSupported</a>).
 Servers MUST include either <code>application/json</code> or <code>application/x-www-form-urlencoded</code> or both.</p>
     <dt data-md><strong>version</strong> (REQUIRED):
@@ -2709,20 +2708,20 @@ the RDF representations, this member maps to the predicate <code>aggr:clientIden
 (<a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>); in the RDF representations, this member maps to the predicate
 <code>aggr:transformationCatalog</code> (<a href="#aggr-transformation-catalog-property">§ 10.2.20 aggr:transformationCatalog</a>).</p>
    </dl>
-   <div class="example" id="example-e438b438">
-    <a class="self-link" href="#example-e438b438"></a>
+   <div class="example" id="example-4be5e58d">
+    <a class="self-link" href="#example-4be5e58d"></a>
 
 <pre class="highlight language-json"><c- p>{</c->
   <c- f>"@context"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"aggr"</c-><c- p>:</c-> <c- u>"https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#"</c-><c- p>,</c->
     <c- f>"provision"</c-><c- p>:</c-> <c- u>"aggr:ProvisionFlow"</c-><c- p>,</c->
     <c- f>"authorization_code"</c-><c- p>:</c-> <c- u>"aggr:AuthorizationCodeFlow"</c-><c- p>,</c->
-    <c- f>"registration_request_formats_supported"</c-><c- p>:</c-> <c- u>"aggr:registrationRequestFormatSupported"</c-><c- p>,</c->
-    <c- f>"registration_endpoint"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"supported_management_request_formats"</c-><c- p>:</c-> <c- u>"aggr:registrationRequestFormatSupported"</c-><c- p>,</c->
+    <c- f>"management_endpoint"</c-><c- p>:</c-> <c- p>{</c->
       <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:registrationEndpoint"</c-><c- p>,</c->
       <c- f>"@type"</c-><c- p>:</c-> <c- u>"@id"</c->
     <c- p>},</c->
-    <c- f>"supported_registration_types"</c-><c- p>:</c-> <c- p>{</c->
+    <c- f>"supported_management_flows"</c-><c- p>:</c-> <c- p>{</c->
       <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:supportedRegistrationType"</c-><c- p>,</c->
       <c- f>"@type"</c-><c- p>:</c-> <c- u>"@vocab"</c->
     <c- p>},</c->
@@ -2740,12 +2739,12 @@ the RDF representations, this member maps to the predicate <code>aggr:clientIden
   <c- p>},</c->
   <c- f>"@id"</c-><c- p>:</c-> <c- u>"https://aggregator.example/"</c-><c- p>,</c->
   <c- f>"@type"</c-><c- p>:</c-> <c- u>"aggr:AggregatorServer"</c-><c- p>,</c->
-  <c- f>"registration_endpoint"</c-><c- p>:</c-> <c- u>"https://aggregator.example/registration"</c-><c- p>,</c->
-  <c- f>"supported_registration_types"</c-><c- p>:</c-> <c- p>[</c->
+  <c- f>"management_endpoint"</c-><c- p>:</c-> <c- u>"https://aggregator.example/registration"</c-><c- p>,</c->
+  <c- f>"supported_management_flows"</c-><c- p>:</c-> <c- p>[</c->
     <c- u>"provision"</c-><c- p>,</c->
     <c- u>"authorization_code"</c->
   <c- p>],</c->
-  <c- f>"registration_request_formats_supported"</c-><c- p>:</c-> <c- p>[</c->
+  <c- f>"supported_management_request_formats"</c-><c- p>:</c-> <c- p>[</c->
     <c- u>"application/json"</c-><c- p>,</c->
     <c- u>"application/x-www-form-urlencoded"</c->
   <c- p>],</c->
@@ -2925,7 +2924,7 @@ while internally orchestrating multiple individual services.</p>
     <li data-md>
      <p>Access <strong>MAY</strong> be protected using an OpenID Connect (OIDC) ID Token for authentication.</p>
    </ul>
-   <h2 class="heading settled" data-level="6" id="aggregator-management"><span class="secno">6. </span><span class="content">Aggregator Management</span><a class="self-link" href="#aggregator-management"></a></h2>
+   <h2 class="heading settled" data-level="6" id="aggregator-management-overview"><span class="secno">6. </span><span class="content">Aggregator Management</span><a class="self-link" href="#aggregator-management-overview"></a></h2>
    
 This section describes how Aggregator Instances are managed at the Aggregator Server level. Deployments define their own 
 authorization policy for these endpoints, but they MUST require authenticated requests so the Aggregator provider can 
@@ -2934,11 +2933,11 @@ the user and the client (Client ID Document) used to access the Aggregator Serve
 functionality at different paths, provided that the Aggregator Server Description advertises the authoritative URLs.
 
 
-   <h3 class="heading settled" data-level="6.1" id="aggregator-registration"><span class="secno">6.1. </span><span class="content">Aggregator Registration Endpoint</span><a class="self-link" href="#aggregator-registration"></a></h3>
+   <h3 class="heading settled" data-level="6.1" id="aggregator-management"><span class="secno">6.1. </span><span class="content">Aggregator Management Endpoint</span><a class="self-link" href="#aggregator-management"></a></h3>
    
-This section specifies the behavior of the <code>registration_endpoint</code> advertised by the Aggregator Server Description 
+This section specifies the behavior of the <code>management_endpoint</code> advertised by the Aggregator Server Description 
 (<a href="#server-description">§ 5.1 Aggregator Server Description</a>). The endpoint supports creating Aggregator Instances, replacing the stored token set for an 
-existing instance, and deleting an instance. If the <code>registration_type</code> isn’t <code>none</code> the endpoint SHOULD reject 
+existing instance, and deleting an instance. If the <code>management_flow</code> isn’t <code>none</code> the endpoint SHOULD reject 
 unauthenticated requests with <code>401 Unauthorized</code>.
 
 
@@ -2947,15 +2946,15 @@ unauthenticated requests with <code>401 Unauthorized</code>.
     <dt data-md><code>POST</code>
     <dd data-md>
      <p>Creates an Aggregator Instance or replaces the stored token set for an existing instance.
-The request body MUST use a content type listed in <code>registration_request_formats_supported</code> and MUST include:
+The request body MUST use a content type listed in <code>supported_management_request_formats</code> and MUST include:
 When using <code>application/json</code>, the body MUST be a JSON object. When using
 <code>application/x-www-form-urlencoded</code>, the body parameters MUST be encoded as form fields with the same
 member names.
 The server MUST support <code>application/json</code> and MAY support <code>application/x-www-form-urlencoded</code>.</p>
      <ul>
       <li data-md>
-       <p><strong>registration_type</strong> (REQUIRED):
-The value is a string token; it MUST be one of the <code>supported_registration_types</code> advertised in the Aggregator 
+       <p><strong>management_flow</strong> (REQUIRED):
+The value is a string token; it MUST be one of the <code>supported_management_flows</code> advertised in the Aggregator 
 Server Description (<a href="#server-description">§ 5.1 Aggregator Server Description</a>). The following string tokens are defined, each corresponding to an RDF 
 class in the Aggregator vocabulary (<a href="#vocabulary">§ 10 Vocabulary</a>) for semantically annotated representations:</p>
        <ul>
@@ -2973,19 +2972,19 @@ class in the Aggregator vocabulary (<a href="#vocabulary">§ 10 Vocabulary</a>
 MUST replace its stored access token and refresh token with a new set obtained from the Identity Provider (IdP). 
 This is not a refresh-token grant; it is a full re-authentication to obtain a fresh access token and refresh token.</p>
      </ul>
-     <p>Depending on <code>registration_type</code>, additional members are defined:</p>
+     <p>Depending on <code>management_flow</code>, additional members are defined:</p>
      <ul>
       <li data-md>
-       <p><strong>registration_type: "none"</strong></p>
+       <p><strong>management_flow: "none"</strong></p>
        <ul>
         <li data-md>
          <p>No additional members are required.</p>
        </ul>
        <p>In this flow the Aggregator Instance has no identity and all requests to upstream resource servers will be
 unauthenticated. All hosted resources MUST be public or accessible without authentication. In this flow the 
-registration post request MIGHT not require authentication, depending on the deployment’s policy.</p>
+management POST request MIGHT not require authentication, depending on the deployment’s policy.</p>
       <li data-md>
-       <p><strong>registration_type: "provision"</strong></p>
+       <p><strong>management_flow: "provision"</strong></p>
        <ul>
         <li data-md>
          <p>No additional members are required.</p>
@@ -2993,13 +2992,13 @@ registration post request MIGHT not require authentication, depending on the dep
        <p>In this flow the Aggregator server MUST provision an new identity for the Aggregator Instance that is
 registered at an Identity Provider (IdP).</p>
       <li data-md>
-       <p><strong>registration_type: "authorization_code"</strong>
-The <code>authorization_code</code> flow uses two <code>POST</code> messages to the <code>registration_endpoint</code>. It is based on the OAuth 
+       <p><strong>management_flow: "authorization_code"</strong>
+The <code>authorization_code</code> flow uses two <code>POST</code> messages to the <code>management_endpoint</code>. It is based on the OAuth 
 2.0 Authorization Code grant <a data-link-type="biblio" href="#biblio-rfc6749" title="The OAuth 2.0 Authorization Framework">[RFC6749]</a> (https://datatracker.ietf.org/doc/html/rfc6749). The <strong>Start Request</strong> 
 bootstraps PKCE <a data-link-type="biblio" href="#biblio-rfc7636" title="Proof Key for Code Exchange by OAuth Public Clients">[RFC7636]</a>, the request body MUST include:</p>
        <ul>
         <li data-md>
-         <p><strong>registration_type</strong> (string, REQUIRED): <code>"authorization_code"</code>.</p>
+         <p><strong>management_flow</strong> (string, REQUIRED): <code>"authorization_code"</code>.</p>
         <li data-md>
          <p><strong>authorization_server</strong> (string, REQUIRED): The URL of the UMA Authorization Server that governs access to
 resources exposed by the Aggregator.</p>
@@ -3020,7 +3019,7 @@ the client cannot determine them through other means.</p>
        <p>The <strong>Finish Request</strong> redeems the authorization code, the request body MUST include:</p>
        <ul>
         <li data-md>
-         <p><strong>registration_type</strong> (string, REQUIRED): <code>"authorization_code"</code>.</p>
+         <p><strong>management_flow</strong> (string, REQUIRED): <code>"authorization_code"</code>.</p>
         <li data-md>
          <p><strong>code</strong> (string, REQUIRED): The authorization code issued by the IdP.</p>
         <li data-md>
@@ -3040,16 +3039,16 @@ identifier, the server MUST respond with <code>400 Bad Request</code>. In deploy
 have a Client ID Document, the Aggregator Server MUST require <code>redirect_uris</code> to be registered in the 
 Aggregator Client ID Document which will be validated by the IDP. If the Aggregator Client ID Document has 
 <code>redirect_uris</code> registered, it MAY skip the Client ID Document check of the client application. In all cases, 
-the server MUST verify that the <code>state</code> matches the stored state for the pending registration.</p>
+the server MUST verify that the <code>state</code> matches the stored state for the pending management flow.</p>
       <li data-md>
-       <p><strong>registration_type: "device_code"</strong>
-The <code>device_code</code> flow uses two <code>POST</code> messages to the <code>registration_endpoint</code> and follows the OAuth 2.0
+       <p><strong>management_flow: "device_code"</strong>
+The <code>device_code</code> flow uses two <code>POST</code> messages to the <code>management_endpoint</code> and follows the OAuth 2.0
 Device Authorization Grant <a data-link-type="biblio" href="#biblio-rfc8628" title="OAuth 2.0 Device Authorization Grant">[RFC8628]</a>. This flow is intended for headless components (for example CLI tools) 
 to authenticate an Aggregator Instance where the <code>authorization_code</code> flow is not practical. The <strong>Start Request</strong> 
 initiates device authorization flow and the request body MUST include:</p>
        <ul>
         <li data-md>
-         <p><strong>registration_type</strong> (string, REQUIRED): <code>"device_code"</code>.</p>
+         <p><strong>management_flow</strong> (string, REQUIRED): <code>"device_code"</code>.</p>
         <li data-md>
          <p><strong>authorization_server</strong> (string, REQUIRED): The URL of the UMA Authorization Server that governs access to
 resources exposed by the Aggregator.</p>
@@ -3078,7 +3077,7 @@ user has authorized the device code. The client uses the <code>state</code> valu
 MUST include:</p>
        <ul>
         <li data-md>
-         <p><strong>registration_type</strong> (string, REQUIRED): <code>"device_code"</code>.</p>
+         <p><strong>management_flow</strong> (string, REQUIRED): <code>"device_code"</code>.</p>
         <li data-md>
          <p><strong>state</strong> (string, REQUIRED): The <code>state</code> value returned by the start request.</p>
        </ul>
@@ -3107,21 +3106,21 @@ authorization_code finish request, and successful device_code poll requests), th
 the Aggregator Description (<a href="#aggregator-description">§ 8.1 Aggregator Description</a>).</p>
       <li data-md>
        <p><strong>subject</strong> (string, OPTIONAL): The WebID or Client_ID for which OIDC tokens were created. This MUST be
-added to the response when the request was a registration type <code>provision</code>.</p>
+added to the response when the request was a management flow <code>provision</code>.</p>
       <li data-md>
        <p><strong>idp</strong> (string, OPTIONAL): The Identity Provider (IdP) that issued the OIDC tokens for the Aggregator
-Instance. This MUST be added to the response when the request was a registration type <code>provision</code> and
+Instance. This MUST be added to the response when the request was a management flow <code>provision</code> and
 the subject is not a WebID.</p>
      </ul>
      <p>The server MUST NOT return any IdP access tokens, refresh tokens, or user credentials to the client.
-When a registration flow completes successfully (for example <code>provision</code>, <code>authorization_code</code> finish, or a successful
+When a management flow completes successfully (for example <code>provision</code>, <code>authorization_code</code> finish, or a successful
 <code>device_code</code> poll), the server obtains and stores an IdP access token for the Aggregator Instance (the
 <code>IDP_aggregator_token</code>) and an optionally accompanying refresh token. These tokens are used by the Aggregator for 
 upstream access and are not returned to the client.</p>
      <p><strong>Token replacement rules</strong>
 To update the tokens for an existing Aggregator Instance, the client MUST include the <code>aggregator</code> member along with 
-the other required members for the selected <code>registration_type</code>. This SHOULD only be done for the following 
-<code>registration_type</code> values, for other values the server SHOULD respond with <code>400 Bad Request</code>:</p>
+the other required members for the selected <code>management_flow</code>. This SHOULD only be done for the following 
+<code>management_flow</code> values, for other values the server SHOULD respond with <code>400 Bad Request</code>:</p>
      <ul>
       <li data-md>
        <p><code>authorization_code</code>: To obtain a new access token and refresh token after the previous ones have expired.</p>
@@ -3135,7 +3134,7 @@ the other required members for the selected <code>registration_type</code>. This
     <dt data-md><code>DELETE</code>
     <dd data-md>
      <p>Deletes an existing Aggregator Instance. The request body MUST use a content type listed in
-<code>registration_request_formats_supported</code>. When using <code>application/json</code>, the body MUST be a JSON object.
+<code>supported_management_request_formats</code>. When using <code>application/json</code>, the body MUST be a JSON object.
 When using <code>application/x-www-form-urlencoded</code>, the body parameters MUST be encoded as form fields with
 the same member names. The request body MUST include:</p>
      <ul>
@@ -3148,7 +3147,7 @@ the Aggregator Description (<a href="#aggregator-description">§ 8.1 Aggregato
    <p>For error conditions, the server MUST respond with:</p>
    <ul>
     <li data-md>
-     <p><code>400 Bad Request</code> for a malformed request body or missing/invalid request members for the selected <code>registration_type</code>.</p>
+     <p><code>400 Bad Request</code> for a malformed request body or missing/invalid request members for the selected <code>management_flow</code>.</p>
     <li data-md>
      <p><code>401 Unauthorized</code> when the request is missing authentication or when the <code>IDP_client_token</code> is invalid.</p>
     <li data-md>
@@ -3157,11 +3156,11 @@ the Aggregator Description (<a href="#aggregator-description">§ 8.1 Aggregato
      <p><code>404 Not Found</code> when <code>aggregator</code> is provided but does not identify an existing Aggregator Instance. A <code>403 Forbidden</code>
 MAY also be returned in this case.</p>
     <li data-md>
-     <p><code>415 Unsupported Media Type</code> when the request format is not listed in <code>registration_request_formats_supported</code>.</p>
+     <p><code>415 Unsupported Media Type</code> when the request format is not listed in <code>supported_management_request_formats</code>.</p>
    </ul>
    <h3 class="heading settled" data-level="6.2" id="aggregator-management-flows"><span class="secno">6.2. </span><span class="content">Aggregator Management Flows (Non-normative)</span><a class="self-link" href="#aggregator-management-flows"></a></h3>
    
-This section gives non-normative examples of how a client can use the <code>registration_endpoint</code> to create,
+This section gives non-normative examples of how a client can use the <code>management_endpoint</code> to create,
 delete, and re-authenticate an Aggregator Instance.
 
 
@@ -3170,16 +3169,16 @@ delete, and re-authenticate an Aggregator Instance.
 This lets resource owners target access-control policies at the aggregator’s dedicated WebID instead of having
 the aggregator impersonate another user’s WebID.</p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
-   <p>The client calls the registration endpoint authenticated with its <code>IDP_client_token</code>.</p>
-   <div class="example" id="example-fda899ad">
-    <a class="self-link" href="#example-fda899ad"></a>
+   <p>The client calls the management endpoint authenticated with its <code>IDP_client_token</code>.</p>
+   <div class="example" id="example-5869b601">
+    <a class="self-link" href="#example-5869b601"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IDP_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
-  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"provision"</c->
+  <c- f>"management_flow"</c-><c- p>:</c-> <c- u>"provision"</c->
 <c- p>}</c->
 </pre>
    </div>
@@ -3225,25 +3224,25 @@ with a token that is scoped specifically for the aggregator. This flow follows t
 Code grant <a data-link-type="biblio" href="#biblio-rfc6749" title="The OAuth 2.0 Authorization Framework">[RFC6749]</a> (https://datatracker.ietf.org/doc/html/rfc6749).</p>
    <p><img alt="PlantUML Diagram" src="uml/deec535dc3f87ed134bdf6b424eb7f9854c54de7.svg"></p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
-   <p>The client begins by asking the Aggregator to bootstrap an authorization_code registration and indicate which
+   <p>The client begins by asking the Aggregator to bootstrap an authorization_code management flow and indicate which
 authorization server should be used. The Aggregator identifies the client application from the
 <code>IDP_client_token</code> and responds with the public parameters required for the OIDC authorization request.</p>
-   <div class="example" id="example-aacab791">
-    <a class="self-link" href="#example-aacab791"></a>
+   <div class="example" id="example-7067493b">
+    <a class="self-link" href="#example-7067493b"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IDP_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
-  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
+  <c- f>"management_flow"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
   <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c->
 <c- p>}</c->
 </pre>
    </div>
    <p><strong>1.2 Aggregator responds with public parameters</strong></p>
    <p>The Aggregator generates the PKCE verifier/challenge pair plus a random <code>state</code>, persists them together with
-the pending registration, and returns only the public portions (<code>aggregator_client_id</code>, <code>code_challenge</code>,
+the pending management flow, and returns only the public portions (<code>aggregator_client_id</code>, <code>code_challenge</code>,
 <code>code_challenge_method</code>, <code>state</code>) to the client application. The <code>authorization_server</code> value identifies the
 UMA Authorization Server (AS) that governs access to resources exposed by the Aggregator. The aggregator uses
 the <code>IDP_client_token</code> to identify the user’s IdP and Application Client ID Document for the subsequent OIDC
@@ -3293,16 +3292,16 @@ Aggregator’s client.</p>
 </pre>
    </div>
    <p><strong>5. Client posts the authorization code back to the Aggregator</strong></p>
-   <p>The client sends the code, redirect URI, and echoed state to the registration endpoint so the Aggregator can finish the flow.</p>
-   <div class="example" id="example-db4c31f6">
-    <a class="self-link" href="#example-db4c31f6"></a>
+   <p>The client sends the code, redirect URI, and echoed state to the management endpoint so the Aggregator can finish the flow.</p>
+   <div class="example" id="example-de6a565a">
+    <a class="self-link" href="#example-de6a565a"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IDP_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
-  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
+  <c- f>"management_flow"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
   <c- f>"code"</c-><c- p>:</c-> <c- u>"SplxlOBeZQQYbYS6WxSbIA"</c-><c- p>,</c->
   <c- f>"redirect_uri"</c-><c- p>:</c-> <c- u>"https://app.example/callback"</c-><c- p>,</c->
   <c- f>"state"</c-><c- p>:</c-> <c- u>"1eb7c8f5..."</c->
@@ -3364,17 +3363,17 @@ aggregator description (<a href="#aggregator-description">§ 8.1 Aggregator De
 Instance by using the OAuth 2.0 Device Authorization Grant <a data-link-type="biblio" href="#biblio-rfc8628" title="OAuth 2.0 Device Authorization Grant">[RFC8628]</a>.</p>
    <p><img alt="PlantUML Diagram" src="uml/35ecb28fb62749a116ddd35c1a09c227f535748d.svg"></p>
    <p><strong>1. Client starts flow with Aggregator Server</strong></p>
-   <p>The client calls the registration endpoint authenticated with its <code>IDP_client_token</code>, indicating the
+   <p>The client calls the management endpoint authenticated with its <code>IDP_client_token</code>, indicating the
 authorization server that governs access to resources exposed by the Aggregator.</p>
-   <div class="example" id="example-55946594">
-    <a class="self-link" href="#example-55946594"></a>
+   <div class="example" id="example-56b2ca9d">
+    <a class="self-link" href="#example-56b2ca9d"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IDP_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
-  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"device_code"</c-><c- p>,</c->
+  <c- f>"management_flow"</c-><c- p>:</c-> <c- u>"device_code"</c-><c- p>,</c->
   <c- f>"authorization_server"</c-><c- p>:</c-> <c- u>"https://as.example"</c->
 <c- p>}</c->
 </pre>
@@ -3412,7 +3411,7 @@ expires_in, and other optional parameters.</p>
    </div>
    <p><strong>1.3 Aggregator Server returns device authorization parameters</strong></p>
    <p>The Aggregator securely stores the <code>device_code</code> and generates a random <code>state</code> value to track the pending
-registration. It responds to the client with the <code>state</code>, <code>user_code</code>, <code>verification_uri</code>, <code>expires_in</code>, and the
+management flow. It responds to the client with the <code>state</code>, <code>user_code</code>, <code>verification_uri</code>, <code>expires_in</code>, and the
 optional other parameters. The <code>device_code</code> is confidential and must not be returned to the client.</p>
    <div class="example" id="example-68586188">
     <a class="self-link" href="#example-68586188"></a>
@@ -3433,18 +3432,18 @@ optional other parameters. The <code>device_code</code> is confidential and must
    <p><strong>2. User authorizes at the IdP</strong></p>
    <p>The client prompts the user to visit the verification URI and enter the user code to authorize access.</p>
    <p><strong>3. Client polls Aggregator Server</strong></p>
-   <p>The client polls the registration endpoint using the <code>state</code> value, waiting at least the returned
+   <p>The client polls the management endpoint using the <code>state</code> value, waiting at least the returned
 <code>interval</code> (if provided) between polls. The Aggregator polls the IdP token endpoint using the stored
 device code until the user authorizes or the device code expires.</p>
-   <div class="example" id="example-44f49335">
-    <a class="self-link" href="#example-44f49335"></a>
+   <div class="example" id="example-0d238e5d">
+    <a class="self-link" href="#example-0d238e5d"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IDP_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
-  <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"device_code"</c-><c- p>,</c->
+  <c- f>"management_flow"</c-><c- p>:</c-> <c- u>"device_code"</c-><c- p>,</c->
   <c- f>"state"</c-><c- p>:</c-> <c- u>"state-abc"</c->
 <c- p>}</c->
 </pre>
@@ -3511,24 +3510,24 @@ successful create operations:</p>
    <h4 class="heading settled" data-level="6.2.4" id="token-update"><span class="secno">6.2.4. </span><span class="content">Token Update Flow</span><a class="self-link" href="#token-update"></a></h4>
    <p>This flow allows users to replace the stored access token and refresh token for an existing Aggregator Instance.
 This is not a refresh-token grant: even refresh tokens can expire, so the client repeats the original
-registration flow to obtain a new set of tokens (and refresh tokens) for the Aggregator Instance.</p>
+management flow to obtain a new set of tokens (and refresh tokens) for the Aggregator Instance.</p>
    <p>The flow is the same as creating an Aggregator Instance but an <code>aggregator</code> member is provided in the start request.
-The exact steps depend on the <code>registration_type</code> used when creating the Aggregator Instance.
+The exact steps depend on the <code>management_flow</code> used when creating the Aggregator Instance.
 For example, for the <code>authorization_code</code> flow:</p>
-   <div class="example" id="example-5a534bad">
-    <a class="self-link" href="#example-5a534bad"></a>
+   <div class="example" id="example-d4d1efb2">
+    <a class="self-link" href="#example-d4d1efb2"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>/registration</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Authorization</c-><c- o>:</c-> <c- l>Bearer &lt;IDP_client_token></c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 {
-    <c- f>"registration_type"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
+    <c- f>"management_flow"</c-><c- p>:</c-> <c- u>"authorization_code"</c-><c- p>,</c->
     <c- f>"aggregator"</c-><c- p>:</c-> <c- u>"https://aggregator.example/aggregators/agg-7890/"</c->
 <c- p>}</c->
 </pre>
    </div>
    <h4 class="heading settled" data-level="6.2.5" id="aggregator-listing"><span class="secno">6.2.5. </span><span class="content">Aggregator Listing Flow</span><a class="self-link" href="#aggregator-listing"></a></h4>
-   <p>This flow allows users to list Aggregator Instances by sending a <code>GET</code> request to the <code>registration_endpoint</code>.</p>
+   <p>This flow allows users to list Aggregator Instances by sending a <code>GET</code> request to the <code>management_endpoint</code>.</p>
    <div class="example" id="example-768f98fe">
     <a class="self-link" href="#example-768f98fe"></a>
 
@@ -3550,7 +3549,7 @@ For example, for the <code>authorization_code</code> flow:</p>
    </div>
    <h4 class="heading settled" data-level="6.2.6" id="aggregator-deletion"><span class="secno">6.2.6. </span><span class="content">Aggregator Deletion Flow</span><a class="self-link" href="#aggregator-deletion"></a></h4>
    <p>This flow allows users to delete an existing Aggregator Instance by sending a <code>DELETE</code> request to the
-<code>registration_endpoint</code> with the <code>aggregator</code> member.</p>
+<code>management_endpoint</code> with the <code>aggregator</code> member.</p>
    <div class="example" id="example-d6e96089">
     <a class="self-link" href="#example-d6e96089"></a>
 
@@ -3582,7 +3581,7 @@ Server that protects the Aggregator itself and issues tokens (e.g., UMA RPTs) fo
    <h3 class="heading settled" data-level="7.1" id="requesting-flow"><span class="secno">7.1. </span><span class="content">Upstream Access (Requesting)</span><a class="self-link" href="#requesting-flow"></a></h3>
    <p><strong>Normative requirements</strong></p>
    <p>The Aggregator Service MUST obtain upstream access tokens according to A4DS and UMA and if asked for a proof of identity MUST
-present the ID token (<code>IDP_aggregator_token</code>) obtained during aggregator registration (<a href="#aggregator-registration">§ 6.1 Aggregator Registration Endpoint</a>). When
+present the ID token (<code>IDP_aggregator_token</code>) obtained during aggregator management (<a href="#aggregator-management">§ 6.1 Aggregator Management Endpoint</a>). When
 the Aggregator Service intends to create derived resources, it MUST request a global scope of
 <code>urn:knows:uma:scopes:derivation-creation</code>. The Aggregator Service MAY include a transformation description claim token
 (<a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>). The <code>claim_type</code> for this description MUST be
@@ -3640,7 +3639,7 @@ Authorization Server, as described in <a data-link-type="biblio" href="#biblio-a
 </pre>
    </div>
    <p><strong>2. Requesting an access token from the UAS</strong></p>
-   <p>Using the <code>IDP_aggregator_token</code> obtained during registration, the Aggregator Service requests an access token from the
+   <p>Using the <code>IDP_aggregator_token</code> obtained during aggregator management, the Aggregator Service requests an access token from the
 UAS. The request includes the derivation-creation scope to notify the UAS we want to create a derived resource. If the
 Aggregator has previously obtained a <code>derivation_resource_id</code> for the same upstream resource and transformation, it should
 include it as a hint using the <code>derivation_resource_id</code> parameter.</p>
@@ -3784,7 +3783,7 @@ it used this <code>derivation_resource_id</code> to create derived resources.</p
 Server using the <code>management_access_token</code>.</p>
    <h3 class="heading settled" data-level="7.2" id="serving-flow"><span class="secno">7.2. </span><span class="content">Client Access (Serving)</span><a class="self-link" href="#serving-flow"></a></h3>
    <p><strong>Normative requirements</strong></p>
-   <p>All endpoints on the Aggregator SHOULD be protected using an AS defined during registration. The Aggregator acts as a
+   <p>All endpoints on the Aggregator SHOULD be protected using an AS defined during management. The Aggregator acts as a
 Resource Server in UMA terminology. So when the Aggregator receives a request without a valid Requesting Party Token (RPT) 
 from a client it MUST request a UMA ticket from its Authorization Server and return <code>401 Unauthorized</code> with that ticket.
 RPT validity is discussed in more detail in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. If this is a request for a derived resource, the Aggregator Service 

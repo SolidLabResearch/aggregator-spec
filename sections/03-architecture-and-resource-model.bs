@@ -11,12 +11,12 @@ The protocol distinguishes the following parties:
 
 - **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator 
     Services.
-- **Aggregator Server:** The server that exposes public discovery information and a registration API to create Aggregator 
+- **Aggregator Server:** The server that exposes public discovery information and a management API to create Aggregator 
     Instances.
-- **Aggregator Instance:** A user-specific (or tenant-specific) logical instance created via registration, exposing instance 
+- **Aggregator Instance:** A user-specific (or tenant-specific) logical instance created via management, exposing instance 
     metadata and a management API.
 - **Aggregator Service:** A configured data-processing pipeline created and managed within an Aggregator Instance.
-- **Identity Provider (IdP):** Issues OIDC tokens used to prove identity as part of registration and upstream authorization 
+- **Identity Provider (IdP):** Issues OIDC tokens used to prove identity as part of management and upstream authorization
     flows.
 - **Authorization Server (AS):** A UMA-capable OAuth2 Authorization Server that issues RPTs for protected resources.
 - **Resource Server (RS):** An upstream resource server hosting data that the Aggregator Service may access on behalf of the 
@@ -27,8 +27,8 @@ Resource Types {#resource-types}
 
 This specification defines HTTP resources at three levels:
 
-- **Aggregator Server resources:** metadata and instance registration (see [[#aggregator-server-metadata]] and 
-    [[#aggregator-registration]]).
+- **Aggregator Server resources:** metadata and instance management (see [[#aggregator-server-metadata]] and 
+    [[#aggregator-management]]).
 - **Aggregator Instance resources:** instance metadata and service management (see [[#aggregator-metadata]] and
     [[#aggregator-service-management]]).
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
@@ -55,7 +55,7 @@ Discovery and Entry Points {#discovery-and-entry-points}
 --------------------------------------------------------
 
 - The Aggregator Server exposes a public discovery resource at its server base URL (see [[#server-description]]).
-- Clients create (or obtain access to) an Aggregator Instance via the registration API (see [[#aggregator-registration]]).
+- Clients create (or obtain access to) an Aggregator Instance via the management API (see [[#aggregator-management]]).
 - The resulting instance base URL is the entry point for instance metadata (see [[#aggregator-metadata]]) 
     and instance service management (see [[#aggregator-service-management]]).
 
@@ -67,7 +67,7 @@ All security requirements are defined in [[#aggregator-security-model]]. At a hi
 - Public (no authentication): the server description (see [[#server-description]]) and the resources it links to, such as 
     the server level transformation catalog and Client ID Document (see [[#server-level-transformation-catalog]] and 
     [[#client-id-document]]).
-- Protected (OIDC): the registration endpoint (see [[#aggregator-registration]]), and possibly the server description and 
+- Protected (OIDC): the management endpoint (see [[#aggregator-management]]), and possibly the server description and 
     server level transformation catalog depending on the implementation.
 - Protected (UMA): the instance metadata resource (see [[#aggregator-metadata]]) and all resources under the service 
     management API (see [[#aggregator-service-management]]).
@@ -86,7 +86,7 @@ Given an Aggregator Server at `https://aggregator.example/` and a path-based Agg
 `https://aggregator.example/abc123/`:
 
 - Server description: `https://aggregator.example/`
-- Registration: `https://aggregator.example/registration`
+- Management: `https://aggregator.example/registration`
 - Transformation catalog: `https://aggregator.example/transformations`
 - Instance description: `https://aggregator.example/abc123/`
 - Instance Transformation catalog: `https://aggregator.example/abc123/transformations`
