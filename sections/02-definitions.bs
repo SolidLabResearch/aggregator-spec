@@ -11,11 +11,10 @@ Core Roles and Components {#definitions-core}
 - **Client:** An application acting on behalf of an end-user to create Aggregator Instances and configure Aggregator 
     Services.
 
-- **Aggregator Server:** The server deployment that exposes public discovery metadata and a registration API used to create 
+- **Aggregator Server:** The server deployment that exposes public discovery metadata and a management API used to create 
     and manage Aggregator Instances.
 
-- **Aggregator Instance** (or “Aggregator”): A user- or tenant-scoped logical instance created via the registration 
-    endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
+- **Aggregator Instance** (or “Aggregator”): A user- or tenant-scoped logical instance created via the management endpoint. An instance exposes an Aggregator Description and an authenticated management API for configuring services.
 
 - **Aggregator Service** (or “Service”): A configured data processing pipeline inside an Aggregator Instance. A service is 
     represented as an FnO Implementation (`fno:Implementation`) that implements an FnO AppliedFunction (`fno:AppliedFunction`), 
@@ -34,7 +33,7 @@ Identity, Authorization, and Tokens {#definitions-security}
     discover the user's IdP (defined in [[!WEBID-PROFILE]]).
 
 - **Identity Provider (IdP):** An OpenID Connect Provider following the OIDC spec ([[!OIDC-Core]]) that authenticates a user 
-    based on it's userID and issues ID tokens used by this protocol during registration and authorization workflows.
+    based on it's userID and issues ID tokens used by this protocol during management and authorization workflows.
 
 - **Authorization Server (AS):** An OAuth 2.0 Authorization Server that supports UMA as defined in ([[!A4DS]]) and issues 
     Requesting Party Tokens (RPTs) for protected resources.
@@ -49,7 +48,7 @@ Identity, Authorization, and Tokens {#definitions-security}
     permissions/scopes for a protected resource (see [[RFC6750]]).
 
 - **ID Token:** An OpenID Connect ID token representing the authenticated user (and, depending on the deployment, 
-    the client). The protocol uses ID tokens as claim tokens in UMA exchanges and during registration flows as described in 
+    the client). The protocol uses ID tokens as claim tokens in UMA exchanges and during management flows as described in 
     [[#aggregator-security-model]].
 
 - **Client ID Document:** A dereferenceable client metadata document that follows the OAuth Client ID Metadata 
