@@ -2128,13 +2128,13 @@ to protected derived resources.</p>
       <li>
        <a href="#service-endpoint"><span class="secno">9.2</span> <span class="content">Service Description Endpoint</span></a>
        <ol class="toc">
-        <li><a href="#service-output"><span class="secno">9.2.1</span> <span class="content">Service Output Endpoint</span></a>
+        <li><a href="#service-output"><span class="secno">9.2.1</span> <span class="content">Service Output Endpoints</span></a>
        </ol>
       <li>
        <a href="#service-provenance"><span class="secno">9.3</span> <span class="content">Provenance Log</span></a>
        <ol class="toc">
         <li><a href="#provlog-publication"><span class="secno">9.3.1</span> <span class="content">Log Publication</span></a>
-        <li><a href="#continous"><span class="secno">9.3.2</span> <span class="content">Continous updates</span></a>
+        <li><a href="#continous"><span class="secno">9.3.2</span> <span class="content">Continuous updates</span></a>
        </ol>
      </ol>
     <li>
@@ -2164,24 +2164,26 @@ to protected derived resources.</p>
         <li><a href="#aggr-token-expiry-property"><span class="secno">10.2.3</span> <span class="content">aggr:tokenExpiry</span></a>
         <li><a href="#aggr-transformations-endpoint-property"><span class="secno">10.2.4</span> <span class="content">aggr:transformationsEndpoint</span></a>
         <li><a href="#aggr-service-discovery-endpoint-property"><span class="secno">10.2.5</span> <span class="content">aggr:serviceCollectionEndpoint</span></a>
-        <li><a href="#aggr-service-property"><span class="secno">10.2.6</span> <span class="content">aggr:service</span></a>
+        <li><a href="#aggr-service-property"><span class="secno">10.2.6</span> <span class="content">aggr:hasService</span></a>
         <li><a href="#aggr-has-transformation-property"><span class="secno">10.2.7</span> <span class="content">aggr:hasTransformation</span></a>
-        <li><a href="#aggr-has-algorithm-property"><span class="secno">10.2.8</span> <span class="content">aggr:hasAlgorithm</span></a>
-        <li><a href="#aggr-has-mapping-property"><span class="secno">10.2.9</span> <span class="content">aggr:hasMapping</span></a>
-        <li><a href="#aggr-has-composition-property"><span class="secno">10.2.10</span> <span class="content">aggr:hasComposition</span></a>
-        <li><a href="#aggr-status-property"><span class="secno">10.2.11</span> <span class="content">aggr:status</span></a>
-        <li><a href="#aggr-status-detail-property"><span class="secno">10.2.12</span> <span class="content">aggr:statusDetail</span></a>
-        <li><a href="#aggr-performs-property"><span class="secno">10.2.13</span> <span class="content">aggr:performs</span></a>
-        <li><a href="#aggr-applies-property"><span class="secno">10.2.14</span> <span class="content">aggr:applies</span></a>
-        <li><a href="#aggr-implements-property"><span class="secno">10.2.15</span> <span class="content">aggr:implements</span></a>
-        <li><a href="#aggr-provlog-property"><span class="secno">10.2.16</span> <span class="content">aggr:provenanceLog</span></a>
-        <li><a href="#aggr-has-activity-property"><span class="secno">10.2.17</span> <span class="content">aggr:hasActivity</span></a>
-        <li><a href="#aggr-registration-endpoint-property"><span class="secno">10.2.18</span> <span class="content">aggr:registrationEndpoint</span></a>
-        <li><a href="#aggr-supported-registration-type-property"><span class="secno">10.2.19</span> <span class="content">aggr:supportedRegistrationType</span></a>
-        <li><a href="#aggr-registration-request-format-supported-property"><span class="secno">10.2.20</span> <span class="content">aggr:registrationRequestFormatSupported</span></a>
-        <li><a href="#aggr-spec-version-property"><span class="secno">10.2.21</span> <span class="content">aggr:specVersion</span></a>
-        <li><a href="#aggr-client-id-property"><span class="secno">10.2.22</span> <span class="content">aggr:clientIdentifier</span></a>
-        <li><a href="#aggr-transformation-catalog-property"><span class="secno">10.2.23</span> <span class="content">aggr:transformationCatalog</span></a>
+        <li><a href="#aggr-has-applied-function-property"><span class="secno">10.2.8</span> <span class="content">aggr:hasAppliedFunction</span></a>
+        <li><a href="#aggr-has-algorithm-property"><span class="secno">10.2.9</span> <span class="content">aggr:hasAlgorithm</span></a>
+        <li><a href="#aggr-has-mapping-property"><span class="secno">10.2.10</span> <span class="content">aggr:hasMapping</span></a>
+        <li><a href="#aggr-has-composition-property"><span class="secno">10.2.11</span> <span class="content">aggr:hasComposition</span></a>
+        <li><a href="#aggr-status-property"><span class="secno">10.2.12</span> <span class="content">aggr:status</span></a>
+        <li><a href="#aggr-status-detail-property"><span class="secno">10.2.13</span> <span class="content">aggr:statusDetail</span></a>
+        <li><a href="#aggr-performs-property"><span class="secno">10.2.14</span> <span class="content">aggr:performs</span></a>
+        <li><a href="#aggr-applies-property"><span class="secno">10.2.15</span> <span class="content">aggr:applies</span></a>
+        <li><a href="#aggr-implements-property"><span class="secno">10.2.16</span> <span class="content">aggr:implements</span></a>
+        <li><a href="#aggr-for-output-property"><span class="secno">10.2.17</span> <span class="content">aggr:forOutput</span></a>
+        <li><a href="#aggr-provlog-property"><span class="secno">10.2.18</span> <span class="content">aggr:provenanceLog</span></a>
+        <li><a href="#aggr-has-activity-property"><span class="secno">10.2.19</span> <span class="content">aggr:hasActivity</span></a>
+        <li><a href="#aggr-registration-endpoint-property"><span class="secno">10.2.20</span> <span class="content">aggr:registrationEndpoint</span></a>
+        <li><a href="#aggr-supported-registration-type-property"><span class="secno">10.2.21</span> <span class="content">aggr:supportedRegistrationType</span></a>
+        <li><a href="#aggr-registration-request-format-supported-property"><span class="secno">10.2.22</span> <span class="content">aggr:registrationRequestFormatSupported</span></a>
+        <li><a href="#aggr-spec-version-property"><span class="secno">10.2.23</span> <span class="content">aggr:specVersion</span></a>
+        <li><a href="#aggr-client-id-property"><span class="secno">10.2.24</span> <span class="content">aggr:clientIdentifier</span></a>
+        <li><a href="#aggr-transformation-catalog-property"><span class="secno">10.2.25</span> <span class="content">aggr:transformationCatalog</span></a>
        </ol>
       <li>
        <a href="#vocabulary-claim-types"><span class="secno">10.3</span> <span class="content">Claim Types</span></a>
@@ -2397,63 +2399,65 @@ assume the parameter is optional.</p>
    </ul>
    <p>Additional metadata <strong>MAY</strong> be linked to a transformation, such as an <code>fno:Implementation</code> using an <code>fno:Mapping</code>, or the
 algorithm it implements using <code>fno:Algorithm</code> as specified by <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>.</p>
-   <div class="example" id="example-64f3ee3b">
-    <a class="self-link" href="#example-64f3ee3b"></a>
+   <div class="example" id="example-ae83d0c0">
+    <a class="self-link" href="#example-ae83d0c0"></a>
 
-<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>server-trans:</c-> <c- g>&lt;https://example.org/transformations#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>dct:</c-> <c- g>&lt;http://purl.org/dc/terms/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>rdf:</c-> <c- g>&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#></c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>sparql-query-view</c->
+<c- nn>server-trans</c-><c- p>:</c-><c- f>sparql-query-view</c->
     <c- b>a</c->                   <c- nn>fno</c-><c- p>:</c-><c- f>Function</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>name</c->            <c- s>"The SPARQL QueryView function"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>description</c->     <c- s>"Performs a query on a source and materializes view as a SPARQL endpoint"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>expects</c->         <c- p>(</c-> <c- p>:</c-><c- f>query-source</c-> <c- p>:</c-><c- f>sparql-query-string</c-> <c- p>)</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>returns</c->         <c- p>(</c-> <c- p>:</c-><c- f>sparql-query-view</c-> <c- p>)</c-> <c- p>.</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>expects</c->         <c- p>(</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>query-source</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>sparql-query-string</c-> <c- p>)</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>returns</c->         <c- p>(</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>view-output</c-> <c- p>)</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>query-source</c->
+<c- nn>server-trans</c-><c- p>:</c-><c- f>query-source</c->
     <c- b>a</c->                   <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->       <c- p>:</c-><c- f>source</c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->       <c- nn>server-trans</c-><c- p>:</c-><c- f>source</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>type</c->            <c- nn>xsd</c-><c- p>:</c-><c- f>anyURI</c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>required</c->        <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>sparql-query-string</c->
+<c- nn>server-trans</c-><c- p>:</c-><c- f>sparql-query-string</c->
     <c- b>a</c->               <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- p>:</c-><c- f>query</c-> <c- p>;</c-> 
+    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- nn>server-trans</c-><c- p>:</c-><c- f>query</c-> <c- p>;</c-> 
     <c- nn>fno</c-><c- p>:</c-><c- f>type</c->        <c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c->  <c- g>&lt;https://www.w3.org/TR/2013/REC-sparql11-query-20130321/></c-> <c- p>;</c->
     <c- nn>fno</c-><c- p>:</c-><c- f>required</c->    <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>sparql-query-view</c->
+<c- nn>server-trans</c-><c- p>:</c-><c- f>view-output</c->
     <c- b>a</c->               <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c->  <c- g>&lt;https://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/></c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- p>:</c-><c- f>view</c-> <c- p>.</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- nn>server-trans</c-><c- p>:</c-><c- f>view</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>rml-mapper</c->
+<c- nn>server-trans</c-><c- p>:</c-><c- f>rml-mapper</c->
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Function</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>name</c-> <c- s>"The RML Mapper Function"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>name</c-> <c- s>"The RML Mapper Function"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
   <c- nn>dct</c-><c- p>:</c-><c- f>description</c-> <c- s>"Performs RML mappings on a source and materializes results as a SPARQL endpoint"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>expects</c-> <c- p>(</c-> <c- p>:</c-><c- f>rml-mapping</c-> <c- p>)</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>returns</c-> <c- p>(</c-> <c- p>:</c-><c- f>rml-output</c-> <c- p>)</c-> <c- p>.</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>expects</c-> <c- p>(</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>rml-mapping</c-> <c- p>)</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>returns</c-> <c- p>(</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>rml-output</c-> <c- p>)</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>rml-mapping</c-> 
+<c- nn>server-trans</c-><c- p>:</c-><c- f>rml-mapping</c-> 
   <c- b>a</c->                   <c- nn>fno</c-><c- p>:</c-><c- f>Parameter</c-> <c- p>;</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>type</c->            <c- nn>rr</c-><c- p>:</c-><c- f>TriplesMap</c-> <c- p>;</c->
   <c- nn>dct</c-><c- p>:</c-><c- f>format</c->          <c- g>&lt;http://www.w3.org/ns/formats/Turtle></c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->       <c- p>:</c-><c- f>mapping</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->       <c- nn>server-trans</c-><c- p>:</c-><c- f>mapping</c-> <c- p>;</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>required</c->        <c- s>"true"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>boolean</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>rml-output</c->
+<c- nn>server-trans</c-><c- p>:</c-><c- f>rml-output</c->
   <c- b>a</c->               <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
   <c- nn>fno</c-><c- p>:</c-><c- f>type</c->        <c- nn>xsd</c-><c- p>:</c-><c- f>anyURI</c-> <c- p>;</c->
   <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c->  <c- g>&lt;https://www.w3.org/TR/sparql11-protocol/></c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- p>:</c-><c- f>table</c-> <c- p>.</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- nn>server-trans</c-><c- p>:</c-><c- f>table</c-> <c- p>.</c->
 </pre>
    </div>
    <h3 class="heading settled" data-level="4.2" id="aggregator-applied-function"><span class="secno">4.2. </span><span class="content">Applied Function</span><a class="self-link" href="#aggregator-applied-function"></a></h3>
    <p>An Applied Function describes the requested transformation and the parameter values that an Aggregator should use when
-deploying a service. A Applied Function <strong>MUST</strong> be described as an <code>fno:AppliedFunction</code>.</p>
+deploying a service. In this specification, the service request is the <code>fno:AppliedFunction</code> that captures those bindings.
+An Applied Function <strong>MUST</strong> be described as an <code>fno:AppliedFunction</code>.</p>
    <p>The Applied Function:</p>
    <ul>
     <li data-md>
@@ -2465,25 +2469,31 @@ parameters as defined by <a data-link-type="biblio" href="#biblio-fno" title="Fu
     <li data-md>
      <p><strong>MAY</strong> reference a composite transformation. If the referenced transformation is described using <code>fnoc:composition</code>,
 the Applied Function binds the exposed composite parameters in the same way as for any other transformation.</p>
+    <li data-md>
+     <p><strong>MAY</strong> be published as a reusable template in the <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a> or
+<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformations Catalog</a>. When a catalog advertises an Applied Function, it <strong>MUST</strong> link to it
+using <code>aggr:hasAppliedFunction</code> and <strong>MUST NOT</strong> use <code>aggr:hasTransformation</code>.</p>
    </ul>
    <p>An <code>aggr:Service</code> <strong>MAY</strong> link to its Applied Function using <code>aggr:applies</code>.</p>
-   <div class="example" id="example-525c49e3">
-    <a class="self-link" href="#example-525c49e3"></a>
+   <div class="example" id="example-857bab30">
+    <a class="self-link" href="#example-857bab30"></a>
 
-<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>inst-trans:</c-> <c- g>&lt;https://example.org/agg1/transformations/></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>server-trans:</c-> <c- g>&lt;https://example.org/transformations#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>fnoc:</c-> <c- g>&lt;https://fno.io/vocabulary/composition/0.1.0/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
 
-<c- p>[]</c->
+<c- nn>inst-trans</c-><c- p>:</c-><c- f>sparql-query-view-service-request</c->
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>AppliedFunction</c-> <c- p>;</c->
-  <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c-> <c- p>:</c-><c- f>sparql-query-view</c-> <c- p>;</c->
+  <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>sparql-query-view</c-> <c- p>;</c->
   <c- nn>fnoc</c-><c- p>:</c-><c- f>parameterBindings</c-> <c- p>(</c->
     <c- p>[</c->
-      <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c-> <c- p>:</c-><c- f>query-source</c-> <c- p>;</c->
-      <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- s>"http://example.com/source1"</c->
+      <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>query-source</c-> <c- p>;</c->
+      <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- s>"http://example.org/source1"</c->
     <c- p>]</c->
     <c- p>[</c->
-      <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c-> <c- p>:</c-><c- f>sparql-query-string</c-> <c- p>;</c->
+      <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c-> <c- nn>server-trans</c-><c- p>:</c-><c- f>sparql-query-string</c-> <c- p>;</c->
       <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>string</c->
     <c- p>]</c->
   <c- p>)</c-> <c- p>.</c->
@@ -2498,21 +2508,21 @@ the Applied Function binds the exposed composite parameters in the same way as f
     <li data-md>
      <p><strong>MUST</strong> reference each contained service using <code>aggr:hasService</code>.</p>
    </ul>
-   <div class="example" id="example-f4108cbf">
-    <a class="self-link" href="#example-f4108cbf"></a>
+   <div class="example" id="example-f0f54b77">
+    <a class="self-link" href="#example-f0f54b77"></a>
 
-<pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;https://example.com/agg1/services#></c-> <c- p>.</c->
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>services:</c-> <c- g>&lt;https://example.org/agg1/services/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 
-<c- g>&lt;></c->
+<c- g>&lt;https://example.org/agg1/services></c->
   <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>ServiceCollection</c-> <c- p>;</c->
   <c- nn>aggr</c-><c- p>:</c-><c- f>hasService</c->
-    <c- g>&lt;https://example.com/agg1/services/sparql-query-view-service></c-><c- p>,</c->
-    <c- g>&lt;https://example.com/agg1/services/rml-mapper-service></c-> <c- p>.</c->
+    <c- nn>services</c-><c- p>:</c-><c- f>sparql-query-view-service</c-><c- p>,</c->
+    <c- nn>services</c-><c- p>:</c-><c- f>rml-mapper-service</c-> <c- p>.</c->
 </pre>
    </div>
    <h3 class="heading settled" data-level="4.4" id="aggregator-service"><span class="secno">4.4. </span><span class="content">Service</span><a class="self-link" href="#aggregator-service"></a></h3>
-   <p>A deployed aggregator service is the running resource created from a Service Request and <strong>MUST</strong> be modelled as:</p>
+   <p>A deployed aggregator service is the running resource created from an Applied Function service request and <strong>MUST</strong> be modelled as:</p>
    <ul>
     <li data-md>
      <p>an <code>aggr:Service</code></p>
@@ -2524,7 +2534,7 @@ the Applied Function binds the exposed composite parameters in the same way as f
    <p>Furthermore, the service:</p>
    <ul>
     <li data-md>
-     <p><strong>MUST</strong> serve one dataset for each transformation output.</p>
+     <p><strong>MUST</strong> serve exactly one dataset for each output of the transformation identified by <code>aggr:performs</code>.</p>
     <li data-md>
      <p><strong>MUST</strong> link using <code>aggr:performs</code> to the underlying <code>fno:Function</code>.</p>
     <li data-md>
@@ -2542,12 +2552,14 @@ the Applied Function binds the exposed composite parameters in the same way as f
     <li data-md>
      <p><strong>MUST</strong> be described as a <code>dcat:Dataset</code>.</p>
     <li data-md>
+     <p><strong>MUST</strong> link to exactly one <code>fno:Output</code> of that transformation using <code>aggr:forOutput</code>.</p>
+    <li data-md>
      <p><strong>MUST</strong> reference a <code>dcat:distribution</code>.</p>
     <li data-md>
-     <p><strong>MUST</strong> declare other versions using <code>dct:hasVersion</code>.</p>
+     <p><strong>MUST</strong> declare other known versions using <code>dcat:hasVersion</code> when version history is retained.</p>
    </ul>
-   <p class="issue" id="issue-612b2958"><a class="self-link" href="#issue-612b2958"></a> The dataset should be linked to the output of the transformation</p>
-   <p class="issue" id="issue-af173811"><a class="self-link" href="#issue-af173811"></a> If the transformation is a SPARQL Endpoint, does this make sense to describe the output as a dataset?</p>
+   <p class="note" role="note"><span class="marker">NOTE:</span> This specification currently uses <code>dcat:hasVersion</code> and <code>dcat:isVersionOf</code> for dataset versioning. A future
+revision MAY additionally adopt <code>dcat:hasCurrentVersion</code> when that term is standardized in a published DCAT version.</p>
    <p>The corresponding distribution <strong>MUST</strong> be described as a <code>dcat:Distribution</code>, where each distribution:</p>
    <ul>
     <li data-md>
@@ -2565,68 +2577,72 @@ the Applied Function binds the exposed composite parameters in the same way as f
     <li data-md>
      <p><strong>SHOULD</strong> declare conformity using <code>dct:conformsTo</code> if defined.</p>
    </ul>
-   <p>This ensures that consumers can reliably discover and access the latest available aggregated results. Furthermore, Service
+   <p>The dataset and the output endpoint are distinct resources. The <code>dcat:Dataset</code> identifies the logical result of
+the transformation output, while the Service Output Endpoint is an access interface for a <code>dcat:Distribution</code> of that
+dataset and <strong>MUST NOT</strong> itself be treated as the dataset resource.
+This ensures that consumers can reliably discover and access the latest available aggregated results. Furthermore, Service 
 descriptions <strong>MAY</strong> be semantically enriched to provide more detailed information about their outputs and capabilities.
 For example, Services can describe a service output endpoint as a SPARQL endpoint using <code>sd:Service</code>, use 
 <code>dct:accrualPeriodicity</code> on the dataset to indicate the frequency of updates, or describe the service API using the Hydra 
 Core Ontology (<a data-link-type="biblio" href="#biblio-hydra" title="Hydra Core Vocabulary">[Hydra]</a>).</p>
-   <div class="example" id="example-e13e896c">
-    <a class="self-link" href="#example-e13e896c"></a>
+   <div class="example" id="example-6044e047">
+    <a class="self-link" href="#example-6044e047"></a>
 
-<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>:</c-> <c- g>&lt;https://example.com/agg1/services/sparql-query-view-service#></c-> <c- p>.</c->
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>:</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>inst-trans:</c-> <c- g>&lt;https://example.org/agg1/transformations/></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>provlog:</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service/provenance#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>dcat:</c-> <c- g>&lt;https://www.w3.org/ns/dcat#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>prov:</c-> <c- g>&lt;http://www.w3.org/ns/prov#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>dct:</c-> <c- g>&lt;http://purl.org/dc/terms/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>service</c->
+<c- g>&lt;https://example.org/agg1/services/sparql-query-view-service></c->
     <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>Service</c-> <c- p>;</c->
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>DataService</c-> <c- p>;</c->
     <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>SoftwareAgent</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>status</c-> <c- s>"running"</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>createdAt</c-> <c- s>"2024-01-01T12:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>performs</c-> <c- p>:</c-><c- f>sparql-query-view</c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>applies</c-> <c- g>&lt;https://example.com/agg1/transformations/sparql-query-view-service-request></c-> <c- p>;</c->
-    <c- nn>aggr</c-><c- p>:</c-><c- f>implements</c-> <c- g>&lt;https://example.com/agg1/transformations/implementations/sparql-query-view-implementation></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>performs</c-> <c- nn>inst-trans</c-><c- p>:</c-><c- f>sparql-query-view</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>applies</c-> <c- nn>inst-trans</c-><c- p>:</c-><c- f>sparql-query-view-service-request</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>servesDataset</c-> <c- p>:</c-><c- f>dataset</c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>dataset</c->
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>forOutput</c-> <c- nn>inst-trans</c-><c- p>:</c-><c- f>view-output</c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>distribution</c-> <c- p>:</c-><c- f>distribution-xml</c-> <c- p>,</c->
      <c- p>:</c-><c- f>distribution-json</c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>hasCurrentVersion</c-> <c- g>&lt;https://example.com/agg1/services/services/sparql-query-view-service/provenance#dataset-0></c-> <c- p>.</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>hasVersion</c-> <c- nn>provlog</c-><c- p>:</c-><c- f>dataset-0</c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>distribution-xml</c->
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Distribution</c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>mediaType</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/application/sparql-results+xml></c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;https://example.com/agg1/services/sparql-query-view-service/output></c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- p>:</c-><c- f>service</c-> <c- p>.</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service/output></c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service></c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>distribution-json</c->
     <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Distribution</c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>mediaType</c-> <c- g>&lt;http://www.iana.org/assignments/media-types/application/sparql-results+json></c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;https://example.com/agg1/services/sparql-query-view-service/output></c-> <c- p>;</c->
-    <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- p>:</c-><c- f>service</c-> <c- p>.</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>accessURL</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service/output></c-> <c- p>;</c->
+    <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service></c-> <c- p>.</c->
 </pre>
    </div>
    <h3 class="heading settled" data-level="4.5" id="aggregator-service-provenance-log"><span class="secno">4.5. </span><span class="content">Service Provenance Log</span><a class="self-link" href="#aggregator-service-provenance-log"></a></h3>
    <p>An aggregator implementation <strong>MAY</strong> provide provenance information for a service. If it does, the service <strong>MUST</strong>
-link to a provenance log, where the Service Provenance Log:</p>
+link to its provenance log using <code>aggr:provenanceLog</code>, where the Service Provenance Log:</p>
    <ul>
     <li data-md>
      <p><strong>MUST</strong> be described as an <code>aggr:ProvenanceLog</code>.</p>
     <li data-md>
      <p><strong>MUST</strong> reference one or more execution activities using <code>aggr:hasActivity</code>.</p>
    </ul>
-   <div class="example" id="example-c82fcd39">
-    <a class="self-link" href="#example-c82fcd39"></a>
+   <div class="example" id="example-b557eec1">
+    <a class="self-link" href="#example-b557eec1"></a>
 
-<pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;https://example.com/agg1/services/sparql-query-view-service/provenance#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 
-<c- g>&lt;></c->
+<c- g>&lt;https://example.org/agg1/services/sparql-query-view-service/provenance></c->
   <c- b>a</c-> <c- nn>aggr</c-><c- p>:</c-><c- f>ProvenanceLog</c-> <c- p>;</c->
   <c- nn>aggr</c-><c- p>:</c-><c- f>hasActivity</c-> <c- p>:</c-><c- f>execution-0</c-> <c- p>.</c->
 </pre>
@@ -2649,51 +2665,60 @@ link to a provenance log, where the Service Provenance Log:</p>
     <li data-md>
      <p><strong>MUST</strong> be associated with the service using <code>prov:associatedWith</code>.</p>
     <li data-md>
-     <p><strong>MUST</strong> include start and end time with <code>prov:startedAtTime</code> and <code>prov:endedAtTime</code>.</p>
+     <p><strong>MUST</strong> include a start time using <code>prov:startedAtTime</code>.</p>
+    <li data-md>
+     <p><strong>MAY</strong> include an end time using <code>prov:endedAtTime</code>.</p>
    </ul>
-   <p>The execution <strong>MAY</strong> provide additional metadata such as prov:quallifiedAssociation, or any other
+   <p>The execution <strong>MAY</strong> provide additional metadata such as <code>prov:qualifiedAssociation</code>, or any other
 relevant provenance information. The executed transformation <strong>MAY</strong> be different from the transformation declared in the 
 service description, for example when the service is a SPARQL endpoint where the execution corresponds to a single query 
 execution. In that case, the transformation in the service description describes the general functionality of the service, 
 while the transformation in the execution log describes the specific query that was executed.</p>
-   <p>The generated dataset is a virtual entity that represents a version of the dataset of the service. The dataset:</p>
+   <p>The generated dataset is a virtual entity that represents the output of the execution. When the execution uses the same
+transformation as the one described in the service description, or otherwise produces a new version of the logical
+dataset served by the service, the generated dataset represents a version of that service dataset. Otherwise, it
+represents only the result of that specific execution. The dataset:</p>
    <ul>
     <li data-md>
      <p><strong>MUST</strong> be typed as a <code>dcat:Dataset</code>.</p>
     <li data-md>
      <p><strong>MUST</strong> be typed as a <code>prov:Entity</code>.</p>
     <li data-md>
-     <p><strong>MUST</strong> specify it is a version of the service dataset using <code>dcat:isVersionOf</code>.</p>
+     <p><strong>MUST</strong> specify it is a version of the service dataset using <code>dcat:isVersionOf</code> when the execution produced a new
+version of the dataset described by the service.</p>
     <li data-md>
      <p><strong>MUST</strong> link to the execution using <code>prov:wasGeneratedBy</code>.</p>
     <li data-md>
      <p><strong>SHOULD</strong> include <code>prov:wasGeneratedAtTime</code>.</p>
    </ul>
-   <div class="example" id="example-636655cb">
-    <a class="self-link" href="#example-636655cb"></a>
+   <p>The following example shows an execution that produces a new version of the service dataset.</p>
+   <div class="example" id="example-ae5040ee">
+    <a class="self-link" href="#example-ae5040ee"></a>
 
-<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>:</c-> <c- g>&lt;https://example.com/agg1/services/services/sparql-query-view-service/provenance#></c-> <c- p>.</c->
+<pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>:</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service/provenance#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>svc:</c-> <c- g>&lt;https://example.org/agg1/services/sparql-query-view-service#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>inst-trans:</c-> <c- g>&lt;https://example.org/agg1/transformations/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>dcat:</c-> <c- g>&lt;https://www.w3.org/ns/dcat#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>prov:</c-> <c- g>&lt;http://www.w3.org/ns/prov#></c-> <c- p>.</c->
-<c- k>@prefix</c-> <c- nn>dct:</c-> <c- g>&lt;http://purl.org/dc/terms/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>execution-0</c->
   <c- b>a</c-> <c- nn>fno</c-><c- p>:</c-><c- f>Execution</c-> <c- p>;</c->
   <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Activity</c-> <c- p>;</c->
-  <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- p>:</c-><c- f>sparql-query-view</c-> <c- p>;</c->
-  <c- p>:</c-><c- f>sparql-query-string</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c-> <c- p>;</c->
-  <c- p>:</c-><c- f>query-source</c-> <c- s>"http://example.org/source1"</c-> <c- p>;</c->
-  <c- p>:</c-><c- f>sparql-query-view</c-> <c- p>:</c-><c- f>dataset-0</c-> <c- p>;</c->
-  <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- p>:</c-><c- f>sparql-query-view-service</c-> <c- p>;</c->
+  <c- nn>fno</c-><c- p>:</c-><c- f>executes</c-> <c- nn>inst-trans</c-><c- p>:</c-><c- f>sparql-query-view</c-> <c- p>;</c->
+  <c- nn>inst-trans</c-><c- p>:</c-><c- f>query</c-> <c- s>"SELECT * WHERE { ?s ?p ?o }"</c-> <c- p>;</c->
+  <c- nn>inst-trans</c-><c- p>:</c-><c- f>source</c-> <c- s>"http://example.org/source1"</c-> <c- p>;</c->
+  <c- nn>inst-trans</c-><c- p>:</c-><c- f>view</c-> <c- p>:</c-><c- f>dataset-0</c-> <c- p>;</c->
+  <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- nn>svc</c-><c- p>:</c-><c- f>service</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>startedAtTime</c-> <c- s>"2025-01-02T12:00:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>endedAtTime</c-> <c- s>"2025-01-02T12:02:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>.</c->
 
-<c- p>:</c-><c- f>dataset-0</c-> <c- p>;</c->
+<c- p>:</c-><c- f>dataset-0</c->
   <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c-> <c- p>;</c->
   <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Entity</c-> <c- p>;</c->
-  <c- nn>dcat</c-><c- p>:</c-><c- f>isVersionOf</c-> <c- p>:</c-><c- f>dataset</c-> <c- p>.</c->
+  <c- nn>dcat</c-><c- p>:</c-><c- f>isVersionOf</c-> <c- p>:</c-><c- f>dataset</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>wasGeneratedBy</c-> <c- p>:</c-><c- f>execution-0</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>wasGeneratedAtTime</c-> <c- s>"2025-01-02T12:02:00Z"</c-><c- p>^^</c-><c- nn>xsd</c-><c- p>:</c-><c- f>dateTime</c-> <c- p>.</c->
 </pre>
@@ -2717,12 +2742,12 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
     <dd data-md>
      <p>The value is a string containing the absolute URL of the Aggregator Management Endpoint (<a href="#aggregator-management-endpoint">§ 6.1 Aggregator Management Endpoint</a>);
 in the RDF representations, this member maps to the predicate <code>aggr:registrationEndpoint</code> 
-(<a href="#aggr-registration-endpoint-property">§ 10.2.18 aggr:registrationEndpoint</a>).</p>
+(<a href="#aggr-registration-endpoint-property">§ 10.2.20 aggr:registrationEndpoint</a>).</p>
     <dt data-md><strong>supported_management_flows</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a JSON array of strings identifying the supported management flow tokens at <code>management_endpoint</code>; in
 the RDF representations, each entry maps to an <code>aggr:supportedRegistrationType</code> triple 
-(<a href="#aggr-supported-registration-type-property">§ 10.2.19 aggr:supportedRegistrationType</a>) whose object is the corresponding flow class IRI.</p>
+(<a href="#aggr-supported-registration-type-property">§ 10.2.21 aggr:supportedRegistrationType</a>) whose object is the corresponding flow class IRI.</p>
     <dd data-md>
      <p>Each member MUST be one of the management flow tokens defined in <a href="#aggregator-management-endpoint">§ 6.1 Aggregator Management Endpoint</a>:</p>
      <ul>
@@ -2737,23 +2762,23 @@ the RDF representations, each entry maps to an <code>aggr:supportedRegistrationT
     <dd data-md>
      <p>The value is a JSON array of strings identifying the supported request formats for the
 <code>management_endpoint</code>. Each entry MUST be a media type; in RDF representations, each entry maps to
-an <code>aggr:registrationRequestFormatSupported</code> triple (<a href="#aggr-registration-request-format-supported-property">§ 10.2.20 aggr:registrationRequestFormatSupported</a>).
+an <code>aggr:registrationRequestFormatSupported</code> triple (<a href="#aggr-registration-request-format-supported-property">§ 10.2.22 aggr:registrationRequestFormatSupported</a>).
 Servers MUST include either <code>application/json</code> or <code>application/x-www-form-urlencoded</code> or both.</p>
     <dt data-md><strong>version</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the semantic version (<a data-link-type="biblio" href="#biblio-semver" title="Semantic Versioning 2.0.0">[SEMVER]</a>) of the Aggregator specification that the server
 adheres to; in the RDF representations, this member maps to the predicate <code>aggr:specVersion</code> 
-(<a href="#aggr-spec-version-property">§ 10.2.21 aggr:specVersion</a>).</p>
+(<a href="#aggr-spec-version-property">§ 10.2.23 aggr:specVersion</a>).</p>
     <dt data-md><strong>client_identifier</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the Client ID Document (<a href="#client-id-document">§ 5.2 Client ID Document</a>); in
 the RDF representations, this member maps to the predicate <code>aggr:clientIdentifier</code> 
-(<a href="#aggr-client-id-property">§ 10.2.22 aggr:clientIdentifier</a>).</p>
+(<a href="#aggr-client-id-property">§ 10.2.24 aggr:clientIdentifier</a>).</p>
     <dt data-md><strong>transformation_catalog</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the server-level Transformation Catalog
 (<a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>); in the RDF representations, this member maps to the predicate
-<code>aggr:transformationCatalog</code> (<a href="#aggr-transformation-catalog-property">§ 10.2.23 aggr:transformationCatalog</a>).</p>
+<code>aggr:transformationCatalog</code> (<a href="#aggr-transformation-catalog-property">§ 10.2.25 aggr:transformationCatalog</a>).</p>
    </dl>
    <div class="example" id="example-4be5e58d">
     <a class="self-link" href="#example-4be5e58d"></a>
@@ -2809,12 +2834,18 @@ aggregator, the <code>redirect_uris</code> property is OPTIONAL instead of REQUI
 the same Aggregator Server (depending on the implementation). Adding this property allows an Aggregator Server 
 implementation to restrict which clients may create aggregators on the server.</p>
    <h3 class="heading settled" data-level="5.3" id="server-level-transformation-catalog"><span class="secno">5.3. </span><span class="content">Server-level Transformation Catalog</span><a class="self-link" href="#server-level-transformation-catalog"></a></h3>
-   <p>The Transformation Catalog is an RDF document describing all aggregator transformation functions (<a href="#aggregator-data-model">§ 4 Aggregator Data Model</a>)
-that can be deployed as services by the aggregator server.</p>
+   <p>The Transformation Catalog is an RDF document describing the reusable transformation resources
+(<a href="#aggregator-data-model">§ 4 Aggregator Data Model</a>) that an Aggregator Server makes available. These resources are primarily deployable
+<code>fno:Function</code>s, including composite transformations described using <code>fnoc:composition</code>. A server MAY additionally
+publish reusable <code>fno:AppliedFunction</code> templates in the same catalog. Supporting resources such as mappings,
+algorithms, and composition descriptions MAY be included in the catalog document and linked from those primary
+resources.</p>
    <p>The <code>aggr:TransformationCatalog</code>:</p>
    <ul>
     <li data-md>
      <p><strong>MUST</strong> reference all supported transformations using <code>aggr:hasTransformation</code>.</p>
+    <li data-md>
+     <p><strong>MAY</strong> reference reusable Applied Functions using <code>aggr:hasAppliedFunction</code>.</p>
     <li data-md>
      <p><strong>MAY</strong> reference a supported algorithm using <code>aggr:hasAlgorithm</code>.</p>
     <li data-md>
@@ -2822,14 +2853,15 @@ that can be deployed as services by the aggregator server.</p>
     <li data-md>
      <p><strong>MUST</strong> reference all resources not hosted by the Aggregator Server using <code>rdfs:seeAlso</code>.</p>
    </ul>
-   <div class="example" id="example-02cab251">
-    <a class="self-link" href="#example-02cab251"></a>
+   <div class="example" id="example-ec1ed3d2">
+    <a class="self-link" href="#example-ec1ed3d2"></a>
 
 <pre class="highlight language-turtle"><c- k>@base</c-> <c- g>&lt;http://aggregator.example.org/transformations#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>dct:</c-> <c- g>&lt;http://purl.org/dc/terms/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>rdfs:</c-> <c- g>&lt;http://www.w3.org/2000/01/rdf-schema#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>fno:</c-> <c- g>&lt;https://w3id.org/function/ontology#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>fnoc:</c-> <c- g>&lt;https://fno.io/vocabulary/composition/0.1.0/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>rdf:</c-> <c- g>&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
 
@@ -2837,6 +2869,7 @@ that can be deployed as services by the aggregator server.</p>
     <c- nn>dct</c-><c- p>:</c-><c- f>title</c-> <c- s>"Aggregator transformations"</c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;StaticSourcesQueryView></c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;DynamicSourcesQueryView></c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>hasAppliedFunction</c-> <c- g>&lt;StaticSourcesQueryViewTemplate></c-> <c- p>;</c->
     <c- nn>aggr</c-><c- p>:</c-><c- f>hasTransformation</c-> <c- g>&lt;http://example.org/external/ExternalFunction></c-> <c- p>;</c->
     <c- nn>rdfs</c-><c- p>:</c-><c- f>seeAlso</c-> <c- g>&lt;http://example.org/external/ExternalFunction></c-> <c- p>.</c->
 
@@ -2876,7 +2909,17 @@ that can be deployed as services by the aggregator server.</p>
 <c- g>&lt;Result></c->
     <c- b>a</c->               <c- nn>fno</c-><c- p>:</c-><c- f>Output</c-> <c- p>;</c->
     <c- nn>dct</c-><c- p>:</c-><c- f>conformsTo</c->  <c- g>&lt;https://www.w3.org/TR/sparql11-protocol/></c-> <c- p>;</c->
-    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- g>&lt;result></c-> <c- p>;</c->
+    <c- nn>fno</c-><c- p>:</c-><c- f>predicate</c->   <c- g>&lt;result></c-> <c- p>.</c->
+
+<c- g>&lt;StaticSourcesQueryViewTemplate></c->
+    <c- b>a</c->               <c- nn>fno</c-><c- p>:</c-><c- f>AppliedFunction</c-> <c- p>;</c->
+    <c- nn>fnoc</c-><c- p>:</c-><c- f>applies</c->    <c- g>&lt;StaticSourcesQueryView></c-> <c- p>;</c->
+    <c- nn>fnoc</c-><c- p>:</c-><c- f>parameterBindings</c-> <c- p>(</c->
+      <c- p>[</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c-> <c- g>&lt;StaticSources></c-> <c- p>;</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- g>&lt;https://example.org/default-sources.txt></c->
+      <c- p>]</c->
+    <c- p>)</c-> <c- p>.</c->
 </pre>
    </div>
    <h4 class="heading settled" data-level="5.3.1" id="catalog-composite-transformations"><span class="secno">5.3.1. </span><span class="content">Composite Transformations</span><a class="self-link" href="#catalog-composite-transformations"></a></h4>
@@ -2884,6 +2927,9 @@ that can be deployed as services by the aggregator server.</p>
    <p>A transformation <strong>MAY</strong> be linked to an <code>fnoc:Composition</code> using <code>fnoc:composition</code>. This <strong>MAY</strong> be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
 provide additional transparency.</p>
+   <p>Composite transformations remain <code>fno:Function</code> resources and therefore <strong>MUST</strong> be advertised using
+<code>aggr:hasTransformation</code>. The <code>fnoc:Composition</code> resources they reference are supporting resources rather than
+separate top-level transformation entries in the catalog.</p>
    <p>If all transformations referenced within the <code>fnoc:Composition</code> are also included in the catalog,
 each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
 while internally orchestrating multiple individual services.</p>
@@ -3249,15 +3295,15 @@ The aggregator should not give these tokens or credentials to the client.</p>
 </pre>
    </div>
    <p>Or with a non-WebID subject:</p>
-   <div class="example" id="example-304c375b">
-    <a class="self-link" href="#example-304c375b"></a>
+   <div class="example" id="example-b024b61a">
+    <a class="self-link" href="#example-b024b61a"></a>
 
 <pre class="highlight language-http"><c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c-> <c- m>201</c-> <c- ne>Created</c->
 <c- e>Content-Type</c-><c- o>:</c-> <c- l>application/json</c->
 
 <c- p>{</c->
   <c- f>"aggregator"</c-><c- p>:</c-> <c- u>"https://aggregator.example/aggregators/agg-7890/"</c-><c- p>,</c->
-  <c- f>"subject"</c-><c- p>:</c-> <c- u>"aggregator@example.com"</c-><c- p>,</c->
+  <c- f>"subject"</c-><c- p>:</c-> <c- u>"aggregator@example.org"</c-><c- p>,</c->
   <c- f>"idp"</c-><c- p>:</c-> <c- u>"https://idp.example/"</c->
 <c- p>}</c->
 </pre>
@@ -4125,16 +4171,27 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
    <p>This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
 <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
 advertise the correct location via its <code>transformation_catalog</code> field (<code>aggr:transformationsEndpoint</code>). It allows aggregator 
-implementations to expose user-specific transformations, or protected/private transformations. This endpoint MAY be user 
-specific and MUST require authentication. The endpoint MAY return a 404 Not Found if no user-specific transformations are 
-available. A client SHOULD combine the information from this endpoint with the server-level Transformation Catalog to get a 
-complete view on the available transformations. The endpoint follows the same content negotiation rules and other 
-requirements as the server-level Transformation Catalog. The Aggregator MAY put the
-transformations in different resources so different policies can be added, and link to them using <code>rdfs:seeAlso</code>. The
-endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.</p>
+implementations to expose user-specific transformations, protected/private transformations, and reusable
+instance-specific <code>fno:AppliedFunction</code> templates. This endpoint MAY be user specific and MUST require authentication.
+The endpoint MAY return a 404 Not Found if no user-specific resources are available. A client SHOULD combine the
+information from this endpoint with the server-level Transformation Catalog to get a complete view on the available
+transformations and reusable applied-function templates. The endpoint follows the same content negotiation rules and
+other requirements as the server-level Transformation Catalog.</p>
+   <p>The instance-level Transformation Catalog:</p>
+   <ul>
+    <li data-md>
+     <p><strong>MUST</strong> reference each directly available <code>fno:Function</code> using <code>aggr:hasTransformation</code>.</p>
+    <li data-md>
+     <p><strong>MAY</strong> reference reusable instance-specific <code>fno:AppliedFunction</code> resources using <code>aggr:hasAppliedFunction</code>.</p>
+    <li data-md>
+     <p><strong>MAY</strong> include supporting resources such as mappings, algorithms, or <code>fnoc:Composition</code> descriptions linked from
+those functions or Applied Functions.</p>
+   </ul>
+   <p>The Aggregator MAY put these resources in different resources so different policies can be added, and link to them
+using <code>rdfs:seeAlso</code>. The endpoint MUST at least return the resources that are directly available at the endpoint URL.</p>
    <h2 class="heading settled" data-level="9" id="aggregator-service-management"><span class="secno">9. </span><span class="content">Aggregator Service Management</span><a class="self-link" href="#aggregator-service-management"></a></h2>
    <p>This section describes how users manage services deployed on an aggregator.</p>
-   <p>The Service Collection endpoint (<a href="#service-collection-endpoint">§ 9.1 Service Collection Endpoint</a>), which allows client to:</p>
+   <p>The Service Collection endpoint (<a href="#service-collection-endpoint">§ 9.1 Service Collection Endpoint</a>), which allows clients to:</p>
    <ul>
     <li data-md>
      <p>Discover running services on an aggregator (<a href="#service-discovery">§ 9.1.3 Service Discovery</a>)</p>
@@ -4157,7 +4214,7 @@ endpoint MUST at least return a list of transformations that are directly availa
 using the <code>service_collection_endpoint</code> field. Clients <strong>MUST</strong> treat the advertised URL as authoritative and <strong>MUST NOT</strong>
 assume a fixed path. Examples shown in this section use <code>https://aggregator.example/agg1/services</code> for illustration purposes only.</p>
    <p>The Aggregator <strong>MUST</strong> register this endpoint as an UMA resource with the Authorization Server and <strong>MUST</strong> advertise
-atleast the <code>read</code> and <code>create</code> scopes.</p>
+at least the <code>read</code> and <code>create</code> scopes.</p>
    <h4 class="heading settled" data-level="9.1.1" id="service-deployment"><span class="secno">9.1.1. </span><span class="content">Deploying a Service</span><a class="self-link" href="#service-deployment"></a></h4>
    <p>The Service Collection Endpoint <strong>MAY</strong> allow <code>POST</code> requests to deploy new services. The supported content types <strong>MUST</strong> be
 advertised via the <code>Accept-Post</code> header defined in <a data-link-type="biblio" href="#biblio-ldp" title="Linked Data Platform">[LDP]</a>.</p>
@@ -4201,8 +4258,13 @@ server-level or this aggregator’s instance-level transformation catalog.</p>
      <p>Upon successful processing of a valid request, the server <strong>MUST</strong>:</p>
      <ol>
       <li data-md>
-       <p>If a Service Request was provided, add an applied function to the instance-level Transformation Catalog if no
-applied function with the same parameter bindings exists.</p>
+       <p>If an Applied Function service request was provided, add that applied function to the instance-level Transformation Catalog if no
+equivalent Applied Function already exists there.
+For this check, two Applied Functions are equivalent when they use the same <code>fnoc:applies</code>
+transformation and the same parameter bindings. The catalog entry <strong>MUST</strong> remain a separate
+<code>fno:AppliedFunction</code> resource linked with <code>aggr:hasAppliedFunction</code>. If the request targets a
+composite transformation, the composite <code>fno:Function</code> <strong>MUST</strong> continue to be advertised separately
+using <code>aggr:hasTransformation</code>.</p>
       <li data-md>
        <p>Deploy the new service on the aggregator and expose its Service Description Endpoint <a href="#service-endpoint">§ 9.2 Service Description Endpoint</a>.</p>
        <ul>
@@ -4219,7 +4281,7 @@ applied function with the same parameter bindings exists.</p>
        <p>Register the service endpoint as a UMA resource at the Authorization Server,
 advertising at least the <code>read</code> and <code>delete</code> scopes.</p>
       <li data-md>
-       <p>Register the service output endpoint as a UMA resource, advertising at least the <code>read</code> scope.</p>
+       <p>Register each service output endpoint as a UMA resource, advertising at least the <code>read</code> scope.</p>
       <li data-md>
        <p>Respond with:</p>
        <ul>
@@ -4236,8 +4298,8 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
      <p>If the request is valid but the service fails to deploy the service, the server <strong>MUST</strong> respond with <code>500 Internal Server Error</code>.</p>
    </dl>
    <p>The following example requests a service that performs the <code>QueryView</code> transformation using the <code>QueryViewMapping</code>:</p>
-   <div class="example" id="example-521dff10">
-    <a class="self-link" href="#example-521dff10"></a>
+   <div class="example" id="example-d6229027">
+    <a class="self-link" href="#example-d6229027"></a>
 
 <pre class="highlight language-http"><c- nf>POST</c-> <c- nn>https://aggregator.example/agg1/services</c-> <c- kr>HTTP</c-><c- o>/</c-><c- m>1.1</c->
 <c- e>Host</c-><c- o>:</c-> <c- l>aggregator.example</c->
@@ -4263,7 +4325,7 @@ referencing an unknown transformation), the server <strong>MUST</strong> respond
       <c- p>[</c->
         <c- nn>fnoc</c-><c- p>:</c-><c- f>boundParameter</c->
           <c- g>&lt;https://aggregator.example/transformations#Sources></c-> <c- p>;</c->
-        <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- s>"http://example.com/source1"</c->
+        <c- nn>fnoc</c-><c- p>:</c-><c- f>boundToTerm</c-> <c- s>"http://example.org/source1"</c->
       <c- p>]</c->
     <c- p>)</c->
   <c- p>]</c-> <c- p>;</c->
@@ -4371,9 +4433,11 @@ It is also used to delete the corresponding service.</p>
    </dl>
    <p>If a composite service is being deleted the Aggregator <strong>MUST</strong> stop and remove every internal transformation if
 not part of any other composite service.</p>
-   <h4 class="heading settled" data-level="9.2.1" id="service-output"><span class="secno">9.2.1. </span><span class="content">Service Output Endpoint</span><a class="self-link" href="#service-output"></a></h4>
-   <p>The Service Output Endpoint <strong>MUST</strong> be hosted at the same URL as the one referenced via <code>dcat:accessURL</code>
-in the corresponding service <code>dcat:Distribution</code>.</p>
+   <h4 class="heading settled" data-level="9.2.1" id="service-output"><span class="secno">9.2.1. </span><span class="content">Service Output Endpoints</span><a class="self-link" href="#service-output"></a></h4>
+   <p>Each Service Output Endpoint <strong>MUST</strong> be hosted at the same URL as the one referenced via <code>dcat:accessURL</code>
+in a corresponding service <code>dcat:Distribution</code>.</p>
+   <p>Each Service Output Endpoint is the access interface for that distribution. It is distinct from the <code>dcat:Dataset</code>
+resource identified in the service description and <strong>MUST NOT</strong> itself be interpreted as the dataset.</p>
    <p>When a client requests a Service Output Endpoint, the server <strong>MUST</strong> include an HTTP <code>Link</code> header (<a data-link-type="biblio" href="#biblio-web-linking" title="Web Linking">[Web-Linking]</a>) pointing to the
 Service Description Endpoint using <code>aggr:fromService</code>.</p>
    <div class="example" id="example-06e8ae77">
@@ -4408,22 +4472,25 @@ An execution resource:</p>
     <li data-md>
      <p>The Service Description <strong>MUST</strong> include a <code>dcat:Dataset</code> representing the logical (abstract) dataset.</p>
     <li data-md>
+     <p>The logical dataset <strong>MUST</strong> link to the corresponding function output using <code>aggr:forOutput</code>.</p>
+    <li data-md>
      <p>This dataset MUST reference its concrete versions using:</p>
      <ul>
       <li data-md>
        <p><code>dcat:hasVersion</code> to list all known versions.</p>
-      <li data-md>
-       <p><code>dcat:hasCurrentVersion</code> to indicate the most recent version.</p>
      </ul>
     <li data-md>
      <p>Each version <strong>MUST</strong> be represented as a separate <code>dcat:Dataset</code> resource.</p>
    </ul>
+   <p class="note" role="note"><span class="marker">NOTE:</span> A future revision of this specification MAY additionally use <code>dcat:hasCurrentVersion</code> once that term is
+standardized in a published DCAT version. Until then, implementations should use <code>dcat:hasVersion</code> together with
+timestamps or other metadata to indicate recency.</p>
    <p>Additionally:</p>
    <ul>
     <li data-md>
      <p>All versioned dataset resources <strong>MUST</strong> be included in the Provenance Log.</p>
     <li data-md>
-     <p>Versioned datasets **MAY%% include relevant version metadata (e.g., relationships to previous versions).</p>
+     <p>Versioned datasets <strong>MAY</strong> include relevant version metadata (e.g., relationships to previous versions).</p>
     <li data-md>
      <p>Executions in the Provenance Log <strong>MUST NOT</strong> link to the abstract dataset. Instead, they <strong>MUST</strong> link to the specific
 dataset version they produced.</p>
@@ -4435,8 +4502,8 @@ dataset version they produced.</p>
     <li data-md>
      <p>The Provenance Log captures the full evolution of the dataset over time.</p>
    </ul>
-   <div class="example" id="example-ab572304">
-    <a class="self-link" href="#example-ab572304"></a>
+   <div class="example" id="example-7d148dc8">
+    <a class="self-link" href="#example-7d148dc8"></a>
 This example shows a Service Description for a service that updates its dataset on a daily basis. 
 The dataset is modeled as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
 
@@ -4444,10 +4511,12 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
 <c- k>@prefix</c-> <c- nn>dct:</c-> <c- g>&lt;http://purl.org/dc/terms/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>freq:</c-> <c- g>&lt;http://purl.org/cld/freq/></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
+<c- k>@prefix</c-> <c- nn>prov:</c-> <c- g>&lt;http://www.w3.org/ns/prov#></c-> <c- p>.</c->
 <c- k>@prefix</c-> <c- nn>xsd:</c-> <c- g>&lt;http://www.w3.org/2001/XMLSchema#></c-> <c- p>.</c->
 
 <c- p>:</c-><c- f>dataset</c->
-    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c->
+    <c- b>a</c-> <c- nn>dcat</c-><c- p>:</c-><c- f>Dataset</c-> <c- p>;</c->
+    <c- nn>aggr</c-><c- p>:</c-><c- f>forOutput</c-> <c- p>:</c-><c- f>result</c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>distribution</c-> <c- p>:</c-><c- f>distribution</c-> <c- p>;</c->
     <c- nn>dcat</c-><c- p>:</c-><c- f>hasVersion</c-> <c- g>&lt;https://aggregator.example/agg1/services/service1/provenance#dataset-0></c-><c- p>,</c->
         <c- g>&lt;https://aggregator.example/agg1/services/service1/provenance#dataset-1></c-> <c- p>;</c->
@@ -4466,8 +4535,8 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
     <c- nn>dcat</c-><c- p>:</c-><c- f>accessService</c-> <c- p>:</c-><c- f>service</c-> <c- p>.</c->
 </pre>
    </div>
-   <div class="example" id="example-2c74ab76">
-    <a class="self-link" href="#example-2c74ab76"></a>
+   <div class="example" id="example-596b0bcf">
+    <a class="self-link" href="#example-596b0bcf"></a>
 The Provenance Log below illustrates two executions of a service and how they relate to versioned dataset resources.
 
 <pre class="highlight language-turtle"><c- k>@prefix</c-> <c- nn>aggr:</c-> <c- g>&lt;https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#></c-> <c- p>.</c->
@@ -4488,7 +4557,7 @@ The Provenance Log below illustrates two executions of a service and how they re
   <c- p>:</c-><c- f>source</c-> <c- s>"http://example.org/source1"</c-> <c- p>;</c->
   <c- p>:</c-><c- f>result</c-> <c- p>:</c-><c- f>dataset-1</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
-  <c- nn>prov</c-><c- p>:</c-><c- f>quallifiedAssociation</c-> <c- p>[</c->
+  <c- nn>prov</c-><c- p>:</c-><c- f>qualifiedAssociation</c-> <c- p>[</c->
     <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Association</c-> <c- p>;</c->
     <c- nn>prov</c-><c- p>:</c-><c- f>agent</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
     <c- nn>prov</c-><c- p>:</c-><c- f>hadPlan</c-> <c- p>:</c-><c- f>query-view</c-> <c- p>.</c->
@@ -4505,7 +4574,7 @@ The Provenance Log below illustrates two executions of a service and how they re
   <c- p>:</c-><c- f>source</c-> <c- s>"http://example.org/source1"</c-> <c- p>;</c->
   <c- p>:</c-><c- f>result</c-> <c- p>:</c-><c- f>dataset-1</c-> <c- p>;</c->
   <c- nn>prov</c-><c- p>:</c-><c- f>associatedWith</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
-  <c- nn>prov</c-><c- p>:</c-><c- f>quallifiedAssociation</c-> <c- p>[</c->
+  <c- nn>prov</c-><c- p>:</c-><c- f>qualifiedAssociation</c-> <c- p>[</c->
     <c- b>a</c-> <c- nn>prov</c-><c- p>:</c-><c- f>Association</c-> <c- p>;</c->
     <c- nn>prov</c-><c- p>:</c-><c- f>agent</c-> <c- p>:</c-><c- f>service</c-> <c- p>;</c->
     <c- nn>prov</c-><c- p>:</c-><c- f>hadPlan</c-> <c- p>:</c-><c- f>query-view</c-> <c- p>.</c->
@@ -4539,11 +4608,11 @@ This prevents unbounded growth of the log over time and ensures manageable stora
      <p>The endpoint <strong>SHOULD</strong> support HTTP content negotiation,
 allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).</p>
    </ul>
-   <h4 class="heading settled" data-level="9.3.2" id="continous"><span class="secno">9.3.2. </span><span class="content">Continous updates</span><a class="self-link" href="#continous"></a></h4>
+   <h4 class="heading settled" data-level="9.3.2" id="continous"><span class="secno">9.3.2. </span><span class="content">Continuous updates</span><a class="self-link" href="#continous"></a></h4>
    <p>For services that continuously update their data (e.g., event-driven or streaming updates):</p>
    <ul>
     <li data-md>
-     <p>The execution <strong>SHOULD NOT</strong> include <code>prov:endedAtTime</code></p>
+     <p>The execution <strong>MAY</strong> omit <code>prov:endedAtTime</code></p>
     <li data-md>
      <p>All newly generated datasets <strong>SHOULD</strong> reference the same ongoing <code>prov:Activity</code></p>
    </ul>
@@ -4555,7 +4624,7 @@ performance constraints, and retention policy.</p>
     <li data-md>
      <p>Apply time-based grouping (e.g., hourly or daily snapshots)</p>
     <li data-md>
-     <p>Only materialize provenance when used externally (e.g., when used by another service provenance log)</p>
+     <p>Only materialize provenance when used externally (e.g., when used by another service’s provenance log)</p>
    </ul>
    <p>The chosen strategy <strong>SHOULD</strong> be documented and consistently applied to ensure predictable provenance semantics.</p>
    <h2 class="heading settled" data-level="10" id="vocabulary"><span class="secno">10. </span><span class="content">Vocabulary</span><a class="self-link" href="#vocabulary"></a></h2>
@@ -4699,7 +4768,7 @@ Links an <code>aggr:Aggregator</code> to its service collection endpoint.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Aggregator</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="10.2.6" id="aggr-service-property"><span class="secno">10.2.6. </span><span class="content">aggr:service</span><a class="self-link" href="#aggr-service-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.6" id="aggr-service-property"><span class="secno">10.2.6. </span><span class="content">aggr:hasService</span><a class="self-link" href="#aggr-service-property"></a></h4>
    
 Links an <code>aggr:ServiceCollection</code> to the <code>aggr:Service</code> instances it advertises.
 
@@ -4709,13 +4778,22 @@ Links an <code>aggr:ServiceCollection</code> to the <code>aggr:Service</code> in
 <strong>range:</strong> <code>aggr:Service</code></p>
    <h4 class="heading settled" data-level="10.2.7" id="aggr-has-transformation-property"><span class="secno">10.2.7. </span><span class="content">aggr:hasTransformation</span><a class="self-link" href="#aggr-has-transformation-property"></a></h4>
    
-Links an <code>aggr:TransformationCollection</code> to a transformation it supports.
+Links an <code>aggr:TransformationCollection</code> to a supported <code>fno:Function</code>. Composite transformations are also linked
+with this property because they remain <code>fno:Function</code> resources.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:TransformationCollection</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Function">fno:Function</a></p>
-   <h4 class="heading settled" data-level="10.2.8" id="aggr-has-algorithm-property"><span class="secno">10.2.8. </span><span class="content">aggr:hasAlgorithm</span><a class="self-link" href="#aggr-has-algorithm-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.8" id="aggr-has-applied-function-property"><span class="secno">10.2.8. </span><span class="content">aggr:hasAppliedFunction</span><a class="self-link" href="#aggr-has-applied-function-property"></a></h4>
+   
+Links an <code>aggr:TransformationCollection</code> to a reusable <code>fno:AppliedFunction</code> template it advertises.
+
+
+   <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
+<strong>domain:</strong> <code>aggr:TransformationCollection</code><br>
+<strong>range:</strong> <a href="https://w3id.org/function/spec/#AppliedFunction">fno:AppliedFunction</a></p>
+   <h4 class="heading settled" data-level="10.2.9" id="aggr-has-algorithm-property"><span class="secno">10.2.9. </span><span class="content">aggr:hasAlgorithm</span><a class="self-link" href="#aggr-has-algorithm-property"></a></h4>
    
 Links an <code>aggr:TransformationCollection</code> to an algorithm it supports.
 
@@ -4723,7 +4801,7 @@ Links an <code>aggr:TransformationCollection</code> to an algorithm it supports.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:TransformationCollection</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Algorithm">fno:Algorithm</a></p>
-   <h4 class="heading settled" data-level="10.2.9" id="aggr-has-mapping-property"><span class="secno">10.2.9. </span><span class="content">aggr:hasMapping</span><a class="self-link" href="#aggr-has-mapping-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.10" id="aggr-has-mapping-property"><span class="secno">10.2.10. </span><span class="content">aggr:hasMapping</span><a class="self-link" href="#aggr-has-mapping-property"></a></h4>
    
 Links an <code>aggr:TransformationCollection</code> to a mapping it supports.
 
@@ -4731,7 +4809,7 @@ Links an <code>aggr:TransformationCollection</code> to a mapping it supports.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:TransformationCollection</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Mapping">fno:Mapping</a></p>
-   <h4 class="heading settled" data-level="10.2.10" id="aggr-has-composition-property"><span class="secno">10.2.10. </span><span class="content">aggr:hasComposition</span><a class="self-link" href="#aggr-has-composition-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.11" id="aggr-has-composition-property"><span class="secno">10.2.11. </span><span class="content">aggr:hasComposition</span><a class="self-link" href="#aggr-has-composition-property"></a></h4>
    
 Links an <code>aggr:TransformationCollection</code> to a composition it supports.
 
@@ -4739,7 +4817,7 @@ Links an <code>aggr:TransformationCollection</code> to a composition it supports
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:TransformationCollection</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Composition">fno:Function</a></p>
-   <h4 class="heading settled" data-level="10.2.11" id="aggr-status-property"><span class="secno">10.2.11. </span><span class="content">aggr:status</span><a class="self-link" href="#aggr-status-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.12" id="aggr-status-property"><span class="secno">10.2.12. </span><span class="content">aggr:status</span><a class="self-link" href="#aggr-status-property"></a></h4>
    
 Provides the lifecycle phase of an <code>aggr:Service</code> (values such as <code>running</code>, <code>stopped</code>, or <code>error</code>).
 
@@ -4747,7 +4825,7 @@ Provides the lifecycle phase of an <code>aggr:Service</code> (values such as <co
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Service</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.12" id="aggr-status-detail-property"><span class="secno">10.2.12. </span><span class="content">aggr:statusDetail</span><a class="self-link" href="#aggr-status-detail-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.13" id="aggr-status-detail-property"><span class="secno">10.2.13. </span><span class="content">aggr:statusDetail</span><a class="self-link" href="#aggr-status-detail-property"></a></h4>
    
 Provides a human-readable explanation of the current <code>aggr:Service</code> status (for example, a stop reason or error message).
 
@@ -4755,7 +4833,7 @@ Provides a human-readable explanation of the current <code>aggr:Service</code> s
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Service</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.13" id="aggr-performs-property"><span class="secno">10.2.13. </span><span class="content">aggr:performs</span><a class="self-link" href="#aggr-performs-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.14" id="aggr-performs-property"><span class="secno">10.2.14. </span><span class="content">aggr:performs</span><a class="self-link" href="#aggr-performs-property"></a></h4>
    
 Provides the transformation an <code>aggr:Service</code> performs.
 
@@ -4763,7 +4841,7 @@ Provides the transformation an <code>aggr:Service</code> performs.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Service</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Function">fno:Function</a></p>
-   <h4 class="heading settled" data-level="10.2.14" id="aggr-applies-property"><span class="secno">10.2.14. </span><span class="content">aggr:applies</span><a class="self-link" href="#aggr-applies-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.15" id="aggr-applies-property"><span class="secno">10.2.15. </span><span class="content">aggr:applies</span><a class="self-link" href="#aggr-applies-property"></a></h4>
    
 Links an <code>aggr:Service</code> to the <code>fno:AppliedFunction</code> that captures the configured parameter bindings for that service.
 
@@ -4771,7 +4849,7 @@ Links an <code>aggr:Service</code> to the <code>fno:AppliedFunction</code> that 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Service</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#AppliedFunction">fno:AppliedFunction</a></p>
-   <h4 class="heading settled" data-level="10.2.15" id="aggr-implements-property"><span class="secno">10.2.15. </span><span class="content">aggr:implements</span><a class="self-link" href="#aggr-implements-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.16" id="aggr-implements-property"><span class="secno">10.2.16. </span><span class="content">aggr:implements</span><a class="self-link" href="#aggr-implements-property"></a></h4>
    
 Provides the implementation used by an <code>aggr:Service</code> to perform its transformation.
 
@@ -4779,15 +4857,23 @@ Provides the implementation used by an <code>aggr:Service</code> to perform its 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Service</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Implementation">fno:Implementation</a></p>
-   <h4 class="heading settled" data-level="10.2.16" id="aggr-provlog-property"><span class="secno">10.2.16. </span><span class="content">aggr:provenanceLog</span><a class="self-link" href="#aggr-provlog-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.17" id="aggr-for-output-property"><span class="secno">10.2.17. </span><span class="content">aggr:forOutput</span><a class="self-link" href="#aggr-for-output-property"></a></h4>
    
-Provides the endpoint to <code>aggr:Service</code> its provenance log.
+Links a <code>dcat:Dataset</code> exposed by an <code>aggr:Service</code> to the <code>fno:Output</code> it represents.
+
+
+   <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
+<strong>domain:</strong> <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset">dcat:Dataset</a><br>
+<strong>range:</strong> <a href="https://w3id.org/function/spec/#Output">fno:Output</a></p>
+   <h4 class="heading settled" data-level="10.2.18" id="aggr-provlog-property"><span class="secno">10.2.18. </span><span class="content">aggr:provenanceLog</span><a class="self-link" href="#aggr-provlog-property"></a></h4>
+   
+Links an <code>aggr:Service</code> to its provenance log.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:Service</code><br>
 <strong>range:</strong> <code>aggr:ProvenanceLog</code></p>
-   <h4 class="heading settled" data-level="10.2.17" id="aggr-has-activity-property"><span class="secno">10.2.17. </span><span class="content">aggr:hasActivity</span><a class="self-link" href="#aggr-has-activity-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.19" id="aggr-has-activity-property"><span class="secno">10.2.19. </span><span class="content">aggr:hasActivity</span><a class="self-link" href="#aggr-has-activity-property"></a></h4>
    
 Links an <code>aggr:ProvenanceLog</code> to an activity it includes.
 
@@ -4795,7 +4881,7 @@ Links an <code>aggr:ProvenanceLog</code> to an activity it includes.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:ProvenanceLog</code><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Execution">fno:Execution</a></p>
-   <h4 class="heading settled" data-level="10.2.18" id="aggr-registration-endpoint-property"><span class="secno">10.2.18. </span><span class="content">aggr:registrationEndpoint</span><a class="self-link" href="#aggr-registration-endpoint-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.20" id="aggr-registration-endpoint-property"><span class="secno">10.2.20. </span><span class="content">aggr:registrationEndpoint</span><a class="self-link" href="#aggr-registration-endpoint-property"></a></h4>
    
 Links an <code>aggr:AggregatorServer</code> to its registration endpoint.
 
@@ -4803,7 +4889,7 @@ Links an <code>aggr:AggregatorServer</code> to its registration endpoint.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:AggregatorServer</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="10.2.19" id="aggr-supported-registration-type-property"><span class="secno">10.2.19. </span><span class="content">aggr:supportedRegistrationType</span><a class="self-link" href="#aggr-supported-registration-type-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.21" id="aggr-supported-registration-type-property"><span class="secno">10.2.21. </span><span class="content">aggr:supportedRegistrationType</span><a class="self-link" href="#aggr-supported-registration-type-property"></a></h4>
    
 Lists the registration flows advertised by an <code>aggr:AggregatorServer</code>.
 
@@ -4811,7 +4897,7 @@ Lists the registration flows advertised by an <code>aggr:AggregatorServer</code>
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:AggregatorServer</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a> (expected to be an <code>aggr:RegistrationFlow</code> class)</p>
-   <h4 class="heading settled" data-level="10.2.20" id="aggr-registration-request-format-supported-property"><span class="secno">10.2.20. </span><span class="content">aggr:registrationRequestFormatSupported</span><a class="self-link" href="#aggr-registration-request-format-supported-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.22" id="aggr-registration-request-format-supported-property"><span class="secno">10.2.22. </span><span class="content">aggr:registrationRequestFormatSupported</span><a class="self-link" href="#aggr-registration-request-format-supported-property"></a></h4>
    
 Lists the supported request formats for an <code>aggr:AggregatorServer</code> registration endpoint.
 
@@ -4819,7 +4905,7 @@ Lists the supported request formats for an <code>aggr:AggregatorServer</code> re
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:AggregatorServer</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.21" id="aggr-spec-version-property"><span class="secno">10.2.21. </span><span class="content">aggr:specVersion</span><a class="self-link" href="#aggr-spec-version-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.23" id="aggr-spec-version-property"><span class="secno">10.2.23. </span><span class="content">aggr:specVersion</span><a class="self-link" href="#aggr-spec-version-property"></a></h4>
    
 States which version of this specification an <code>aggr:AggregatorServer</code> implements.
 
@@ -4827,7 +4913,7 @@ States which version of this specification an <code>aggr:AggregatorServer</code>
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:AggregatorServer</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.22" id="aggr-client-id-property"><span class="secno">10.2.22. </span><span class="content">aggr:clientIdentifier</span><a class="self-link" href="#aggr-client-id-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.24" id="aggr-client-id-property"><span class="secno">10.2.24. </span><span class="content">aggr:clientIdentifier</span><a class="self-link" href="#aggr-client-id-property"></a></h4>
    
 Links an <code>aggr:AggregatorServer</code> to its Client ID Document.
 
@@ -4835,7 +4921,7 @@ Links an <code>aggr:AggregatorServer</code> to its Client ID Document.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <code>aggr:AggregatorServer</code><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="10.2.23" id="aggr-transformation-catalog-property"><span class="secno">10.2.23. </span><span class="content">aggr:transformationCatalog</span><a class="self-link" href="#aggr-transformation-catalog-property"></a></h4>
+   <h4 class="heading settled" data-level="10.2.25" id="aggr-transformation-catalog-property"><span class="secno">10.2.25. </span><span class="content">aggr:transformationCatalog</span><a class="self-link" href="#aggr-transformation-catalog-property"></a></h4>
    
 References the Aggregator Server’s server-level transformation catalog.
 
@@ -5073,8 +5159,6 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
   </dl>
   <h2 class="heading no-num no-ref settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> The dataset should be linked to the output of the transformation <a class="issue-return" href="#issue-612b2958" title="Jump to section">↵</a></div>
-   <div class="issue"> If the transformation is a SPARQL Endpoint, does this make sense to describe the output as a dataset? <a class="issue-return" href="#issue-af173811" title="Jump to section">↵</a></div>
    <div class="issue"> should we allow a name field for the aggregator during creation? <a class="issue-return" href="#issue-7876f244" title="Jump to section">↵</a></div>
    <div class="issue"> TODO maybe rewrite the below requirements so it is a bit more structured and easier to read? <a class="issue-return" href="#issue-48caa997" title="Jump to section">↵</a></div>
   </div>

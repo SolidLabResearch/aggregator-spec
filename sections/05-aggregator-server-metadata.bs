@@ -109,11 +109,16 @@ implementation to restrict which clients may create aggregators on the server.
 Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------
 
-The Transformation Catalog is an RDF document describing all aggregator transformation functions ([[#aggregator-data-model]])
-that can be deployed as services by the aggregator server.
+The Transformation Catalog is an RDF document describing the reusable transformation resources
+([[#aggregator-data-model]]) that an Aggregator Server makes available. These resources are primarily deployable
+`fno:Function`s, including composite transformations described using `fnoc:composition`. A server MAY additionally
+publish reusable `fno:AppliedFunction` templates in the same catalog. Supporting resources such as mappings,
+algorithms, and composition descriptions MAY be included in the catalog document and linked from those primary
+resources.
 
 The `aggr:TransformationCatalog`:
   - **MUST** reference all supported transformations using `aggr:hasTransformation`.
+  - **MAY** reference reusable Applied Functions using `aggr:hasAppliedFunction`.
   - **MAY** reference a supported algorithm using `aggr:hasAlgorithm`.
   - **MAY** reference a supported mapping using `aggr:hasMapping`.
   - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
@@ -125,6 +130,7 @@ The `aggr:TransformationCatalog`:
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -132,6 +138,7 @@ The `aggr:TransformationCatalog`:
     dct:title "Aggregator transformations" ;
     aggr:hasTransformation <StaticSourcesQueryView> ;
     aggr:hasTransformation <DynamicSourcesQueryView> ;
+    aggr:hasAppliedFunction <StaticSourcesQueryViewTemplate> ;
     aggr:hasTransformation <http://example.org/external/ExternalFunction> ;
     rdfs:seeAlso <http://example.org/external/ExternalFunction> .
 
@@ -171,7 +178,17 @@ The `aggr:TransformationCatalog`:
 <Result>
     a               fno:Output ;
     dct:conformsTo  <https://www.w3.org/TR/sparql11-protocol/> ;
-    fno:predicate   <result> ;
+    fno:predicate   <result> .
+
+<StaticSourcesQueryViewTemplate>
+    a               fno:AppliedFunction ;
+    fnoc:applies    <StaticSourcesQueryView> ;
+    fnoc:parameterBindings (
+      [
+        fnoc:boundParameter <StaticSources> ;
+        fnoc:boundToTerm <https://example.org/default-sources.txt>
+      ]
+    ) .
 ```
 </div>
 
@@ -182,6 +199,10 @@ An Aggregator Server **MAY** support the deployment of composite transformations
 A transformation **MAY** be linked to an `fnoc:Composition` using `fnoc:composition`. This **MAY** be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
 provide additional transparency.
+
+Composite transformations remain `fno:Function` resources and therefore **MUST** be advertised using
+`aggr:hasTransformation`. The `fnoc:Composition` resources they reference are supporting resources rather than
+separate top-level transformation entries in the catalog.
 
 If all transformations referenced within the `fnoc:Composition` are also included in the catalog,
 each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 

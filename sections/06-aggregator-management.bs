@@ -235,7 +235,7 @@ Content-Type: application/json
 
 {
   "aggregator": "https://aggregator.example/aggregators/agg-7890/",
-  "subject": "aggregator@example.com",
+  "subject": "aggregator@example.org",
   "idp": "https://idp.example/"
 }
 ```

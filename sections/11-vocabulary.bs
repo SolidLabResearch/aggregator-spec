@@ -129,7 +129,7 @@ Links an `aggr:Aggregator` to its service collection endpoint.
 **domain:** `aggr:Aggregator`<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:service ### {#aggr-service-property}
+### aggr:hasService ### {#aggr-service-property}
 Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
@@ -137,11 +137,19 @@ Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 **range:** `aggr:Service`
 
 ### aggr:hasTransformation ### {#aggr-has-transformation-property}
-Links an `aggr:TransformationCollection` to a transformation it supports.
+Links an `aggr:TransformationCollection` to a supported `fno:Function`. Composite transformations are also linked
+with this property because they remain `fno:Function` resources.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:TransformationCollection`<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Function)
+
+### aggr:hasAppliedFunction ### {#aggr-has-applied-function-property}
+Links an `aggr:TransformationCollection` to a reusable `fno:AppliedFunction` template it advertises.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:TransformationCollection`<br>
+**range:** [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
 
 ### aggr:hasAlgorithm ### {#aggr-has-algorithm-property}
 Links an `aggr:TransformationCollection` to an algorithm it supports.
@@ -199,8 +207,15 @@ Provides the implementation used by an `aggr:Service` to perform its transformat
 **domain:** `aggr:Service`<br>
 **range:** [fno:Implementation](https://w3id.org/function/spec/#Implementation)
 
+### aggr:forOutput ### {#aggr-for-output-property}
+Links a `dcat:Dataset` exposed by an `aggr:Service` to the `fno:Output` it represents.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** [dcat:Dataset](https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset)<br>
+**range:** [fno:Output](https://w3id.org/function/spec/#Output)
+
 ### aggr:provenanceLog ### {#aggr-provlog-property}
-Provides the endpoint to `aggr:Service` its provenance log.
+Links an `aggr:Service` to its provenance log.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>

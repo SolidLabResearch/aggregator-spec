@@ -3,7 +3,7 @@ Aggregator Service Management {#aggregator-service-management}
 
 This section describes how users manage services deployed on an aggregator.
 
-The Service Collection endpoint ([[#service-collection-endpoint]]), which allows client to:
+The Service Collection endpoint ([[#service-collection-endpoint]]), which allows clients to:
     - Discover running services on an aggregator ([[#service-discovery]])
     - Deploy new services on an aggregator ([[#service-deployment]])
 
@@ -22,8 +22,8 @@ The location of this endpoint **MUST** be advertised in the Aggregator Descripti
 using the `service_collection_endpoint` field. Clients **MUST** treat the advertised URL as authoritative and **MUST NOT**
 assume a fixed path. Examples shown in this section use `https://aggregator.example/agg1/services` for illustration purposes only.
 
-The Aggregator **MUST** register this endpoint as an UMA resource with the Authorization Server and **MUST** advertise 
-atleast the `read` and `create` scopes.
+The Aggregator **MUST** register this endpoint as an UMA resource with the Authorization Server and **MUST** advertise
+at least the `read` and `create` scopes.
 
 ### Deploying a Service ### {#service-deployment}
 
@@ -49,8 +49,13 @@ ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured 
                 - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
     
     Upon successful processing of a valid request, the server **MUST**:
-        1. If a Service Request was provided, add an applied function to the instance-level Transformation Catalog if no
-            applied function with the same parameter bindings exists.
+        1. If an Applied Function service request was provided, add that applied function to the instance-level Transformation Catalog if no
+            equivalent Applied Function already exists there.
+            For this check, two Applied Functions are equivalent when they use the same `fnoc:applies`
+            transformation and the same parameter bindings. The catalog entry **MUST** remain a separate
+            `fno:AppliedFunction` resource linked with `aggr:hasAppliedFunction`. If the request targets a
+            composite transformation, the composite `fno:Function` **MUST** continue to be advertised separately
+            using `aggr:hasTransformation`.
         2. Deploy the new service on the aggregator and expose its Service Description Endpoint [[#service-endpoint]].
             - `aggr:performs` **MUST** link the `fno:Function`
             - `aggr:applies` **SHOULD** link the `fno:AppliedFunction`
@@ -58,7 +63,7 @@ ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured 
         3. Update the Service Collection and its associated `ETag`.
         4. Register the service endpoint as a UMA resource at the Authorization Server, 
             advertising at least the `read` and `delete` scopes.
-        5. Register the service output endpoint as a UMA resource, advertising at least the `read` scope.
+        5. Register each service output endpoint as a UMA resource, advertising at least the `read` scope.
         6. Respond with:
             - `201 Created`
             - The service description (as defined in [[#aggregator-service]]) in the response body, and
@@ -97,7 +102,7 @@ Content-Type: text/turtle
       [
         fnoc:boundParameter
           <https://aggregator.example/transformations#Sources> ;
-        fnoc:boundToTerm "http://example.com/source1"
+        fnoc:boundToTerm "http://example.org/source1"
       ]
     )
   ] ;
@@ -182,10 +187,13 @@ This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC911
 If a composite service is being deleted the Aggregator **MUST** stop and remove every internal transformation if
 not part of any other composite service.
 
-### Service Output Endpoint ### {#service-output}
+### Service Output Endpoints ### {#service-output}
 
-The Service Output Endpoint **MUST** be hosted at the same URL as the one referenced via `dcat:accessURL` 
-in the corresponding service `dcat:Distribution`.
+Each Service Output Endpoint **MUST** be hosted at the same URL as the one referenced via `dcat:accessURL`
+in a corresponding service `dcat:Distribution`.
+
+Each Service Output Endpoint is the access interface for that distribution. It is distinct from the `dcat:Dataset`
+resource identified in the service description and **MUST NOT** itself be interpreted as the dataset.
 
 When a client requests a Service Output Endpoint, the server **MUST** include an HTTP `Link` header ([[!Web-Linking]]) pointing to the 
 Service Description Endpoint using `aggr:fromService`.
@@ -225,14 +233,18 @@ An Aggregator **MAY** retain provenance information across multiple executions. 
 
 In such cases:
     - The Service Description **MUST** include a `dcat:Dataset` representing the logical (abstract) dataset.
+    - The logical dataset **MUST** link to the corresponding function output using `aggr:forOutput`.
     - This dataset MUST reference its concrete versions using:
         - `dcat:hasVersion` to list all known versions.
-        - `dcat:hasCurrentVersion` to indicate the most recent version.
     - Each version **MUST** be represented as a separate `dcat:Dataset` resource.
+
+NOTE: A future revision of this specification MAY additionally use `dcat:hasCurrentVersion` once that term is
+standardized in a published DCAT version. Until then, implementations should use `dcat:hasVersion` together with
+timestamps or other metadata to indicate recency.
 
 Additionally:
     - All versioned dataset resources **MUST** be included in the Provenance Log.
-    - Versioned datasets **MAY%% include relevant version metadata (e.g., relationships to previous versions).
+    - Versioned datasets **MAY** include relevant version metadata (e.g., relationships to previous versions).
     - Executions in the Provenance Log **MUST NOT** link to the abstract dataset. Instead, they **MUST** link to the specific 
         dataset version they produced.
 
@@ -248,10 +260,12 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix freq: <http://purl.org/cld/freq/> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :dataset
-    a dcat:Dataset
+    a dcat:Dataset ;
+    aggr:forOutput :result ;
     dcat:distribution :distribution ;
     dcat:hasVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-0>,
         <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
@@ -292,7 +306,7 @@ The Provenance Log below illustrates two executions of a service and how they re
   :source "http://example.org/source1" ;
   :result :dataset-1 ;
   prov:associatedWith :service ;
-  prov:quallifiedAssociation [
+  prov:qualifiedAssociation [
     a prov:Association ;
     prov:agent :service ;
     prov:hadPlan :query-view .
@@ -309,7 +323,7 @@ The Provenance Log below illustrates two executions of a service and how they re
   :source "http://example.org/source1" ;
   :result :dataset-1 ;
   prov:associatedWith :service ;
-  prov:quallifiedAssociation [
+  prov:qualifiedAssociation [
     a prov:Association ;
     prov:agent :service ;
     prov:hadPlan :query-view .
@@ -343,10 +357,10 @@ Aggregator servers **MAY** publish a services' Provenance Log at any deployment-
     - The endpoint **SHOULD** support HTTP content negotiation, 
         allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
 
-### Continous updates ### {#continous}
+### Continuous updates ### {#continous}
 
 For services that continuously update their data (e.g., event-driven or streaming updates):
-  - The execution **SHOULD NOT** include `prov:endedAtTime`
+  - The execution **MAY** omit `prov:endedAtTime`
   - All newly generated datasets **SHOULD** reference the same ongoing `prov:Activity`
 
 Creating a new `dcat:Dataset` for every minor change may lead to excessive provenance granularity and operational overhead. 
@@ -357,6 +371,6 @@ The server **MAY** choose, for example, to:
 
   - Apply time-based grouping (e.g., hourly or daily snapshots)
 
-  - Only materialize provenance when used externally (e.g., when used by another service provenance log)
+  - Only materialize provenance when used externally (e.g., when used by another service's provenance log)
 
 The chosen strategy **SHOULD** be documented and consistently applied to ensure predictable provenance semantics.
