@@ -40,6 +40,10 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://w3id.org/function/spec/",
     "title": "Function Ontology (FnO)"
   },
+  "Hydra": {
+    "href": "https://www.hydra-cg.com/spec/latest/core/",
+    "title": "Hydra Core Vocabulary"
+  },
   "OIDC-Core": {
     "href": "https://openid.net/specs/openid-connect-core-1_0.html",
     "title": "OpenID Connect Core 1.0"

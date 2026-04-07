@@ -37,23 +37,24 @@ ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured 
     This request **MUST**:
         - be authorized with the `create` scope on the Service Collection Endpoint.
         - be an RDF Document containing `aggr:Service` descriptions that:
-            - **MUST** declare an `fno:AppliedFunction` with `aggr:performs` that:
-                - **MUST** apply a transformation from the server-level or this aggregator's instance-level transformation
-                    catalog.
-                - bounds a value to **AT LEAST** each required parameter.
-            - **MAY** specify a implementation to use with `aggr:usesMapping`.
+            - **MUST** declare the requested transformation using `aggr:performs`, referencing a transformation from the
+                server-level or this aggregator's instance-level transformation catalog.
+            - **SHOULD** declare an Applied Function ([[#aggregator-applied-function]]) with `aggr:applies` that:
+                - **MUST** apply the same transformation identified by `aggr:performs`.
+                - **MUST** bind a value to **AT LEAST** each required parameter.
+            - **MAY** specify an implementation to use with `aggr:implements`.
             - **MAY** specify a URI indicating the requested service endpoint location.
                 - The Aggregator **MAY** ignore the requested URI and assign its own.
                 - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
                 - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
     
     Upon successful processing of a valid request, the server **MUST**:
-        1. Add an applied function to the instance-level Transformation Catalog if no applied function
-            with the same parameter bindings exists.
+        1. If a Service Request was provided, add an applied function to the instance-level Transformation Catalog if no
+            applied function with the same parameter bindings exists.
         2. Deploy the new service on the aggregator and expose its Service Description Endpoint [[#service-endpoint]].
-            - `aggr:performs` **MUST** link either:
-                - the `fno:AppliedFunction`
-                - the `fno:Function`
+            - `aggr:performs` **MUST** link the `fno:Function`
+            - `aggr:applies` **SHOULD** link the `fno:AppliedFunction`
+            - `aggr:implements` **MAY** link the chosen `fno:Implementation`
         3. Update the Service Collection and its associated `ETag`.
         4. Register the service endpoint as a UMA resource at the Authorization Server, 
             advertising at least the `read` and `delete` scopes.
@@ -83,7 +84,8 @@ Content-Type: text/turtle
 
 <https://aggregator.example/agg1/services/service1/>
   a aggr:Service ;
-  aggr:performs [
+  aggr:performs <https://aggregator.example/transformations#QueryView> ;
+  aggr:applies [
     a fno:AppliedFunction ;
     fnoc:applies <https://aggregator.example/transformations#QueryView> ;
     fnoc:parameterBindings (
@@ -95,14 +97,11 @@ Content-Type: text/turtle
       [
         fnoc:boundParameter
           <https://aggregator.example/transformations#Sources> ;
-        fnoc:boundToTerm (
-          "http://example.com/source1"
-          "http://example.com/source2"
-        )
+        fnoc:boundToTerm "http://example.com/source1"
       ]
     )
   ] ;
-  aggr:usesMapping <https://aggregator.example/transformations#QueryViewMapping> .
+  aggr:implements <https://aggregator.example/transformations#QueryViewImplementation> .
 ```
 </div>
 
@@ -216,7 +215,7 @@ This section describes how an Aggregator **SHOULD** store, expose, and maintain 
 
 An Aggregator is not required to manage provenance data. However, if it does, it **MUST** conform to this specification.
 
-A service’s Provenance Log is an RDF document that references **AT LEAST** the most recent execution performed by the service using `aggr:hasExecution`.
+A service’s Provenance Log is an RDF document that references **AT LEAST** the most recent execution performed by the service using `aggr:hasActivity`.
 An execution resource:
     - **MAY** be embedded in the Provenance Log document, or
     - **MAY** be hosted on separate endpoints as individual RDF documents.
@@ -256,7 +255,6 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
     dcat:distribution :distribution ;
     dcat:hasVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-0>,
         <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
-    dcat:hasCurrentVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
     dct:accrualPeriodicity freq:daily ;
     dct:modified "2025-01-02T12:02:00Z"^^xsd:dateTime .
 
@@ -291,10 +289,7 @@ The Provenance Log below illustrates two executions of a service and how they re
   a prov:Activity ;
   fno:executes :query-view ;
   :query "SELECT * WHERE { ?s ?p ?o }" ;
-  :sources (
-    "http://example.org/source1",
-    "http://example.org/source2",
-  ) ;
+  :source "http://example.org/source1" ;
   :result :dataset-1 ;
   prov:associatedWith :service ;
   prov:quallifiedAssociation [
@@ -311,10 +306,7 @@ The Provenance Log below illustrates two executions of a service and how they re
   a prov:Activity ;
   fno:executes :query-view ;
   :query "SELECT * WHERE { ?s ?p ?o }" ;
-  :sources (
-    "http://example.org/source1",
-    "http://example.org/source2",
-  ) ;
+  :source "http://example.org/source1" ;
   :result :dataset-1 ;
   prov:associatedWith :service ;
   prov:quallifiedAssociation [

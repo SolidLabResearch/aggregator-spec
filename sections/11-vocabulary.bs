@@ -183,15 +183,21 @@ Provides the transformation an `aggr:Service` performs.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
-**range:** [fno:Function](https://w3id.org/function/spec/#Function),
-  [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
+**range:** [fno:Function](https://w3id.org/function/spec/#Function)
 
-### aggr:usesMapping ### {#aggr-uses-mapping-property}
-Provides the mapping used by an `aggr:Service` to perform its transformation.
+### aggr:applies ### {#aggr-applies-property}
+Links an `aggr:Service` to the `fno:AppliedFunction` that captures the configured parameter bindings for that service.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:Service`<br>
-**range:** [fno:Mapping](https://w3id.org/function/spec/#Mapping)
+**range:** [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
+
+### aggr:implements ### {#aggr-implements-property}
+Provides the implementation used by an `aggr:Service` to perform its transformation.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** `aggr:Service`<br>
+**range:** [fno:Implementation](https://w3id.org/function/spec/#Implementation)
 
 ### aggr:provenanceLog ### {#aggr-provlog-property}
 Provides the endpoint to `aggr:Service` its provenance log.
@@ -205,7 +211,7 @@ Links an `aggr:ProvenanceLog` to an activity it includes.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** `aggr:ProvenanceLog`<br>
-**range:** [prov:Activity](https://www.w3.org/TR/prov-o/#Activity)
+**range:** [fno:Execution](https://w3id.org/function/spec/#Execution)
 
 ### aggr:registrationEndpoint ### {#aggr-registration-endpoint-property}
 Links an `aggr:AggregatorServer` to its registration endpoint.

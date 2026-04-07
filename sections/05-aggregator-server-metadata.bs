@@ -152,7 +152,6 @@ The `aggr:TransformationCatalog`:
     a               fno:Parameter ;
     fno:predicate   <sources> ;
     fno:type        xsd:anyURI ;
-    fno:container   rdf:List ;
     fno:required    "true"^^xsd:boolean .
 
 <SourcesEndpoint>
