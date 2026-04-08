@@ -8,8 +8,8 @@ This section describes how the Aggregator handles authentication and authorizati
 
 The Aggregator relies on the Authorization for Data Spaces (A4DS) specification [[!A4DS]] to authenticate Clients and 
 authorize access to resources. For streaming or non-HTTP interfaces, the Aggregator MAY additionally use the Service 
-Authorization for Data Spaces (SA4DS) specification [[!SA4DS]]. All Aggregator endpoints are protected using User-Managed 
-Access (UMA) [[!UMA]].
+Authorization for Data Spaces (SA4DS) specification [[!SA4DS]]. All Aggregator instance endpoints are protected using 
+User-Managed Access (UMA) [[!UMA]].
 
 In this section, the **Upstream Resource Server (URS)** is the Resource Server that hosts the original data the
 Aggregator consumes. The **Upstream Authorization Server (UAS)** is the Authorization Server that protects that URS and

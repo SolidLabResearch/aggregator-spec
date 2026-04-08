@@ -42,7 +42,7 @@ Describes the service collection resource (e.g., `/services`).
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
 [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
 
-### aggr:TransformationCollection ### {#aggr-transformation-collection-class}
+### aggr:TransformationCatalog ### {#aggr-transformation-catalog-class}
 Describes a transformation catalog resource that lists the transformations supported by an Aggregator Server
 (and optionally instance-specific transformations).
 
@@ -137,39 +137,39 @@ Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 **range:** `aggr:Service`
 
 ### aggr:hasTransformation ### {#aggr-has-transformation-property}
-Links an `aggr:TransformationCollection` to a supported `fno:Function`. Composite transformations are also linked
+Links an `aggr:TransformationCatalog` to a supported `fno:Function`. Composite transformations are also linked
 with this property because they remain `fno:Function` resources.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCollection`<br>
+**domain:** `aggr:TransformationCatalog`<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Function)
 
 ### aggr:hasAppliedFunction ### {#aggr-has-applied-function-property}
-Links an `aggr:TransformationCollection` to a reusable `fno:AppliedFunction` template it advertises.
+Links an `aggr:TransformationCatalog` to a reusable `fno:AppliedFunction` template it advertises.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCollection`<br>
+**domain:** `aggr:TransformationCatalog`<br>
 **range:** [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
 
 ### aggr:hasAlgorithm ### {#aggr-has-algorithm-property}
-Links an `aggr:TransformationCollection` to an algorithm it supports.
+Links an `aggr:TransformationCatalog` to an algorithm it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCollection`<br>
+**domain:** `aggr:TransformationCatalog`<br>
 **range:** [fno:Algorithm](https://w3id.org/function/spec/#Algorithm)
 
 ### aggr:hasMapping ### {#aggr-has-mapping-property}
-Links an `aggr:TransformationCollection` to a mapping it supports.
+Links an `aggr:TransformationCatalog` to a mapping it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCollection`<br>
+**domain:** `aggr:TransformationCatalog`<br>
 **range:** [fno:Mapping](https://w3id.org/function/spec/#Mapping)
 
 ### aggr:hasComposition ### {#aggr-has-composition-property}
-Links an `aggr:TransformationCollection` to a composition it supports.
+Links an `aggr:TransformationCatalog` to a composition it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCollection`<br>
+**domain:** `aggr:TransformationCatalog`<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Composition)
 
 ### aggr:status ### {#aggr-status-property}
@@ -213,6 +213,13 @@ Links a `dcat:Dataset` exposed by an `aggr:Service` to the `fno:Output` it repre
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** [dcat:Dataset](https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset)<br>
 **range:** [fno:Output](https://w3id.org/function/spec/#Output)
+
+### aggr:fromService ### {#aggr-from-service-property}
+Links a service output distribution to the `aggr:Service` that exposes it.
+
+**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
+**domain:** [dcat:Distribution](https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution)<br>
+**range:** `aggr:Service`
 
 ### aggr:provenanceLog ### {#aggr-provlog-property}
 Links an `aggr:Service` to its provenance log.

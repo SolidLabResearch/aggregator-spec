@@ -1,11 +1,11 @@
-Aggregator Data Model {#aggregator-data-model}
+Aggregator Data Model {#data-model}
 ==============================================
 
 This section specifies the data model used to describe the aggregator components like running aggregator services
 and the transformations they implement as well as the outputs they generate. By describing them as linked data the 
 model enables interoperable publication, discovery, execution, and provenance tracking of aggregator services.
 
-Transformation {#aggregator-transformation}
+Transformation {#data-model-transformation}
 -------------------------------------------
 
 An aggregator transformation defines a well-described functional interface using the Function Ontology [[!FNO]].
@@ -81,7 +81,7 @@ server-trans:rml-output
 ```
 </div>
 
-Applied Function {#aggregator-applied-function}
+Applied Function {#data-model-applied-function}
 ---------------------------------------------
 
 An Applied Function describes the requested transformation and the parameter values that an Aggregator should use when
@@ -125,7 +125,7 @@ inst-trans:sparql-query-view-service-request
 ```
 </div>
 
-Service Collection {#aggregator-service-collection}
+Service Collection {#data-model-service-collection}
 -----------------------------
 
 A Service Collection describes the set of services currently exposed by an Aggregator Instance.
@@ -148,7 +148,7 @@ The Service Collection:
 </div>
 
 
-Service {#aggregator-service}
+Service {#data-model-service}
 -----------------------------
 
 A deployed aggregator service is the running resource created from an Applied Function service request and **MUST** be modelled as:
@@ -159,10 +159,11 @@ A deployed aggregator service is the running resource created from an Applied Fu
 Furthermore, the service:
   - **MUST** serve exactly one dataset for each output of the transformation identified by `aggr:performs`.
   - **MUST** link using `aggr:performs` to the underlying `fno:Function`.
+  - **MUST** link using `dcat:servesDataset` to the corresponding dataset described as a `dcat:Dataset`.
   - **SHOULD** declare operational metadata such as status and creation time.
   - **SHOULD** indicate it adheres to the aggregator protocol using `dct:conformsTo`.
   - **SHOULD** link using `aggr:applies` to the corresponding Applied Function
-    ([[#aggregator-applied-function]]) when the deployment allows the configured parameter values to be disclosed.
+    ([[#data-model-applied-function]]) when the deployment allows the configured parameter values to be disclosed.
   - **MAY** specify the exact implementation using a link to an `fno:Implementation` with `aggr:implements`.
 
 The corresponding dataset:
@@ -234,7 +235,7 @@ Core Ontology ([[!Hydra]]).
 ```
 </div>
 
-Service Provenance Log {#aggregator-service-provenance-log}
+Service Provenance Log {#data-model-service-provenance-log}
 -----------------------------
 
 An aggregator implementation **MAY** provide provenance information for a service. If it does, the service **MUST**
@@ -253,14 +254,14 @@ link to its provenance log using `aggr:provenanceLog`, where the Service Provena
 </div>
 
 
-Execution {#aggregator-service-execution}
+Execution {#data-model-service-execution}
 ------------------------------
 
 If the aggregator provides provenance information, each execution:
   - **MUST** be a `fno:Execution`.
   - **MUST** link to the executed transformation using `fno:executes`.
-  - **MUST** link to the generated dataset using an output predicate defined in [[#aggregator-transformation]].
-  - **SHOULD** link to the used parameter values using the parameter predicates defined in [[#aggregator-transformation]].
+  - **MUST** link to the generated dataset using an output predicate defined in [[#data-model-transformation]].
+  - **SHOULD** link to the used parameter values using the parameter predicates defined in [[#data-model-transformation]].
   - **SHOULD** link to the used mapping using `fno:uses` to indicate the used implementation, if relevant.
   - **MUST** be a `prov:Activity`.
   - **MUST** be associated with the service using `prov:associatedWith`.

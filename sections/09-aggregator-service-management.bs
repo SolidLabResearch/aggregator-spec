@@ -28,55 +28,58 @@ at least the `read` and `create` scopes.
 ### Deploying a Service ### {#service-deployment}
 
 The Service Collection Endpoint **MAY** allow `POST` requests to deploy new services. The supported content types **MUST** be
-advertised via the `Accept-Post` header defined in [[!LDP]].
+advertised via the `Accept-Post` header defined in [[!LDP]]. The `POST` request to deploy a new services **MUST** be 
+authorized with the `create` scope on the Service Collection Endpoint.
 
-ISSUE: TODO maybe rewrite the below requirements so it is a bit more structured and easier to read?
+The request body **MUST** be an RDF document that describes exactly one requested `aggr:Service`. The requested
+service resource:
+- **MUST** be the only `aggr:Service` described in the request body.
+- **MUST** identify a new service resource using either a unique URI or a blank node.
+- **MUST** declare the requested transformation using `aggr:performs`, referencing a transformation from the
+    server-level or this aggregator's instance-level Transformation Catalog.
+- **MAY** specify an implementation to use with `aggr:implements`.
+- **MAY** declare an Applied Function ([[#data-model-applied-function]]) using `aggr:applies`.
 
-: `POST`
-:: Enables clients to deploy new Services.
-    This request **MUST**:
-        - be authorized with the `create` scope on the Service Collection Endpoint.
-        - be an RDF Document containing `aggr:Service` descriptions that:
-            - **MUST** declare the requested transformation using `aggr:performs`, referencing a transformation from the
-                server-level or this aggregator's instance-level transformation catalog.
-            - **SHOULD** declare an Applied Function ([[#aggregator-applied-function]]) with `aggr:applies` that:
-                - **MUST** apply the same transformation identified by `aggr:performs`.
-                - **MUST** bind a value to **AT LEAST** each required parameter.
-            - **MAY** specify an implementation to use with `aggr:implements`.
-            - **MAY** specify a URI indicating the requested service endpoint location.
-                - The Aggregator **MAY** ignore the requested URI and assign its own.
-                - If the requested URI is syntactically invalid or not permitted, the server **MUST** respond with `400 Bad Request`.
-                - If the requested URI is valid but already in use, the server **MUST** respond with `409 Conflict`.
-    
-    Upon successful processing of a valid request, the server **MUST**:
-        1. If an Applied Function service request was provided, add that applied function to the instance-level Transformation Catalog if no
-            equivalent Applied Function already exists there.
-            For this check, two Applied Functions are equivalent when they use the same `fnoc:applies`
-            transformation and the same parameter bindings. The catalog entry **MUST** remain a separate
-            `fno:AppliedFunction` resource linked with `aggr:hasAppliedFunction`. If the request targets a
-            composite transformation, the composite `fno:Function` **MUST** continue to be advertised separately
-            using `aggr:hasTransformation`.
-        2. Deploy the new service on the aggregator and expose its Service Description Endpoint [[#service-endpoint]].
-            - `aggr:performs` **MUST** link the `fno:Function`
-            - `aggr:applies` **SHOULD** link the `fno:AppliedFunction`
-            - `aggr:implements` **MAY** link the chosen `fno:Implementation`
-        3. Update the Service Collection and its associated `ETag`.
-        4. Register the service endpoint as a UMA resource at the Authorization Server, 
-            advertising at least the `read` and `delete` scopes.
-        5. Register each service output endpoint as a UMA resource, advertising at least the `read` scope.
-        6. Respond with:
-            - `201 Created`
-            - The service description (as defined in [[#aggregator-service]]) in the response body, and
-            - A `Location` header identifying the Service Description Endpoint.
+If the request includes `aggr:applies`, the referenced Applied Function:
+- **MUST** apply the same transformation identified by `aggr:performs`.
+- **MUST** bind a value to each required parameter of that transformation.
 
-    If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
-    referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`.
+If the requested transformation defines one or more required parameters, the request **MUST** include `aggr:applies`
+with an Applied Function that binds those parameters.
 
-    If the request is valid but the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
-    
-The following example requests a service that performs the `QueryView` transformation using the `QueryViewMapping`:
+The new service object **MAY** be specified with a blank node or as a URI indicating the requested service endpoint 
+location. The Aggregator **MAY** ignore the requested URI and assign its own. If the requested URI is syntactically invalid 
+or not permitted, the server **MUST** respond with `400 Bad Request`. If the requested URI is valid but already in use, 
+the server **MUST** respond with `409 Conflict`.
+
+Upon successful processing of a valid request:
+1. If the request includes an Applied Function via `aggr:applies`, the server **MUST** ensure that an equivalent
+    `fno:AppliedFunction` is present in the instance-level Transformation Catalog.
+    If no equivalent Applied Function already exists there, the server **MUST** create a separate
+    `fno:AppliedFunction` resource and advertise it in the transformation catalog using `aggr:hasAppliedFunction`.
+    If an equivalent Applied Function already exists there, the server **MUST NOT** create a duplicate catalog entry.
+
+    Two Applied Functions are equivalent when they:
+    - use the same `fnoc:applies` transformation; and
+    - bind the same set of parameter/value pairs, independent of binding order.
+2. If the request targets a composite transformation, the [[!FNO]] composition and composition function **MUST** be made 
+    available in a resource and advertised in the instance-level Transformation Catalog using `aggr:hasTransformation`, 
+    and the service **MUST** reference the composition function in its `aggr:performs` property.
+3. The server **MUST** deploy the new service on the aggregator and expose its Service Description Endpoint 
+    [[#service-endpoint]], acording to the data model in [[#data-model-service]].
+4. Update the Service Collection and its associated `ETag`.
+5. Register the service endpoint as a UMA resource at the Authorization Server, 
+    advertising at least the `read` and `delete` scopes.
+6. Register each service output endpoint as a UMA resource, advertising at least the `read` scope.
+7. Respond with a `201 Created` status code and include in the response body the service description (as defined in 
+    [[#data-model-service]]), and a `Location` header identifying the Service Description Endpoint.
+
+If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
+referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`. If the request is valid but 
+the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
 
 <div class="example">
+The following example requests a service that performs the `QueryView` transformation using the `QueryViewMapping`.
 ```http
 POST https://aggregator.example/agg1/services HTTP/1.1
 Host: aggregator.example
@@ -112,39 +115,33 @@ Content-Type: text/turtle
 
 ### Deploying a Composite Service ### {#composite-service-deployment}
 
-Deploying a service that performs a composite transformation **MUST** use the same request format as any other transformation service.
-
-When all transformations referenced in the `fnoc:Composition` are included in the Transformation Catalog, the server **MUST**:
-    - Deploy a service for each individual transformation referenced in the composition 
-        without exposing a Service Description Endpoint for those internal services.
-        - If the output of such a transformation is mapped to the output of the composite transformation, 
-            the corresponding Service Output Endpoint **MUST** be exposed.
-    - Expose a Service Description Endpoint for the composite service.
-        - This Service Description Endpoint **MUST** use the Service Output Endpoints of the corresponding internal services.
+Deploying a service that performs a composite transformation **MUST** use the same request format as any other 
+transformation service. The implementation should not expose a [[#service-endpoint]] for all transformations in the 
+composition. If the output of such a transformation is mapped to the output of the composite transformation, the 
+corresponding [[#service-output]] **MUST** be exposed. Lastly, the aggregator **MUST** expose a [[#service-endpoint]] 
+for the composite service. This [[#service-endpoint]] **MUST** use the [[#service-output]] of the corresponding internal 
+services.
 
 ### Service Discovery ### {#service-discovery}
 
-The Service Collection Endpoint **MUST** expose the Service Collection, an RDF document including all deployed service URIs.
-
-The endpoint **SHOULD** support HTTP content negotiation to allow clients to request different RDF serializations 
-(e.g., Turtle, JSON-LD) of the RDF Document.
+The Service Collection Endpoint **MUST** expose the [[#data-model-service-collection]], an RDF document including all 
+deployed service URIs. The endpoint **SHOULD** support HTTP content negotiation to allow clients to request different RDF 
+serializations (e.g., Turtle, JSON-LD) of the RDF Document.
 
 : `HEAD`
 :: Enables clients to detect changes to the collection without retrieving the full representation. 
-    This request **MUST** be authorized with a `read` scope on the Service Collection resource.
-
-    The server **MUST** respond with:
+    This request **MUST** be authorized with a `read` scope on the Service Collection resource. The server **MUST** respond 
+    with:
         - `200 OK`
         - An `ETag` header whose value changes whenever a service is added to or removed from the collection.
 
 : `GET`
 :: Returns the service collection RDF Document.
-    This request **MUST** be authorized with a `read` scope on the Service Collection endpoint.
-
-    The server **MUST** respond with:
+    This request **MUST** be authorized with a `read` scope on the Service Collection endpoint. The server **MUST** 
+    respond with:
         - `200 OK`
         - The same `ETag` value that would be returned in response to a `HEAD` request
-        - The serialized Service Collection in the body
+        - The serialized [[#data-model-service-collection]] in the body
 
 The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoints using `aggr:hasService`.
 
@@ -164,13 +161,11 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
 Service Description Endpoint {#service-endpoint}
 ------------------------------------------------
 
-The Service Description Endpoint **MUST** expose the Service Description as described in [[#aggregator-service]].
-It is also used to delete the corresponding service.
-
-This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
+The Service Description Endpoint **MUST** expose the [[#data-model-service]]. It is also used to delete the corresponding 
+service. This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
 
 : GET
-:: Retrieves the service description (as defined in [[#aggregator-service]]).
+:: Retrieves the service description (as defined in [[#data-model-service]]).
     - The request **MUST** be authorized with the read `scope` on the service description endpoint.
     - The server **MUST** respond with `200 OK`.
 
@@ -184,19 +179,13 @@ This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC911
         4. Respond with either `200 OK` or `204 No Content`.
     - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
 
-If a composite service is being deleted the Aggregator **MUST** stop and remove every internal transformation if
-not part of any other composite service.
-
 ### Service Output Endpoints ### {#service-output}
 
-Each Service Output Endpoint **MUST** be hosted at the same URL as the one referenced via `dcat:accessURL`
-in a corresponding service `dcat:Distribution`.
-
-Each Service Output Endpoint is the access interface for that distribution. It is distinct from the `dcat:Dataset`
-resource identified in the service description and **MUST NOT** itself be interpreted as the dataset.
-
-When a client requests a Service Output Endpoint, the server **MUST** include an HTTP `Link` header ([[!Web-Linking]]) pointing to the 
-Service Description Endpoint using `aggr:fromService`.
+Each Service Output Endpoint **MUST** be hosted at the same URL as the one referenced via `dcat:accessURL` in a 
+corresponding service `dcat:Distribution`. Each Service Output Endpoint is the access interface for that distribution. 
+It is distinct from the `dcat:Dataset` resource identified in the service description and **MUST NOT** itself be 
+interpreted as the dataset. When a client requests a Service Output Endpoint, the server **MUST** include an HTTP 
+`Link` header ([[!Web-Linking]]) pointing to the Service Description Endpoint using `aggr:fromService`.
 
 <div class="example">
 ```http
@@ -204,57 +193,43 @@ Link: <https://aggregator.example/agg1/services/service1/>; rel="https://spec.kn
 ```
 </div>
 
-This requirement establishes an explicit and machine-readable relationship between a service output 
-and its corresponding service description.
-
-One example of how this relationship **MAY** be used is in provenance tracking across Aggregator Services. 
-When an Aggregator Service dereferences a Service Output Endpoint and encounters the required `Link` header, it **MAY**
-use this information to establish a provenance relationship between datasets.
-
-More specifically, the Aggregator Service **MAY** link the consumed service output dataset to the newly generated 
-output dataset using `prov:wasDerivedFrom`.
-
-This enables explicit provenance chains to be constructed across multiple Aggregator Services
+This requirement establishes an explicit and machine-readable relationship between a service output and its corresponding 
+service description. One example of how this relationship **MAY** be used is in provenance tracking across Aggregator 
+Services. When an Aggregator Service dereferences a Service Output Endpoint and encounters the required `Link` header, 
+it **MAY** use this information to establish a provenance relationship between datasets. More specifically, the Aggregator 
+Service **MAY** link the consumed service output dataset to the newly generated output dataset using `prov:wasDerivedFrom`.
+This enables explicit provenance chains to be constructed across multiple Aggregator Services.
 
 Provenance Log {#service-provenance}
 ---------------------------------
 
-This section describes how an Aggregator **SHOULD** store, expose, and maintain provenance metadata describing service executions.
+This section describes how an Aggregator **SHOULD** store, expose, and maintain provenance metadata describing service 
+[[#data-model-service-execution]]. An Aggregator is not required to manage provenance data. However, if it does, it 
+**MUST** conform to this specification. A service’s [[#data-model-service-provenance-log]] is an RDF document that 
+references **AT LEAST** the most recent [[#data-model-service-execution]] performed by the service using 
+`aggr:hasActivity`. Aggregator servers **MAY** publish a services' Provenance Log at any deployment-specific URL using the 
+`GET` method. The endpoint **MUST** be advertised in the Service Description through the `aggr:provenanceLog` predicate. 
+The endpoint **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations 
+(e.g., Turtle, JSON-LD). The executions that are defined in the provenance log **MAY** be embedded in the 
+Provenance Log document or **MAY** be hosted on separate endpoints as individual RDF documents.
 
-An Aggregator is not required to manage provenance data. However, if it does, it **MUST** conform to this specification.
-
-A service’s Provenance Log is an RDF document that references **AT LEAST** the most recent execution performed by the service using `aggr:hasActivity`.
-An execution resource:
-    - **MAY** be embedded in the Provenance Log document, or
-    - **MAY** be hosted on separate endpoints as individual RDF documents.
-
-An Aggregator **MAY** retain provenance information across multiple executions. When provenance is retained, the resulting service dataset 
-**MUST** be modeled as a versioned dataset, following the versioning approach defined in [[!Data-Catalog]].
-
-In such cases:
-    - The Service Description **MUST** include a `dcat:Dataset` representing the logical (abstract) dataset.
-    - The logical dataset **MUST** link to the corresponding function output using `aggr:forOutput`.
-    - This dataset MUST reference its concrete versions using:
-        - `dcat:hasVersion` to list all known versions.
-    - Each version **MUST** be represented as a separate `dcat:Dataset` resource.
+If the Provenance Log keeps a history log of multiple executions, it **SHOULD** be subject to a retention policy 
+defining how long execution records remain included in the log. This prevents unbounded growth of the log over time 
+and ensures manageable storage and query performance. All retained executions **MUST** be included in the 
+[[#data-model-service-provenance-log]]. The executions **MUST NOT** link the the abstract dataset defined in the 
+[[#data-model-service]]. When provenance is retained, the execution records **MUST** include 
+execution datasets as defined in [[#data-model-service-execution]]. If the performed transformation of the execution is 
+the same as the one defined in the service description, the execution datasets **MUST** be defined following the versioning 
+approach defined in [[!Data-Catalog]] with `dcat:hasVersion` and `dcat:isVersionOf`.
 
 NOTE: A future revision of this specification MAY additionally use `dcat:hasCurrentVersion` once that term is
 standardized in a published DCAT version. Until then, implementations should use `dcat:hasVersion` together with
 timestamps or other metadata to indicate recency.
 
-Additionally:
-    - All versioned dataset resources **MUST** be included in the Provenance Log.
-    - Versioned datasets **MAY** include relevant version metadata (e.g., relationships to previous versions).
-    - Executions in the Provenance Log **MUST NOT** link to the abstract dataset. Instead, they **MUST** link to the specific 
-        dataset version they produced.
-
-This ensures that:
-    - The Service Description provides a stable, high-level view of the dataset.
-    - The Provenance Log captures the full evolution of the dataset over time.
-
 <div class="example">
-This example shows a Service Description for a service that updates its dataset on a daily basis. 
-The dataset is modeled as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
+This example shows a Service Description for a service that updates its dataset on a daily basis.
+In this example, the retained executions produce new versions of the logical service dataset, so that dataset is modeled
+as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
 ```turtle
 @prefix dcat: <https://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
@@ -286,7 +261,7 @@ The dataset is modeled as a versioned dataset and references concrete dataset ve
 </div>
 
 <div class="example">
-The Provenance Log below illustrates two executions of a service and how they relate to versioned dataset resources.
+The Provenance Log below illustrates two executions of a service that each produce a new version of the logical service dataset.
 ```turtle
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
@@ -295,7 +270,7 @@ The Provenance Log below illustrates two executions of a service and how they re
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <>
-  a aggr:provenanceLog ;
+  a aggr:ProvenanceLog ;
   aggr:hasActivity :execution-0, :execution-1 .
 
 :execution-0
@@ -304,7 +279,7 @@ The Provenance Log below illustrates two executions of a service and how they re
   fno:executes :query-view ;
   :query "SELECT * WHERE { ?s ?p ?o }" ;
   :source "http://example.org/source1" ;
-  :result :dataset-1 ;
+  :result :dataset-0 ;
   prov:associatedWith :service ;
   prov:qualifiedAssociation [
     a prov:Association ;
@@ -347,30 +322,14 @@ The Provenance Log below illustrates two executions of a service and how they re
 ```
 </div>
 
-If the Provenance Log keeps a history log, it **SHOULD** be subject to a retention policy defining how long execution records remain included in the log. 
-This prevents unbounded growth of the log over time and ensures manageable storage and query performance.
+### Continuous updates ### {#continuous-updates}
 
-### Log Publication ### {#provlog-publication}
-
-Aggregator servers **MAY** publish a services' Provenance Log at any deployment-specific URL using the `GET` method:
-    - The endpoint **MUST** be advertised in the Service Description through the `aggr:provenanceLog` predicate.
-    - The endpoint **SHOULD** support HTTP content negotiation, 
-        allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
-
-### Continuous updates ### {#continous}
-
-For services that continuously update their data (e.g., event-driven or streaming updates):
-  - The execution **MAY** omit `prov:endedAtTime`
-  - All newly generated datasets **SHOULD** reference the same ongoing `prov:Activity`
-
-Creating a new `dcat:Dataset` for every minor change may lead to excessive provenance granularity and operational overhead. 
+For services that continuously update their data (e.g., event-driven or streaming updates) the execution **MAY** omit 
+`prov:endedAtTime`. All newly generated datasets **SHOULD** reference the same ongoing `prov:Activity`. Creating a new 
+`dcat:Dataset` for every minor change may lead to excessive provenance granularity and operational overhead. 
 Therefore, an Aggregator Server **SHOULD** determine an appropriate provenance granularity level based on its use case, 
-performance constraints, and retention policy.
-
-The server **MAY** choose, for example, to:
-
-  - Apply time-based grouping (e.g., hourly or daily snapshots)
-
-  - Only materialize provenance when used externally (e.g., when used by another service's provenance log)
+performance constraints, and retention policy. The server **MAY** choose, for example, to:
+- Apply time-based grouping (e.g., hourly or daily snapshots)
+- Only materialize provenance when used externally (e.g., when used by another service's provenance log)
 
 The chosen strategy **SHOULD** be documented and consistently applied to ensure predictable provenance semantics.

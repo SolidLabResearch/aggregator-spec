@@ -28,6 +28,7 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
     the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
     ([[#aggr-supported-registration-type-property]]) whose object is the corresponding flow class IRI.
 :: Each member MUST be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
+    - `"none"` (RDF class `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]]))
     - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]]))
     - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]]))
     - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]]))
@@ -110,11 +111,14 @@ Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------
 
 The Transformation Catalog is an RDF document describing the reusable transformation resources
-([[#aggregator-data-model]]) that an Aggregator Server makes available. These resources are primarily deployable
+([[#data-model]]) that an Aggregator Server makes available. These resources are primarily deployable
 `fno:Function`s, including composite transformations described using `fnoc:composition`. A server MAY additionally
 publish reusable `fno:AppliedFunction` templates in the same catalog. Supporting resources such as mappings,
 algorithms, and composition descriptions MAY be included in the catalog document and linked from those primary
-resources.
+resources. Aggregator servers **MAY** publish this catalog at any deployment-specific URL. The URL **MUST** be advertised 
+in the [[#server-description]] via the `transformation_catalog` field. The catalog **SHOULD** support HTTP content 
+negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD). Access **MAY** be protected 
+using an OpenID Connect (OIDC) ID Token for authentication.
 
 The `aggr:TransformationCatalog`:
   - **MUST** reference all supported transformations using `aggr:hasTransformation`.
@@ -192,28 +196,19 @@ The `aggr:TransformationCatalog`:
 ```
 </div>
 
-### Composite Transformations ### {#catalog-composite-transformations}
-
-An Aggregator Server **MAY** support the deployment of composite transformations. 
-
 A transformation **MAY** be linked to an `fnoc:Composition` using `fnoc:composition`. This **MAY** be done
-solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata to 
-provide additional transparency.
+solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata 
+to provide additional transparency. Composite transformations remain `fno:Function` resources and therefore **MUST** be 
+advertised using `aggr:hasTransformation`. If all transformations referenced within the `fnoc:Composition` are also 
+included in the catalog, each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a 
+single service while internally orchestrating multiple individual services.
 
-Composite transformations remain `fno:Function` resources and therefore **MUST** be advertised using
-`aggr:hasTransformation`. The `fnoc:Composition` resources they reference are supporting resources rather than
-separate top-level transformation entries in the catalog.
-
-If all transformations referenced within the `fnoc:Composition` are also included in the catalog,
-each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a single service 
-while internally orchestrating multiple individual services.
-
+<div class="example">
 The following example describes a pipeline that:
   1. Uses RML to map a non-RDF source.
   2. Executes a query over the generated RDF.
   3. Exposes the resulting query output.
 
-<div class="example">
 ```turtle
 @base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
@@ -221,7 +216,7 @@ The following example describes a pipeline that:
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
 
-<> a aggr:TransformationCollection ;
+<> a aggr:TransformationCatalog ;
     dct:title "Aggregator transformations" ;
     aggr:hasTransformation <RMLQueryPipeline> ;
     aggr:hasTransformation <QueryView> ;
@@ -273,13 +268,3 @@ The following example describes a pipeline that:
   ] .
 ```
 </div>
-
-### Catalog Publication ### {#server-level-catalog-publication}
-
-  - Aggregator servers **MAY** publish this catalog at any deployment-specific URL.
-
-  - The URL **MUST** be advertised in the [[#server-description]] via the `transformation_catalog` field.
-
-  - The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD).
-
-  - Access **MAY** be protected using an OpenID Connect (OIDC) ID Token for authentication.

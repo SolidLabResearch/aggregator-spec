@@ -13,113 +13,119 @@ This section specifies the behavior of the `management_endpoint` advertised by t
 existing instance, and deleting an instance. If the `management_flow` isn't `none` the endpoint SHOULD reject 
 unauthenticated requests with `401 Unauthorized`.
 
-ISSUE: should we allow a name field for the aggregator during creation?
+For error conditions, the server MUST respond with:
+- `400 Bad Request` for a malformed request body or missing/invalid request members for the selected `management_flow`.
+- `401 Unauthorized` when the request is missing authentication or when the `IDP_client_token` is invalid.
+- `403 Forbidden` when the authenticated user is not allowed to manage the requested Aggregator Instance.
+- `404 Not Found` when `aggregator` is provided but does not identify an existing Aggregator Instance. A `403 Forbidden`
+    MAY also be returned in this case.
+- `415 Unsupported Media Type` when the request format is not listed in `supported_management_request_formats`.
 
-: `POST`
-:: Creates an Aggregator Instance or replaces the stored token set for an existing instance.
-    The request body MUST use a content type listed in `supported_management_request_formats` and MUST include:
-    When using `application/json`, the body MUST be a JSON object. When using
-    `application/x-www-form-urlencoded`, the body parameters MUST be encoded as form fields with the same
-    member names.
-    The server MUST support `application/json` and MAY support `application/x-www-form-urlencoded`.
-    - **management_flow** (REQUIRED):
-        The value is a string token; it MUST be one of the `supported_management_flows` advertised in the Aggregator 
-        Server Description ([[#server-description]]). The following string tokens are defined, each corresponding to an RDF 
-        class in the Aggregator vocabulary ([[#vocabulary]]) for semantically annotated representations:
-        - `"none"` ↔ `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]])
-        - `"provision"` ↔ `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]])
-        - `"authorization_code"` ↔ `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]])
-        - `"device_code"` ↔ `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]])
-    - **aggregator** (string, OPTIONAL): When present, the request targets an existing Aggregator Instance and the server 
-        MUST replace its stored access token and refresh token with a new set obtained from the Identity Provider (IdP). 
-        This is not a refresh-token grant; it is a full re-authentication to obtain a fresh access token and refresh token.
+### `POST` ### {#aggregator-management-endpoint-post}
 
-    Depending on `management_flow`, additional members are defined:
+Creates an Aggregator Instance or replaces the stored token set for an existing instance.
+The request body MUST use a content type listed in `supported_management_request_formats`. When using `application/json`, 
+the body MUST be a JSON object. When using `application/x-www-form-urlencoded`, the body parameters MUST be encoded as 
+form fields with the same member names. The request body MUST include the following members:
 
-    - **management_flow: "none"**
-        - No additional members are required.
+- **management_flow** (REQUIRED):
+    The value is a string token; it MUST be one of the `supported_management_flows` advertised in the Aggregator 
+    Server Description ([[#server-description]]). The following string tokens are defined, each corresponding to an RDF 
+    class in the Aggregator vocabulary ([[#vocabulary]]) for semantically annotated representations:
+    - `"none"` ↔ `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]])
+    - `"provision"` ↔ `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]])
+    - `"authorization_code"` ↔ `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]])
+    - `"device_code"` ↔ `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]])
+- **aggregator** (string, OPTIONAL): When present, the request targets an existing Aggregator Instance and the server 
+    MUST replace its stored access token and refresh token with a new set obtained from the Identity Provider (IdP). 
+    This is not a refresh-token grant; it is a full re-authentication to obtain a fresh access token and refresh token.
 
-        In this flow the Aggregator Instance has no identity and all requests to upstream resource servers will be 
-        unauthenticated. All hosted resources MUST be public or accessible without authentication. In this flow the 
-        management POST request MIGHT not require authentication, depending on the deployment’s policy.
+Depending on `management_flow`, additional members are defined:
 
-    - **management_flow: "provision"**
-        - No additional members are required.
+- **management_flow: "none"**
+    - No additional members are required.
 
-        In this flow the Aggregator server MUST provision an new identity for the Aggregator Instance that is
-        registered at an Identity Provider (IdP).
+    In this flow the Aggregator Instance has no identity and all requests to upstream resource servers will be 
+    unauthenticated. All hosted resources MUST be public or accessible without authentication. In this flow the 
+    management POST request MIGHT not require authentication, depending on the deployment’s policy.
 
-    - **management_flow: "authorization_code"**
-        The `authorization_code` flow uses two `POST` messages to the `management_endpoint`. It is based on the OAuth 
-        2.0 Authorization Code grant [[RFC6749]] (https://datatracker.ietf.org/doc/html/rfc6749). The **Start Request** 
-        bootstraps PKCE [[RFC7636]], the request body MUST include:
-            - **management_flow** (string, REQUIRED): `"authorization_code"`.
-            - **authorization_server** (string, REQUIRED): The URL of the UMA Authorization Server that governs access to
-                resources exposed by the Aggregator.
+- **management_flow: "provision"**
+    - No additional members are required.
 
-        The server MUST respond with `201 Created` and a JSON object containing:
-            - **aggregator_client_id** (string, REQUIRED): The Client ID Document of the aggregator.
-            - **code_challenge** (string, REQUIRED)
-            - **code_challenge_method** (string, REQUIRED)
-            - **state** (string, REQUIRED)
+    In this flow the Aggregator server MUST provision an new identity for the Aggregator Instance that is
+    registered at an Identity Provider (IdP).
 
-        The server MAY also include IdP discovery hints (for example `issuer` or `authorization_endpoint`) if
-        the client cannot determine them through other means.
-
-        The **Finish Request** redeems the authorization code, the request body MUST include:
-            - **management_flow** (string, REQUIRED): `"authorization_code"`.
-            - **code** (string, REQUIRED): The authorization code issued by the IdP.
-            - **redirect_uri** (string, REQUIRED): The redirect URI used in the authorization request.
-            - **state** (string, REQUIRED): The `state` returned by the start request.
-
-        The finish request reuses the stored `authorization_server` from the start request and the client SHOULD NOT 
-        include it again. This flow uses two Client ID Documents: the Aggregator Client ID Document and
-        the application Client ID Document identified by the client_id URI in the `aud` claim. If the Aggregator Client ID 
-        Document ([[#client-id-document]]) doesn't have
-        `redirect_uris` registered, the Aggregator Server MUST verify that `redirect_uri` in the request matches one of 
-        the redirect URIs registered in the Client ID Document of the client application. The client application's
-        Client ID Document MUST be the client_id URI in the `aud` claim of the `IDP_client_token` from the authorization header
-        in the **Start Request** request. If the `aud` claim is missing or does not contain a dereferenceable client
-        identifier, the server MUST respond with `400 Bad Request`. In deployments where the client application does not
-        have a Client ID Document, the Aggregator Server MUST require `redirect_uris` to be registered in the 
-        Aggregator Client ID Document which will be validated by the IDP. If the Aggregator Client ID Document has 
-        `redirect_uris` registered, it MAY skip the Client ID Document check of the client application. In all cases, 
-        the server MUST verify that the `state` matches the stored state for the pending management flow.
-
-    - **management_flow: "device_code"**
-        The `device_code` flow uses two `POST` messages to the `management_endpoint` and follows the OAuth 2.0
-        Device Authorization Grant [[RFC8628]]. This flow is intended for headless components (for example CLI tools) 
-        to authenticate an Aggregator Instance where the `authorization_code` flow is not practical. The **Start Request** 
-        initiates device authorization flow and the request body MUST include:
-        - **management_flow** (string, REQUIRED): `"device_code"`.
+- **management_flow: "authorization_code"**
+    The `authorization_code` flow uses two `POST` messages to the `management_endpoint`. It is based on the OAuth 
+    2.0 Authorization Code grant [[RFC6749]] (https://datatracker.ietf.org/doc/html/rfc6749). The **Start Request** 
+    bootstraps PKCE [[RFC7636]], the request body MUST include:
+        - **management_flow** (string, REQUIRED): `"authorization_code"`.
         - **authorization_server** (string, REQUIRED): The URL of the UMA Authorization Server that governs access to
             resources exposed by the Aggregator.
 
-        The server MUST determine the IdP from the `IDP_client_token` in the authorization header (for example,
-        via the `iss` claim and discovery), request device authorization at the IdP, securely store the returned 
-        device_code, and respond with 201 Created and a JSON object containing:
-        - **state** (string, REQUIRED): Opaque value used by the client to poll completion of the device flow.
-        - **user_code** (string, REQUIRED): The end-user verification code issued by the IdP.
-        - **verification_uri** (string, REQUIRED): The end-user verification URI on the IdP.
-        - **verification_uri_complete** (string, OPTIONAL): A verification URI that includes the "user_code" (or other 
-            information with the same function as the "user_code"), which is designed for non-textual transmission.
-        - **expires_in** (number, REQUIRED): The lifetime in seconds of the device authorization session.
-        - **interval** (number, OPTIONAL): Minimum polling interval in seconds, this may differ from the interval the 
-            IdP recommends.
+    The server MUST respond with `201 Created` and a JSON object containing:
+        - **aggregator_client_id** (string, REQUIRED): The Client ID Document of the aggregator.
+        - **code_challenge** (string, REQUIRED)
+        - **code_challenge_method** (string, REQUIRED)
+        - **state** (string, REQUIRED)
 
-        The `device_code` is confidential and MUST NOT be returned to the client. The **Poll Request** checks whether the 
-        user has authorized the device code. The client uses the `state` value to poll for completion, the request body 
-        MUST include:
-        - **management_flow** (string, REQUIRED): `"device_code"`.
-        - **state** (string, REQUIRED): The `state` value returned by the start request.
+    The server MAY also include IdP discovery hints (for example `issuer` or `authorization_endpoint`) if
+    the client cannot determine them through other means.
 
-        Unlike a traditional OAuth device flow, the client does not poll the IdP directly. Upon receiving a poll request, 
-        the Aggregator MUST attempt to redeem the stored device_code at the IdP token endpoint 
-        (grant_type=urn:ietf:params:oauth:grant-type:device_code). If authorization is not yet complete, the server MUST 
-        respond with 202 Accepted. When authorization succeeds, the server creates (or updates) the Aggregator Instance and 
-        responds as for other successful create/update operations (see below). If the device authorization session has 
-        expired, the server MUST respond with 400 Bad Request. The device authorization session MUST be bound to the 
-        authenticated caller.
+    The **Finish Request** redeems the authorization code, the request body MUST include:
+        - **management_flow** (string, REQUIRED): `"authorization_code"`.
+        - **code** (string, REQUIRED): The authorization code issued by the IdP.
+        - **redirect_uri** (string, REQUIRED): The redirect URI used in the authorization request.
+        - **state** (string, REQUIRED): The `state` returned by the start request.
+
+    The finish request reuses the stored `authorization_server` from the start request and the client SHOULD NOT 
+    include it again. This flow uses two Client ID Documents: the Aggregator Client ID Document and
+    the application Client ID Document identified by the client_id URI in the `aud` claim. If the Aggregator Client ID 
+    Document ([[#client-id-document]]) doesn't have
+    `redirect_uris` registered, the Aggregator Server MUST verify that `redirect_uri` in the request matches one of 
+    the redirect URIs registered in the Client ID Document of the client application. The client application's
+    Client ID Document MUST be the client_id URI in the `aud` claim of the `IDP_client_token` from the authorization header
+    in the **Start Request** request. If the `aud` claim is missing or does not contain a dereferenceable client
+    identifier, the server MUST respond with `400 Bad Request`. In deployments where the client application does not
+    have a Client ID Document, the Aggregator Server MUST require `redirect_uris` to be registered in the 
+    Aggregator Client ID Document which will be validated by the IDP. If the Aggregator Client ID Document has 
+    `redirect_uris` registered, it MAY skip the Client ID Document check of the client application. In all cases, 
+    the server MUST verify that the `state` matches the stored state for the pending management flow.
+
+- **management_flow: "device_code"**
+    The `device_code` flow uses two `POST` messages to the `management_endpoint` and follows the OAuth 2.0
+    Device Authorization Grant [[RFC8628]]. This flow is intended for headless components (for example CLI tools) 
+    to authenticate an Aggregator Instance where the `authorization_code` flow is not practical. The **Start Request** 
+    initiates device authorization flow and the request body MUST include:
+    - **management_flow** (string, REQUIRED): `"device_code"`.
+    - **authorization_server** (string, REQUIRED): The URL of the UMA Authorization Server that governs access to
+        resources exposed by the Aggregator.
+
+    The server MUST determine the IdP from the `IDP_client_token` in the authorization header (for example,
+    via the `iss` claim and discovery), request device authorization at the IdP, securely store the returned 
+    device_code, and respond with 201 Created and a JSON object containing:
+    - **state** (string, REQUIRED): Opaque value used by the client to poll completion of the device flow.
+    - **user_code** (string, REQUIRED): The end-user verification code issued by the IdP.
+    - **verification_uri** (string, REQUIRED): The end-user verification URI on the IdP.
+    - **verification_uri_complete** (string, OPTIONAL): A verification URI that includes the "user_code" (or other 
+        information with the same function as the "user_code"), which is designed for non-textual transmission.
+    - **expires_in** (number, REQUIRED): The lifetime in seconds of the device authorization session.
+    - **interval** (number, OPTIONAL): Minimum polling interval in seconds, this may differ from the interval the 
+        IdP recommends.
+
+    The `device_code` is confidential and MUST NOT be returned to the client. The **Poll Request** checks whether the 
+    user has authorized the device code. The client uses the `state` value to poll for completion, the request body 
+    MUST include:
+    - **management_flow** (string, REQUIRED): `"device_code"`.
+    - **state** (string, REQUIRED): The `state` value returned by the start request.
+
+    Unlike a traditional OAuth device flow, the client does not poll the IdP directly. Upon receiving a poll request, 
+    the Aggregator MUST attempt to redeem the stored device_code at the IdP token endpoint 
+    (grant_type=urn:ietf:params:oauth:grant-type:device_code). If authorization is not yet complete, the server MUST 
+    respond with 202 Accepted. When authorization succeeds, the server creates (or updates) the Aggregator Instance and 
+    responds as for other successful create/update operations (see below). If the device authorization session has 
+    expired, the server MUST respond with 400 Bad Request. The device authorization session MUST be bound to the 
+    authenticated caller.
 
     **Success responses**
     For successful `POST` requests that create/update an Aggregator Instance (i.e., provision, the 
@@ -150,28 +156,18 @@ ISSUE: should we allow a name field for the aggregator during creation?
     - `authorization_code`: To obtain a new access token and refresh token after the previous ones have expired.
     - `device_code`: To obtain a new access token and refresh token after the previous ones have expired.
 
-: `GET`
-:: This method returns the list of Aggregator Instances owned by the authenticated user. The server MUST respond with
-    `200 OK` and a JSON array containing zero or more Aggregator Description URLs ([[#aggregator-description]]).
+### `GET` ### {#aggregator-management-endpoint-get}
+This method returns the list of Aggregator Instances owned by the authenticated user. The server MUST respond with `200 OK` 
+and a JSON array containing zero or more Aggregator Description URLs ([[#aggregator-description]]).
 
-: `DELETE`
-:: Deletes an existing Aggregator Instance. The request body MUST use a content type listed in
-    `supported_management_request_formats`. When using `application/json`, the body MUST be a JSON object.
-    When using `application/x-www-form-urlencoded`, the body parameters MUST be encoded as form fields with
-    the same member names. The request body MUST include:
-    - **aggregator** (string, REQUIRED): Absolute URL of the Aggregator Instance base URL that dereferences to
-        the Aggregator Description ([[#aggregator-description]]).
+### `DELETE` ### {#aggregator-management-endpoint-delete}
+Deletes an existing Aggregator Instance. The request body MUST use a content type listed in 
+`supported_management_request_formats`. When using `application/json`, the body MUST be a JSON object. When using 
+`application/x-www-form-urlencoded`, the body parameters MUST be encoded as form fields with the same member names. The
+request body MUST include the term **aggregator** whose value is the absolute URL of the Aggregator Instance base URL that 
+dereferences to the Aggregator Description ([[#aggregator-description]]). If deletion succeeds the server MUST respond 
+with `204 No Content`.
 
-    If deletion succeeds the server MUST respond with `204 No Content`.
-
-
-For error conditions, the server MUST respond with:
-- `400 Bad Request` for a malformed request body or missing/invalid request members for the selected `management_flow`.
-- `401 Unauthorized` when the request is missing authentication or when the `IDP_client_token` is invalid.
-- `403 Forbidden` when the authenticated user is not allowed to manage the requested Aggregator Instance.
-- `404 Not Found` when `aggregator` is provided but does not identify an existing Aggregator Instance. A `403 Forbidden`
-    MAY also be returned in this case.
-- `415 Unsupported Media Type` when the request format is not listed in `supported_management_request_formats`.
 
 Aggregator Management Flows (Non-normative) {#aggregator-management-flows}
 --------------------------------------------------------
