@@ -176,7 +176,7 @@ The following namespace prefixes are used throughout this specification and SHOU
 - `dct:` → `http://purl.org/dc/terms/`
 - `fno:` → `https://w3id.org/function/ontology#`
 - `fnoc:` → `https://fno.io/vocabulary/composition/0.1.0/`
-- `dcat:` → `https://www.w3.org/ns/dcat#`
+- `dcat:` → `http://www.w3.org/ns/dcat#`
 - `rdf:` → `http://www.w3.org/1999/02/22-rdf-syntax-ns#`
 - `rdfs:` → `http://www.w3.org/2000/01/rdf-schema#`
 - `xsd:` → `http://www.w3.org/2001/XMLSchema#`
@@ -274,9 +274,12 @@ Each parameter and output:
   - **MUST** be a `fno:Parameter` or `fno:Output` respectively.
   - **MUST** use `fno:predicate` to specify the predicate that will be used to bind the parameter or output value in an 
     `fno:AppliedFunction` or `fno:Execution`.
-  - **MAY** use `fno:type` to describe the parameter/output type.
-  - **MAY** use `dct:format` to describe parameter/output format.
-  - **MAY** use `dct:conformsTo` to signify the parameter/output must follow a specification/protocol.
+  - **MUST** define the `fno:type` of the output as a `dcat:Dataset`.
+  - **SHOULD** use `fno:type` to describe the parameter types.
+  - **MAY** use `dct:format` to describe the format of the parameter.
+  - **MAY** use `dct:conformsTo` to signify the parameter follows a certain specification/protocol.
+  - **MAY** use `dct:conformsTo` to signify the output follows a certain shape. If such a shape is defined, the dataset
+    generated for that output and the distributions referenced from that dataset **MUST** conform to it.
   - **MAY** use `fno:required` to indicate whether the parameter is required or optional. If not specified, clients **MUST** 
     assume the parameter is optional.
 
@@ -286,35 +289,67 @@ algorithm it implements using `fno:Algorithm` as specified by [[!FNO]].
 <div class="example">
 ```turtle
 @prefix server-trans: <https://example.org/transformations#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 server-trans:sparql-query-view
-    a                   fno:Function ;
-    fno:name            "The SPARQL QueryView function"^^xsd:string ;
-    dct:description     "Performs a query on a source and materializes view as a SPARQL endpoint"^^xsd:string ;
-    fno:expects         ( server-trans:query-source server-trans:sparql-query-string ) ;
-    fno:returns         ( server-trans:view-output ) .
+  a                   fno:Function ;
+  fno:name            "The SPARQL QueryView function"^^xsd:string ;
+  dct:description     "Performs a query on a source and materializes view as a SPARQL endpoint"^^xsd:string ;
+  fno:expects         ( server-trans:query-source server-trans:sparql-query-string ) ;
+  fno:returns         ( server-trans:view-output ) .
 
 server-trans:query-source
-    a                   fno:Parameter ;
-    fno:predicate       server-trans:source ;
-    fno:type            xsd:anyURI ;
-    fno:required        "true"^^xsd:boolean .
+  a                   fno:Parameter ;
+  fno:predicate       server-trans:source ;
+  fno:type            xsd:anyURI ;
+  fno:required        "true"^^xsd:boolean .
 
 server-trans:sparql-query-string
-    a               fno:Parameter ;
-    fno:predicate   server-trans:query ; 
-    fno:type        xsd:string ;
-    dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
-    fno:required    "true"^^xsd:boolean .
+  a               fno:Parameter ;
+  fno:predicate   server-trans:query ;
+  fno:type        xsd:string ;
+  dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
+  fno:required    "true"^^xsd:boolean .
 
 server-trans:view-output
-    a               fno:Output ;
-    dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/> ;
-    fno:predicate   server-trans:view .
+  a               fno:Output ;
+  fno:type        dcat:Dataset ;
+  dct:conformsTo  server-trans:SPARQLResultDatasetShape .
+  fno:predicate   server-trans:view .
+
+server-trans:SPARQLResultDatasetShape
+  a sh:NodeShape ;
+  sh:targetClass dcat:Dataset ;
+  sh:property [
+    sh:path dcat:distribution ;
+    sh:minCount 1 ;
+    sh:node server-trans:SPARQLXMLDistributionShape
+  ] ;
+  sh:property [
+    sh:path dcat:distribution ;
+    sh:minCount 1 ;
+    sh:node server-trans:SPARQLJSONDistributionShape
+  ] .
+
+server-trans:SPARQLXMLDistributionShape
+  a sh:NodeShape ;
+  sh:property [
+    sh:path dcat:mediaType ;
+    sh:hasValue <http://www.iana.org/assignments/media-types/application/sparql-results+xml>
+  ] .
+
+server-trans:SPARQLJSONDistributionShape
+  a sh:NodeShape ;
+  sh:property [
+    sh:path dcat:mediaType ;
+    sh:hasValue <http://www.iana.org/assignments/media-types/application/sparql-results+json>
+  ] .
 
 server-trans:rml-mapper
   a fno:Function ;
@@ -332,8 +367,7 @@ server-trans:rml-mapping
 
 server-trans:rml-output
   a               fno:Output ;
-  fno:type        xsd:anyURI ;
-  dct:conformsTo  <https://www.w3.org/TR/sparql11-protocol/> ;
+  fno:type        dcat:Dataset ;
   fno:predicate   server-trans:table .
 ```
 </div>
@@ -342,7 +376,7 @@ Applied Function {#data-model-applied-function}
 ---------------------------------------------
 
 An Applied Function describes the requested transformation and the parameter values that an Aggregator should use when
-deploying a service. In this specification, the service request is the `fno:AppliedFunction` that captures those bindings.
+deploying a service. When requesting a service an `fno:AppliedFunction` is used to capture those bindings.
 An Applied Function **MUST** be described as an `fno:AppliedFunction`.
 
 The Applied Function:
@@ -366,7 +400,7 @@ An `aggr:Service` **MAY** link to its Applied Function using `aggr:applies`.
 @prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-inst-trans:sparql-query-view-service-request
+inst-trans:sparql-query-view-applied-function
   a fno:AppliedFunction ;
   fnoc:applies server-trans:sparql-query-view ;
   fnoc:parameterBindings (
@@ -408,7 +442,7 @@ The Service Collection:
 Service {#data-model-service}
 -----------------------------
 
-A deployed aggregator service is the running resource created from an Applied Function service request and **MUST** be modelled as:
+A deployed aggregator service is the running resource created from a service request and **MUST** be modelled as:
   - an `aggr:Service`
   - a `dcat:DataService` ([[!Data-Catalog]])
   - a `prov:SoftwareAgent` ([[!PROV-O]])
@@ -427,10 +461,8 @@ The corresponding dataset:
   - **MUST** be described as a `dcat:Dataset`.
   - **MUST** link to exactly one `fno:Output` of that transformation using `aggr:forOutput`.
   - **MUST** reference a `dcat:distribution`.
+  - **MUST** declare the latest known version using `dcat:hasCurrentVersion` when version history is retained.
   - **MUST** declare other known versions using `dcat:hasVersion` when version history is retained.
-
-NOTE: This specification currently uses `dcat:hasVersion` and `dcat:isVersionOf` for dataset versioning. A future
-revision MAY additionally adopt `dcat:hasCurrentVersion` when that term is standardized in a published DCAT version.
 
 The corresponding distribution **MUST** be described as a `dcat:Distribution`, where each distribution:
   - **MUST** reference the corresponding output endpoint using `dcat:accessURL`.
@@ -453,9 +485,10 @@ Core Ontology ([[!Hydra]]).
 ```turtle
 @prefix : <https://example.org/agg1/services/sparql-query-view-service#> .
 @prefix inst-trans: <https://example.org/agg1/transformations/> .
+@prefix server-trans: <https://example.org/transformations#> .
 @prefix provlog: <https://example.org/agg1/services/sparql-query-view-service/provenance#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -466,17 +499,17 @@ Core Ontology ([[!Hydra]]).
     a prov:SoftwareAgent ;
     aggr:status "running" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    aggr:performs inst-trans:sparql-query-view ;
-    aggr:applies inst-trans:sparql-query-view-service-request ;
+    aggr:performs server-trans:sparql-query-view ;
+    aggr:applies inst-trans:sparql-query-view-applied-function ;
     dct:conformsTo <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> ;
     dcat:servesDataset :dataset .
 
 :dataset
     a dcat:Dataset ;
-    aggr:forOutput inst-trans:view-output ;
+    aggr:forOutput server-trans:view-output ;
     dcat:distribution :distribution-xml ,
      :distribution-json ;
-    dcat:hasVersion provlog:dataset-0 .
+    dcat:hasCurrentVersion provlog:dataset-0 .
 
 :distribution-xml
     a dcat:Distribution ;
@@ -526,10 +559,8 @@ If the aggregator provides provenance information, each execution:
   - **MAY** include an end time using `prov:endedAtTime`.
 
 The execution **MAY** provide additional metadata such as `prov:qualifiedAssociation`, or any other 
-relevant provenance information. The executed transformation **MAY** be different from the transformation declared in the 
-service description, for example when the service is a SPARQL endpoint where the execution corresponds to a single query 
-execution. In that case, the transformation in the service description describes the general functionality of the service, 
-while the transformation in the execution log describes the specific query that was executed.
+relevant provenance information. The executed transformation **MUST** be the same as the transformation declared in the 
+service description.
 
 The generated dataset is a virtual entity that represents the output of the execution. When the execution uses the same
 transformation as the one described in the service description, or otherwise produces a new version of the logical
@@ -547,11 +578,10 @@ The following example shows an execution that produces a new version of the serv
 <div class="example">
 ```turtle
 @prefix : <https://example.org/agg1/services/sparql-query-view-service/provenance#> .
-@prefix svc: <https://example.org/agg1/services/sparql-query-view-service#> .
 @prefix inst-trans: <https://example.org/agg1/transformations/> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -562,7 +592,7 @@ The following example shows an execution that produces a new version of the serv
   inst-trans:query "SELECT * WHERE { ?s ?p ?o }" ;
   inst-trans:source "http://example.org/source1" ;
   inst-trans:view :dataset-0 ;
-  prov:associatedWith svc:service ;
+  prov:associatedWith <https://example.org/agg1/services/sparql-query-view-service> ;
   prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
   prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
 
@@ -710,6 +740,7 @@ The `aggr:TransformationCatalog`:
 ```turtle
 @base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
@@ -760,7 +791,7 @@ The `aggr:TransformationCatalog`:
 
 <Result>
     a               fno:Output ;
-    dct:conformsTo  <https://www.w3.org/TR/sparql11-protocol/> ;
+    fno:type        dcat:Dataset ;
     fno:predicate   <result> .
 
 <StaticSourcesQueryViewTemplate>
@@ -2249,12 +2280,12 @@ Service Description Endpoint {#service-endpoint}
 The Service Description Endpoint **MUST** expose the [[#data-model-service]]. It is also used to delete the corresponding 
 service. This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
 
-: GET
+: `GET`
 :: Retrieves the service description (as defined in [[#data-model-service]]).
     - The request **MUST** be authorized with the read `scope` on the service description endpoint.
     - The server **MUST** respond with `200 OK`.
 
-: DELETE
+: `DELETE`
 :: Deletes a running Aggregator Service.
     - The request **MUST** be authorized with the `delete` scope on the service resources.
     - Upon successful processing, the Aggregator **MUST**:
@@ -2263,6 +2294,34 @@ service. This endpoint **SHOULD** support HTTP content negotiation as defined in
         3. Delete the corresponding UMA resources at the Authorization Server.
         4. Respond with either `200 OK` or `204 No Content`.
     - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
+
+Next the the `GET` and `DELETE` methods, the server **MAY** support:
+
+: `PATCH`
+:: Updates the service description (as defined in [[#data-model-service]]).
+    - The server **MUST** respond with `200 OK` and include the updated service description in the response body.
+    - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
+    - The request **MUST** be authorized with the `update` scope on the service description endpoint.
+    - If the server supports `PATCH`, it **MUST** advertise the supported patch document formats using the HTTP
+        `Accept-Patch` header.
+    - If the request `Content-Type` is not a supported patch document format, the server **MUST** respond with
+        `415 Unsupported Media Type`.
+    - If the request is syntactically malformed or semantically invalid, the server **MUST** respond with `400 Bad Request`.
+    - If the request is valid but the service fails to update, the server **MUST** respond with `500 Internal Server Error`.
+
+: `PUT`
+:: Replaces the service description (as defined in [[#data-model-service]]).
+    - The request **MUST** be authorized with the `update` scope on the service description endpoint.
+    - The server **MUST** respond with `200 OK` and include the updated service description in the response body.
+    - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
+    - If the request is syntactically malformed or semantically invalid, the server **MUST** respond with `400 Bad Request`.
+    - If the request is valid but the service fails to update, the server **MUST** respond with `500 Internal Server Error`.
+
+When the server supports `PATCH` or `PUT`, it **SHOULD NOT** allow the user to remove or modify values that are managed by
+the Aggregator itself. This includes at least the service identifier, the RDF types of the service, `aggr:createdAt`,
+`aggr:status`, `aggr:statusDetail`, `dcat:servesDataset`, `dcat:distribution`, and `aggr:provenanceLog`. If a `PATCH` or 
+`PUT` request attempts to remove or modify such values, the server **SHOULD** respond with
+`400 Bad Request`.
 
 ### Service Output Endpoints ### {#service-output}
 
@@ -2305,18 +2364,14 @@ and ensures manageable storage and query performance. All retained executions **
 [[#data-model-service]]. When provenance is retained, the execution records **MUST** include 
 execution datasets as defined in [[#data-model-service-execution]]. If the performed transformation of the execution is 
 the same as the one defined in the service description, the execution datasets **MUST** be defined following the versioning 
-approach defined in [[!Data-Catalog]] with `dcat:hasVersion` and `dcat:isVersionOf`.
-
-NOTE: A future revision of this specification MAY additionally use `dcat:hasCurrentVersion` once that term is
-standardized in a published DCAT version. Until then, implementations should use `dcat:hasVersion` together with
-timestamps or other metadata to indicate recency.
+approach defined in [[!Data-Catalog]] with `dcat:hasCurrentVersion`, `dcat:hasVersion`, and `dcat:isVersionOf`.
 
 <div class="example">
 This example shows a Service Description for a service that updates its dataset on a daily basis.
 In this example, the retained executions produce new versions of the logical service dataset, so that dataset is modeled
 as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
 ```turtle
-@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix freq: <http://purl.org/cld/freq/> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
@@ -2327,6 +2382,7 @@ as a versioned dataset and references concrete dataset versions that are describ
     a dcat:Dataset ;
     aggr:forOutput :result ;
     dcat:distribution :distribution ;
+    dcat:hasCurrentVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
     dcat:hasVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-0>,
         <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
     dct:accrualPeriodicity freq:daily ;
@@ -2351,12 +2407,17 @@ The Provenance Log below illustrates two executions of a service that each produ
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <>
   a aggr:ProvenanceLog ;
   aggr:hasActivity :execution-0, :execution-1 .
+
+:dataset
+  a dcat:Dataset ;
+  dcat:hasCurrentVersion :dataset-1 ;
+  dcat:hasVersion :dataset-0, :dataset-1 .
 
 :execution-0
   a fno:Execution ;

@@ -164,12 +164,12 @@ Service Description Endpoint {#service-endpoint}
 The Service Description Endpoint **MUST** expose the [[#data-model-service]]. It is also used to delete the corresponding 
 service. This endpoint **SHOULD** support HTTP content negotiation as defined in [[RFC9110]].
 
-: GET
+: `GET`
 :: Retrieves the service description (as defined in [[#data-model-service]]).
     - The request **MUST** be authorized with the read `scope` on the service description endpoint.
     - The server **MUST** respond with `200 OK`.
 
-: DELETE
+: `DELETE`
 :: Deletes a running Aggregator Service.
     - The request **MUST** be authorized with the `delete` scope on the service resources.
     - Upon successful processing, the Aggregator **MUST**:
@@ -178,6 +178,34 @@ service. This endpoint **SHOULD** support HTTP content negotiation as defined in
         3. Delete the corresponding UMA resources at the Authorization Server.
         4. Respond with either `200 OK` or `204 No Content`.
     - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
+
+Next the the `GET` and `DELETE` methods, the server **MAY** support:
+
+: `PATCH`
+:: Updates the service description (as defined in [[#data-model-service]]).
+    - The server **MUST** respond with `200 OK` and include the updated service description in the response body.
+    - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
+    - The request **MUST** be authorized with the `update` scope on the service description endpoint.
+    - If the server supports `PATCH`, it **MUST** advertise the supported patch document formats using the HTTP
+        `Accept-Patch` header.
+    - If the request `Content-Type` is not a supported patch document format, the server **MUST** respond with
+        `415 Unsupported Media Type`.
+    - If the request is syntactically malformed or semantically invalid, the server **MUST** respond with `400 Bad Request`.
+    - If the request is valid but the service fails to update, the server **MUST** respond with `500 Internal Server Error`.
+
+: `PUT`
+:: Replaces the service description (as defined in [[#data-model-service]]).
+    - The request **MUST** be authorized with the `update` scope on the service description endpoint.
+    - The server **MUST** respond with `200 OK` and include the updated service description in the response body.
+    - If the service does not exist, the Aggregator **SHOULD** respond with `404 Not Found`.
+    - If the request is syntactically malformed or semantically invalid, the server **MUST** respond with `400 Bad Request`.
+    - If the request is valid but the service fails to update, the server **MUST** respond with `500 Internal Server Error`.
+
+When the server supports `PATCH` or `PUT`, it **SHOULD NOT** allow the user to remove or modify values that are managed by
+the Aggregator itself. This includes at least the service identifier, the RDF types of the service, `aggr:createdAt`,
+`aggr:status`, `aggr:statusDetail`, `dcat:servesDataset`, `dcat:distribution`, and `aggr:provenanceLog`. If a `PATCH` or 
+`PUT` request attempts to remove or modify such values, the server **SHOULD** respond with
+`400 Bad Request`.
 
 ### Service Output Endpoints ### {#service-output}
 
@@ -220,18 +248,14 @@ and ensures manageable storage and query performance. All retained executions **
 [[#data-model-service]]. When provenance is retained, the execution records **MUST** include 
 execution datasets as defined in [[#data-model-service-execution]]. If the performed transformation of the execution is 
 the same as the one defined in the service description, the execution datasets **MUST** be defined following the versioning 
-approach defined in [[!Data-Catalog]] with `dcat:hasVersion` and `dcat:isVersionOf`.
-
-NOTE: A future revision of this specification MAY additionally use `dcat:hasCurrentVersion` once that term is
-standardized in a published DCAT version. Until then, implementations should use `dcat:hasVersion` together with
-timestamps or other metadata to indicate recency.
+approach defined in [[!Data-Catalog]] with `dcat:hasCurrentVersion`, `dcat:hasVersion`, and `dcat:isVersionOf`.
 
 <div class="example">
 This example shows a Service Description for a service that updates its dataset on a daily basis.
 In this example, the retained executions produce new versions of the logical service dataset, so that dataset is modeled
 as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
 ```turtle
-@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix freq: <http://purl.org/cld/freq/> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
@@ -242,6 +266,7 @@ as a versioned dataset and references concrete dataset versions that are describ
     a dcat:Dataset ;
     aggr:forOutput :result ;
     dcat:distribution :distribution ;
+    dcat:hasCurrentVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
     dcat:hasVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-0>,
         <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
     dct:accrualPeriodicity freq:daily ;
@@ -266,12 +291,17 @@ The Provenance Log below illustrates two executions of a service that each produ
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix dcat: <https://www.w3.org/ns/dcat#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <>
   a aggr:ProvenanceLog ;
   aggr:hasActivity :execution-0, :execution-1 .
+
+:dataset
+  a dcat:Dataset ;
+  dcat:hasCurrentVersion :dataset-1 ;
+  dcat:hasVersion :dataset-0, :dataset-1 .
 
 :execution-0
   a fno:Execution ;

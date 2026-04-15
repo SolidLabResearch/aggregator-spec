@@ -131,6 +131,7 @@ The `aggr:TransformationCatalog`:
 ```turtle
 @base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
@@ -181,7 +182,7 @@ The `aggr:TransformationCatalog`:
 
 <Result>
     a               fno:Output ;
-    dct:conformsTo  <https://www.w3.org/TR/sparql11-protocol/> ;
+    fno:type        dcat:Dataset ;
     fno:predicate   <result> .
 
 <StaticSourcesQueryViewTemplate>
