@@ -4,6 +4,7 @@ Shortname: aggregator-spec
 Level: none
 Status: LD
 Editor: Maarten Vandenbrande, Ghent University - imec http://idlab.ugent.be/, maarten.vandenbrande@ugent.be
+Editor: Pol Nachtergaele, Ghent University - imec http://idlab.ugent.be/, pol.nachtergaele@ugent.be
 Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggregator deployments,
   registering aggregator instances, and managing services that execute data transformations. The protocol
   leverages OIDC and User-Managed Access (UMA) for authentication and authorization, enabling secure access
@@ -39,6 +40,10 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://w3id.org/function/spec/",
     "title": "Function Ontology (FnO)"
   },
+  "Hydra": {
+    "href": "https://www.hydra-cg.com/spec/latest/core/",
+    "title": "Hydra Core Vocabulary"
+  },
   "OIDC-Core": {
     "href": "https://openid.net/specs/openid-connect-core-1_0.html",
     "title": "OpenID Connect Core 1.0"
@@ -63,13 +68,17 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://www.w3.org/TR/vocab-dcat-3/",
     "title": "Data Catalog Vocabulary"
   },
-  "FOAF": {
-    "href": "http://xmlns.com/foaf/0.1/",
-    "title": "Friend of a Friend (FOAF)"
+  "LDP": {
+    "href": "https://www.w3.org/TR/ldp/",
+    "title": "Linked Data Platform"
   },
-  "DCTERMS": {
-    "href": "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
-    "title": "Dublin Core Metadata Terms"
+  "PROV-O": {
+    "href": "https://www.w3.org/TR/prov-o/",
+    "title": "The Provenance Ontology"
+  },
+  "Web-Linking": {
+    "href": "https://www.rfc-editor.org/rfc/rfc8288",
+    "title": "Web Linking"
   }
 }
 </pre>
@@ -81,14 +90,16 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
 
 <pre class="include" path="sections/03-architecture-and-resource-model.bs"></pre>
 
-<pre class="include" path="sections/04-aggregator-server-metadata.bs"></pre>
+<pre class="include" path="sections/04-aggregator-data-model.bs"></pre>
 
-<pre class="include" path="sections/05-aggregator-management.bs"></pre>
+<pre class="include" path="sections/05-aggregator-server-metadata.bs"></pre>
 
-<pre class="include" path="sections/06-security-model-authentication-and-authorization.bs"></pre>
+<pre class="include" path="sections/06-aggregator-management.bs"></pre>
 
-<pre class="include" path="sections/07-aggregator-metadata.bs"></pre>
+<pre class="include" path="sections/07-security-model-authentication-and-authorization.bs"></pre>
 
-<pre class="include" path="sections/08-aggregator-service-management.bs"></pre>
+<pre class="include" path="sections/08-aggregator-metadata.bs"></pre>
 
-<pre class="include" path="sections/09-vocabulary.bs"></pre>
+<pre class="include" path="sections/09-aggregator-service-management.bs"></pre>
+
+<pre class="include" path="sections/11-vocabulary.bs"></pre>

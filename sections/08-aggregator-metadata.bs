@@ -42,8 +42,8 @@ that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-c
     `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
 : **service_collection_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
-    Services ([[#service-collection]]); in the RDF representations, this member maps to the predicate
-    `aggr:serviceCollectionEndpoint` ([[#aggr-service-collection-endpoint-property]]).
+    Services ([[#service-collection-endpoint]]); in the RDF representations, this member maps to the predicate
+    `aggr:serviceCollectionEndpoint` ([[#aggr-service-discovery-endpoint-property]]).
  
 This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 
 that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
@@ -84,22 +84,30 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
   "login_status": true,
   "token_expiry": "2025-12-17T18:20:00Z",
   "transformation_catalog": "https://aggregator.example/aggregators/agg-7890/transformations",
-  "service_collection_endpoint": "https://aggregator.example/aggregators/agg-7890/config/services",
+  "service_collection_endpoint": "https://aggregator.example/aggregators/agg-7890/services",
   "oidcIssuer": "https://issuer.example/"
 }
 ```
 </div>
 
-Instance-level Transformations Catalog {#instance-level-transformation-catalog}
+Instance-level Transformation Catalog {#instance-level-transformation-catalog}
 -------------------------------------------------------------------
 
-This endpoint is the instance-level extension on the public Transformation Catalog defined in
+This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
 [[#server-level-transformation-catalog]]. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
 advertise the correct location via its `transformation_catalog` field (`aggr:transformationsEndpoint`). It allows aggregator 
-implementations to expose user-specific transformations, or protected/private transformations. This endpoint, contrasting 
-to the public Transformation Catalog, MAY be user specific and MUST require authentication. The endpoint MAY return a 404 
-Not Found if no user-specific transformations are available. A client SHOULD combine the information from this endpoint 
-with the public Transformation Catalog to get a complete view on the available transformations. The endpoint follows the 
-same content negotiation rules and other requirements as the public Transformation Catalog. The Aggregator MAY put the
-transformations in different resources so different policies can be added, and link to them using `rdfs:seeAlso`. The
-endpoint MUST at least return a list of transformations that are directly available at the endpoint URL.
+implementations to expose user-specific transformations, protected/private transformations, and reusable
+instance-specific `fno:AppliedFunction` templates. This endpoint MAY be user specific and MUST require authentication.
+The endpoint MAY return a 404 Not Found if no user-specific resources are available. A client SHOULD combine the
+information from this endpoint with the server-level Transformation Catalog to get a complete view on the available
+transformations and reusable applied-function templates. The endpoint follows the same content negotiation rules and
+other requirements as the server-level Transformation Catalog.
+
+The instance-level Transformation Catalog:
+  - **MUST** reference each directly available `fno:Function` using `aggr:hasTransformation`.
+  - **MAY** reference reusable instance-specific `fno:AppliedFunction` resources using `aggr:hasAppliedFunction`.
+  - **MAY** include supporting resources such as mappings, algorithms, or `fnoc:Composition` descriptions linked from
+    those functions or Applied Functions.
+
+The Aggregator MAY put these resources in different resources so different policies can be added, and link to them
+using `rdfs:seeAlso`. The endpoint MUST at least return the resources that are directly available at the endpoint URL.

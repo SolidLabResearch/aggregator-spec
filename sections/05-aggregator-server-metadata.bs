@@ -1,0 +1,271 @@
+Aggregator Server Metadata {#aggregator-server-metadata}
+===============================================================
+
+This section describes the endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except 
+for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at 
+deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can 
+discover them.
+
+Aggregator Server Description {#server-description}
+---------------------------------------------------
+
+The Aggregator Server Description allows clients to discover the Aggregator Server’s endpoints and capabilities. This 
+document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MAY be accessible without 
+authentication or MAY require an OpenID Connect (OIDC) ID Token depending on deployment policy, and MUST provide at least 
+the following information. Each JSON member is paired with an RDF predicate from [[#vocabulary]] so the document can also 
+be served as JSON-LD or other RDF formats using content negotiation based on [[RFC9110]]:
+
+In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF 
+type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` 
+in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
+
+: **management_endpoint** (REQUIRED):
+:: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management-endpoint]]); 
+    in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` 
+    ([[#aggr-registration-endpoint-property]]).
+: **supported_management_flows** (REQUIRED):
+:: The value is a JSON array of strings identifying the supported management flow tokens at `management_endpoint`; in 
+    the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
+    ([[#aggr-supported-registration-type-property]]) whose object is the corresponding flow class IRI.
+:: Each member MUST be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
+    - `"none"` (RDF class `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]]))
+    - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]]))
+    - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]]))
+    - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]]))
+: **supported_management_request_formats** (REQUIRED):
+:: The value is a JSON array of strings identifying the supported request formats for the
+    `management_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
+    an `aggr:registrationRequestFormatSupported` triple ([[#aggr-registration-request-format-supported-property]]).
+    Servers MUST include either `application/json` or `application/x-www-form-urlencoded` or both.
+: **version** (REQUIRED):
+:: The value is a string containing the semantic version ([[!SEMVER]]) of the Aggregator specification that the server 
+    adheres to; in the RDF representations, this member maps to the predicate `aggr:specVersion` 
+    ([[#aggr-spec-version-property]]).
+: **client_identifier** (REQUIRED):
+:: The value is a string containing the absolute URL of the Client ID Document ([[#client-id-document]]); in 
+    the RDF representations, this member maps to the predicate `aggr:clientIdentifier` 
+    ([[#aggr-client-id-property]]).
+: **transformation_catalog** (REQUIRED):
+:: The value is a string containing the absolute URL of the server-level Transformation Catalog 
+    ([[#server-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
+    `aggr:transformationCatalog` ([[#aggr-transformation-catalog-property]]).
+
+<div class="example">
+```json
+{
+  "@context": {
+    "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
+    "provision": "aggr:ProvisionFlow",
+    "authorization_code": "aggr:AuthorizationCodeFlow",
+    "supported_management_request_formats": "aggr:registrationRequestFormatSupported",
+    "management_endpoint": {
+      "@id": "aggr:registrationEndpoint",
+      "@type": "@id"
+    },
+    "supported_management_flows": {
+      "@id": "aggr:supportedRegistrationType",
+      "@type": "@vocab"
+    },
+    "version": {
+      "@id": "aggr:specVersion"
+    },
+    "client_identifier": {
+      "@id": "aggr:clientIdentifier",
+      "@type": "@id"
+    },
+    "transformation_catalog": {
+      "@id": "aggr:transformationCatalog",
+      "@type": "@id"
+    }
+  },
+  "@id": "https://aggregator.example/",
+  "@type": "aggr:AggregatorServer",
+  "management_endpoint": "https://aggregator.example/registration",
+  "supported_management_flows": [
+    "provision",
+    "authorization_code"
+  ],
+  "supported_management_request_formats": [
+    "application/json",
+    "application/x-www-form-urlencoded"
+  ],
+  "version": "1.0.0",
+  "client_identifier": "https://aggregator.example/client.jsonld",
+  "transformation_catalog": "https://aggregator.example/transformations"
+}
+```
+</div>
+
+
+Client ID Document {#client-id-document}
+--------------------------------------------------------
+
+Endpoint that exposes the Client ID Document of the aggregator used for authorization. Servers MAY host this document at any 
+URL; the `client_identifier` property in the Aggregator Server Description MUST contain the authoritative absolute URL. The 
+Client ID Document MUST conform to the OAuth Client ID Metadata Document specification [[!Client-ID]]. In the case for the 
+aggregator, the `redirect_uris` property is OPTIONAL instead of REQUIRED, as multiple clients MAY create an Aggregator on 
+the same Aggregator Server (depending on the implementation). Adding this property allows an Aggregator Server 
+implementation to restrict which clients may create aggregators on the server.
+
+Server-level Transformation Catalog {#server-level-transformation-catalog}
+--------------------------------------------------------------------------
+
+The Transformation Catalog is an RDF document describing the reusable transformation resources
+([[#data-model]]) that an Aggregator Server makes available. These resources are primarily deployable
+`fno:Function`s, including composite transformations described using `fnoc:composition`. A server MAY additionally
+publish reusable `fno:AppliedFunction` templates in the same catalog. Supporting resources such as mappings,
+algorithms, and composition descriptions MAY be included in the catalog document and linked from those primary
+resources. Aggregator servers **MAY** publish this catalog at any deployment-specific URL. The URL **MUST** be advertised 
+in the [[#server-description]] via the `transformation_catalog` field. The catalog **SHOULD** support HTTP content 
+negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD). Access **MAY** be protected 
+using an OpenID Connect (OIDC) ID Token for authentication.
+
+The `aggr:TransformationCatalog`:
+  - **MUST** reference all supported transformations using `aggr:hasTransformation`.
+  - **MAY** reference reusable Applied Functions using `aggr:hasAppliedFunction`.
+  - **MAY** reference a supported algorithm using `aggr:hasAlgorithm`.
+  - **MAY** reference a supported mapping using `aggr:hasMapping`.
+  - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
+
+<div class="example">
+```turtle
+@base <http://aggregator.example.org/transformations#> .
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<> a aggr:TransformationCatalog ;
+    dct:title "Aggregator transformations" ;
+    aggr:hasTransformation <StaticSourcesQueryView> ;
+    aggr:hasTransformation <DynamicSourcesQueryView> ;
+    aggr:hasAppliedFunction <StaticSourcesQueryViewTemplate> ;
+    aggr:hasTransformation <http://example.org/external/ExternalFunction> ;
+    rdfs:seeAlso <http://example.org/external/ExternalFunction> .
+
+
+<StaticSourcesQueryView>
+    a                   fno:Function ;
+    dct:description     "Performs a query over a list of static sources and materializes results as a SPARQL endpoint"^^xsd:string ;
+    fno:expects         ( <StaticSources> <Query> ) ;
+    fno:returns         ( <Result> ) .
+
+<DynamicSourcesQueryView>
+    a                   fno:Function ;
+    dct:description     "Performs a query over a list of fetched sources and materializes results as a SPARQL endpoint"^^xsd:string ;
+    fno:expects         ( <SourcesEndpoint> <Query> ) ;
+    fno:returns         ( <Result> ) .
+
+<StaticSources>
+    a               fno:Parameter ;
+    fno:predicate   <sources> ;
+    fno:type        xsd:anyURI ;
+    fno:required    "true"^^xsd:boolean .
+
+<SourcesEndpoint>
+    a             fno:Parameter ;
+    fno:predicate <sources> ;
+    fno:type      xsd:anyURI ;
+    dct:format    <https://www.iana.org/assignments/media-types/text/plain> ;
+    fno:required  "true"^^xsd:boolean .
+
+<Query>
+    a               fno:Parameter ;
+    fno:predicate   <query> ;
+    fno:type        xsd:string ;
+    dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
+    fno:required    "true"^^xsd:boolean .
+
+<Result>
+    a               fno:Output ;
+    fno:type        dcat:Dataset ;
+    fno:predicate   <result> .
+
+<StaticSourcesQueryViewTemplate>
+    a               fno:AppliedFunction ;
+    fnoc:applies    <StaticSourcesQueryView> ;
+    fnoc:parameterBindings (
+      [
+        fnoc:boundParameter <StaticSources> ;
+        fnoc:boundToTerm <https://example.org/default-sources.txt>
+      ]
+    ) .
+```
+</div>
+
+A transformation **MAY** be linked to an `fnoc:Composition` using `fnoc:composition`. This **MAY** be done
+solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata 
+to provide additional transparency. Composite transformations remain `fno:Function` resources and therefore **MUST** be 
+advertised using `aggr:hasTransformation`. If all transformations referenced within the `fnoc:Composition` are also 
+included in the catalog, each of them represents a deployable service. This enables an Aggregator to expose a pipeline as a 
+single service while internally orchestrating multiple individual services.
+
+<div class="example">
+The following example describes a pipeline that:
+  1. Uses RML to map a non-RDF source.
+  2. Executes a query over the generated RDF.
+  3. Exposes the resulting query output.
+
+```turtle
+@base <http://aggregator.example.org/transformations#> .
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
+
+<> a aggr:TransformationCatalog ;
+    dct:title "Aggregator transformations" ;
+    aggr:hasTransformation <RMLQueryPipeline> ;
+    aggr:hasTransformation <QueryView> ;
+    aggr:hasTransformation <RMLMapper> ;
+    
+<RMLQueryPipeline>
+  a fno:Function ;
+  fno:expects ( <Mapping> <Query> ) ;
+  fno:returns ( <Result> ) ;
+  fno:composition [
+    fnoc:composedOf [
+      fnoc:mapFrom [
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <Mapping> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <RMLMapper> ;
+        fnoc:functionParameter <Mapping> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <Query> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <QueryView> ;
+        fnoc:functionParameter <Query> .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <RMLMapper> ;
+        fnoc:functionParameter <Result> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <QueryView> ;
+        fnoc:functionParameter <Sources> ;
+        fnoc:mappingStrategy fnoc:append .
+      ] .
+    ],[
+      fnoc:mapFrom [
+        fnoc:constituentFunction <QueryView> ;
+        fnoc:functionOutput <Result> .
+      ] ;
+      fnoc:mapTo [
+        fnoc:constituentFunction <RMLQueryPipeline> ;
+        fnoc:functionParameter <Result> .
+      ] .
+    ] .
+  ] .
+```
+</div>
