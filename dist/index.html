@@ -2015,7 +2015,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Aggregator Specification</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-04-15">15 April 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-04-16">16 April 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2029,7 +2029,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 15 April 2026,
+In addition, as of 16 April 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2112,7 +2112,7 @@ to protected derived resources.</p>
      <a href="#aggregator-metadata"><span class="secno">8</span> <span class="content">Aggregator Metadata</span></a>
      <ol class="toc">
       <li><a href="#aggregator-description"><span class="secno">8.1</span> <span class="content">Aggregator Description</span></a>
-      <li><a href="#instance-level-transformation-catalog"><span class="secno">8.2</span> <span class="content">Instance-level Transformations Catalog</span></a>
+      <li><a href="#instance-level-transformation-catalog"><span class="secno">8.2</span> <span class="content">Instance-level Transformation Catalog</span></a>
      </ol>
     <li>
      <a href="#aggregator-service-management"><span class="secno">9</span> <span class="content">Aggregator Service Management</span></a>
@@ -2239,7 +2239,7 @@ represented as an FnO Implementation (<code>fno:Implementation</code>) that impl
 which defines inputs and outputs (see <a href="#aggregator-service-management">§ 9 Aggregator Service Management</a>).</p>
     <li data-md>
      <p><strong>Transformation Catalog:</strong> A catalog that describes the FnO Functions supported by the Aggregator Server and the FnO AppliedFunctions hosted on an Aggregator
-Instance (see <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a> and <a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformations Catalog</a>).</p>
+Instance (see <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a> and <a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformation Catalog</a>).</p>
    </ul>
    <h3 class="heading settled" data-level="2.2" id="definitions-security"><span class="secno">2.2. </span><span class="content">Identity, Authorization, and Tokens</span><a class="self-link" href="#definitions-security"></a></h3>
    <ul>
@@ -2496,7 +2496,7 @@ An Applied Function <strong>MUST</strong> be described as an <code>fno:AppliedFu
    <ul>
     <li data-md>
      <p><strong>MUST</strong> use <code>fnoc:applies</code> to reference a transformation from the <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a> or
-<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformations Catalog</a>.</p>
+<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformation Catalog</a>.</p>
     <li data-md>
      <p><strong>MUST</strong> bind a value to each required parameter of the referenced transformation, and <strong>MAY</strong> bind values to optional
 parameters as defined by <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>.</p>
@@ -2505,7 +2505,7 @@ parameters as defined by <a data-link-type="biblio" href="#biblio-fno" title="Fu
 the Applied Function binds the exposed composite parameters in the same way as for any other transformation.</p>
     <li data-md>
      <p><strong>MAY</strong> be published as a reusable template in the <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a> or
-<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformations Catalog</a>. When a catalog advertises an Applied Function, it <strong>MUST</strong> link to it
+<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformation Catalog</a>. When a catalog advertises an Applied Function, it <strong>MUST</strong> link to it
 using <code>aggr:hasAppliedFunction</code> and <strong>MUST NOT</strong> use <code>aggr:hasTransformation</code>.</p>
    </ul>
    <p>An <code>aggr:Service</code> <strong>MAY</strong> link to its Applied Function using <code>aggr:applies</code>.</p>
@@ -3252,7 +3252,7 @@ the other required members for the selected <code>management_flow</code>. This S
    </ul>
    <h4 class="heading settled" data-level="6.1.2" id="aggregator-management-endpoint-get"><span class="secno">6.1.2. </span><span class="content"><code>GET</code></span><a class="self-link" href="#aggregator-management-endpoint-get"></a></h4>
    
-This method returns the list of Aggregator Instances owned by the authenticated user. The server MUST respond with <code>200 OK</code> 
+This method returns the list of Aggregator Instances created by the authenticated user. The server MUST respond with <code>200 OK</code> 
 and a JSON array containing zero or more Aggregator Description URLs (<a href="#aggregator-description">§ 8.1 Aggregator Description</a>).
 
 
@@ -4134,7 +4134,7 @@ the predicate <code>aggr:tokenExpiry</code> (<a href="#aggr-token-expiry-propert
     <dt data-md><strong>transformation_catalog</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the instance’s Transformations Endpoint
-(<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformations Catalog</a>); in the RDF representations, this member maps to the predicate
+(<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformation Catalog</a>); in the RDF representations, this member maps to the predicate
 <code>aggr:transformationsEndpoint</code> (<a href="#aggr-transformations-endpoint-property">§ 10.2.4 aggr:transformationsEndpoint</a>).</p>
     <dt data-md><strong>service_collection_endpoint</strong> (REQUIRED):
     <dd data-md>
@@ -4186,7 +4186,7 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
 <c- p>}</c->
 </pre>
    </div>
-   <h3 class="heading settled" data-level="8.2" id="instance-level-transformation-catalog"><span class="secno">8.2. </span><span class="content">Instance-level Transformations Catalog</span><a class="self-link" href="#instance-level-transformation-catalog"></a></h3>
+   <h3 class="heading settled" data-level="8.2" id="instance-level-transformation-catalog"><span class="secno">8.2. </span><span class="content">Instance-level Transformation Catalog</span><a class="self-link" href="#instance-level-transformation-catalog"></a></h3>
    <p>This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
 <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
 advertise the correct location via its <code>transformation_catalog</code> field (<code>aggr:transformationsEndpoint</code>). It allows aggregator 

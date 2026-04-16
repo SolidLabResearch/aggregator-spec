@@ -157,7 +157,7 @@ Depending on `management_flow`, additional members are defined:
     - `device_code`: To obtain a new access token and refresh token after the previous ones have expired.
 
 ### `GET` ### {#aggregator-management-endpoint-get}
-This method returns the list of Aggregator Instances owned by the authenticated user. The server MUST respond with `200 OK` 
+This method returns the list of Aggregator Instances created by the authenticated user. The server MUST respond with `200 OK` 
 and a JSON array containing zero or more Aggregator Description URLs ([[#aggregator-description]]).
 
 ### `DELETE` ### {#aggregator-management-endpoint-delete}

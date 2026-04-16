@@ -90,7 +90,7 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
 ```
 </div>
 
-Instance-level Transformations Catalog {#instance-level-transformation-catalog}
+Instance-level Transformation Catalog {#instance-level-transformation-catalog}
 -------------------------------------------------------------------
 
 This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
