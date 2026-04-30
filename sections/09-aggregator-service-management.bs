@@ -35,44 +35,28 @@ The request body **MUST** be an RDF document that describes exactly one requeste
 service resource:
 - **MUST** be the only `aggr:Service` described in the request body.
 - **MUST** identify a new service resource using either a unique URI or a blank node.
-- **MUST** declare the requested transformation using `aggr:performs`, referencing a transformation from the
-    server-level or this aggregator's instance-level Transformation Catalog.
 - **MAY** specify an implementation to use with `aggr:implements`.
-- **MAY** declare an Applied Function ([[#data-model-applied-function]]) using `aggr:applies`.
+- **MUST** declare a Transformation using one of the following:
+    - An Applied Transformation via `aggr:applies`, which:
+        - **MUST** reference a Transformation from a Transformation Catalog using `fnoc:applies`.
+        - **MUST** bind a value to each required parameter of that Transformation.
+    - A Transformation via `aggr:performs`, if the Transformation requires no input values.
 
-If the request includes `aggr:applies`, the referenced Applied Function:
-- **MUST** apply the same transformation identified by `aggr:performs`.
-- **MUST** bind a value to each required parameter of that transformation.
-
-If the requested transformation defines one or more required parameters, the request **MUST** include `aggr:applies`
-with an Applied Function that binds those parameters.
-
-The new service object **MAY** be specified with a blank node or as a URI indicating the requested service endpoint 
-location. The Aggregator **MAY** ignore the requested URI and assign its own. If the requested URI is syntactically invalid 
+The requested Service **MAY** be identified by a blank node or a URI indicating the desired Service endpoint location. 
+The Aggregator **MAY** ignore the requested URI and assign its own. If the requested URI is syntactically invalid 
 or not permitted, the server **MUST** respond with `400 Bad Request`. If the requested URI is valid but already in use, 
 the server **MUST** respond with `409 Conflict`.
 
-Upon successful processing of a valid request:
-1. If the request includes an Applied Function via `aggr:applies`, the server **MUST** ensure that an equivalent
-    `fno:AppliedFunction` is present in the instance-level Transformation Catalog.
-    If no equivalent Applied Function already exists there, the server **MUST** create a separate
-    `fno:AppliedFunction` resource and advertise it in the transformation catalog using `aggr:hasAppliedFunction`.
-    If an equivalent Applied Function already exists there, the server **MUST NOT** create a duplicate catalog entry.
-
-    Two Applied Functions are equivalent when they:
-    - use the same `fnoc:applies` transformation; and
-    - bind the same set of parameter/value pairs, independent of binding order.
-2. If the request targets a composite transformation, the [[!FNO]] composition and composition function **MUST** be made 
-    available in a resource and advertised in the instance-level Transformation Catalog using `aggr:hasTransformation`, 
-    and the service **MUST** reference the composition function in its `aggr:performs` property.
-3. The server **MUST** deploy the new service on the aggregator and expose its Service Description Endpoint 
-    [[#service-endpoint]], acording to the data model in [[#data-model-service]].
-4. Update the Service Collection and its associated `ETag`.
-5. Register the service endpoint as a UMA resource at the Authorization Server, 
-    advertising at least the `read` and `delete` scopes.
-6. Register each service output endpoint as a UMA resource, advertising at least the `read` scope.
-7. Respond with a `201 Created` status code and include in the response body the service description (as defined in 
-    [[#data-model-service]]), and a `Location` header identifying the Service Description Endpoint.
+Upon successful processing, the Aggregator **MUST**:
+1. Deploy the new Service and expose its Service Description Endpoint [[#service-endpoint]] according to the data model 
+    in [[#data-model-service]]. If the request included an Applied Transformation, the Service description MUST reference 
+    the Applied Transformation (as identified by `fnoc:applies`) using `aggr:performs`.
+2. Update the Service Collection and its associated ETag.
+3. Register the Service Description Endpoint as a UMA resource at the Authorization Server, advertising at least the `read` 
+    and `delete` scopes.
+4. Register each Service output endpoint as a UMA resource, advertising at least the `read` scope.
+5. Respond with `201 Created`, including the Service description (as defined in [[#data-model-service]]) in the response body 
+    and a `Location` header identifying the Service Description Endpoint.
 
 If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
 referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`. If the request is valid but 
