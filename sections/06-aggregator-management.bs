@@ -32,10 +32,10 @@ form fields with the same member names. The request body MUST include the follow
     The value is a string token; it MUST be one of the `supported_management_flows` advertised in the Aggregator 
     Server Description ([[#server-description]]). The following string tokens are defined, each corresponding to an RDF 
     class in the Aggregator vocabulary ([[#vocabulary]]) for semantically annotated representations:
-    - `"none"` ↔ `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]])
-    - `"provision"` ↔ `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]])
-    - `"authorization_code"` ↔ `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]])
-    - `"device_code"` ↔ `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]])
+    - `"none"` ↔ `aggr:NoAuthFlow` ([[#NoAuthFlow]])
+    - `"provision"` ↔ `aggr:ProvisionFlow` ([[#ProvisionFlow]])
+    - `"authorization_code"` ↔ `aggr:AuthorizationCodeFlow` ([[#AuthorizationCodeFlow]])
+    - `"device_code"` ↔ `aggr:DeviceCodeFlow` ([[#DeviceCodeFlow]])
 - **aggregator** (string, OPTIONAL): When present, the request targets an existing Aggregator Instance and the server 
     MUST replace its stored access token and refresh token with a new set obtained from the Identity Provider (IdP). 
     This is not a refresh-token grant; it is a full re-authentication to obtain a fresh access token and refresh token.

@@ -16,45 +16,45 @@ the following information. Each JSON member is paired with an RDF predicate from
 be served as JSON-LD or other RDF formats using content negotiation based on [[RFC9110]]:
 
 In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF 
-type `aggr:AggregatorServer` ([[#aggr-aggregator-server-class]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` 
+type `aggr:AggregatorServer` ([[#AggregatorServer]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` 
 in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
 
 : **management_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management-endpoint]]); 
     in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` 
-    ([[#aggr-registration-endpoint-property]]).
+    ([[#registrationEndpoint]]).
 : **supported_management_flows** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported management flow tokens at `management_endpoint`; in 
     the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
-    ([[#aggr-supported-registration-type-property]]) whose object is the corresponding flow class IRI.
+    ([[#supportedRegistrationType]]) whose object is the corresponding flow class IRI.
 :: Each member MUST be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
-    - `"none"` (RDF class `aggr:NoAuthFlow` ([[#aggr-no-auth-flow-class]]))
-    - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#aggr-provision-flow-class]]))
-    - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#aggr-authorization-code-flow-class]]))
-    - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#aggr-device-code-flow-class]]))
+    - `"none"` (RDF class `aggr:NoAuthFlow` ([[#NoAuthFlow]]))
+    - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#ProvisionFlow]]))
+    - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#AuthorizationCodeFlow]]))
+    - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#DeviceCodeFlow]]))
 : **supported_management_request_formats** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported request formats for the
     `management_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
-    an `aggr:registrationRequestFormatSupported` triple ([[#aggr-registration-request-format-supported-property]]).
+    an `aggr:registrationRequestFormatSupported` triple ([[#registrationRequestFormatSupported]]).
     Servers MUST include either `application/json` or `application/x-www-form-urlencoded` or both.
 : **version** (REQUIRED):
 :: The value is a string containing the semantic version ([[!SEMVER]]) of the Aggregator specification that the server 
     adheres to; in the RDF representations, this member maps to the predicate `aggr:specVersion` 
-    ([[#aggr-spec-version-property]]).
+    ([[#specVersion]]).
 : **client_identifier** (REQUIRED):
 :: The value is a string containing the absolute URL of the Client ID Document ([[#client-id-document]]); in 
     the RDF representations, this member maps to the predicate `aggr:clientIdentifier` 
-    ([[#aggr-client-id-property]]).
+    ([[#clientIdentifier]]).
 : **transformation_catalog** (REQUIRED):
 :: The value is a string containing the absolute URL of the server-level Transformation Catalog 
     ([[#server-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
-    `aggr:transformationCatalog` ([[#aggr-transformation-catalog-property]]).
+    `aggr:transformationCatalog` ([[#transformationCatalog]]).
 
 <div class="example">
 ```json
 {
   "@context": {
-    "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
+    "aggr": "https://w3id.org/aggregator#",
     "provision": "aggr:ProvisionFlow",
     "authorization_code": "aggr:AuthorizationCodeFlow",
     "supported_management_request_formats": "aggr:registrationRequestFormatSupported",
@@ -130,7 +130,7 @@ The `aggr:TransformationCatalog`:
 <div class="example">
 ```turtle
 @base <http://aggregator.example.org/transformations#> .
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix aggr: <https://w3id.org/aggregator#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -212,7 +212,7 @@ The following example describes a pipeline that:
 
 ```turtle
 @base <http://aggregator.example.org/transformations#> .
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix aggr: <https://w3id.org/aggregator#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
