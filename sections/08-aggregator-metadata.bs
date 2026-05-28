@@ -17,33 +17,33 @@ semantically annotated RDF representations (for example JSON-LD or Turtle) using
 The endpoint MUST return at least the following information about the aggregator, but additional fields MAY be
 included as needed. Each field SHOULD be expressed using the RDF properties defined in [[#vocabulary]] so the document MAY 
 be served as JSON-LD or other RDF formats. In semantically annotated representations, the Aggregator Description MUST state 
-that the described resource has RDF type `aggr:Aggregator` ([[#aggr-aggregator-class]]) (e.g., via `@type` in JSON-LD or 
+that the described resource has RDF type `aggr:Aggregator` ([[#Aggregator]]) (e.g., via `@type` in JSON-LD or 
 `a aggr:Aggregator` in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
 
 : **id** (OPTIONAL):
 :: The value is a string containing the absolute URL that identifies the Aggregator Instance (typically the
     instance base URL itself); in the RDF representations, this is the RDF subject (i.e., `@id`) of the
-    `aggr:Aggregator` resource ([[#aggr-aggregator-class]]).
+    `aggr:Aggregator` resource ([[#Aggregator]]).
 : **created_at** (REQUIRED):
 :: The value is a string timestamp (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in
     the RDF representations, this member maps to the predicate `aggr:createdAt`
-    ([[#aggr-created-at-property]]).
+    ([[#createdAt]]).
 : **login_status** (REQUIRED):
 :: The value is a boolean that indicates whether the stored token set for the aggregator is currently valid;
     in the RDF representations, this member maps to the predicate `aggr:loginStatus`
-    ([[#aggr-login-status-property]]).
+    ([[#loginStatus]]).
 : **token_expiry** (OPTIONAL):
 :: The value is a string timestamp indicating when the aggregator's access token will expire (recommended:
     `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in the RDF representations, this member maps to
-    the predicate `aggr:tokenExpiry` ([[#aggr-token-expiry-property]]).
+    the predicate `aggr:tokenExpiry` ([[#tokenExpiry]]).
 : **transformation_catalog** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Transformations Endpoint
     ([[#instance-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
-    `aggr:transformationsEndpoint` ([[#aggr-transformations-endpoint-property]]).
+    `aggr:transformationsEndpoint` ([[#transformationsEndpoint]]).
 : **service_collection_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
     Services ([[#service-collection-endpoint]]); in the RDF representations, this member maps to the predicate
-    `aggr:serviceCollectionEndpoint` ([[#aggr-service-discovery-endpoint-property]]).
+    `aggr:serviceCollectionEndpoint` ([[#serviceCollectionEndpoint]]).
  
 This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 
 that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
@@ -53,7 +53,7 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
 {
   "@context": {
     "id": "@id",
-    "aggr": "https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#",
+    "aggr": "https://w3id.org/aggregator#",
     "oidcIssuer": "http://www.w3.org/ns/solid/terms#oidcIssuer",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 

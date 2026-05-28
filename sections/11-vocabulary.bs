@@ -2,26 +2,26 @@ Vocabulary {#vocabulary}
 ===================================
 
 The Aggregator vocabulary is defined in the `aggr:` namespace 
-(`https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#`). The following classes and properties are used 
+(`https://w3id.org/aggregator#`). The following classes and properties are used 
 throughout this specification.
 
 Classes {#vocabulary-classes}
 ---------------------------
 
-### aggr:Aggregator ### {#aggr-aggregator-class}
+### aggr:Aggregator ### {#Aggregator}
 Describes an Aggregator Instance (its base URL is the Aggregator Description resource).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Service](https://schema.org/Service)<br>
 **subClassOf:** [foaf:Agent](https://xmlns.com/foaf/0.1/Agent)
 
-### aggr:ServiceImplementation ### {#aggr-service-implementation}
+### aggr:ServiceImplementation ### {#ServiceImplementation}
 Represents an implementation that can run inside an aggregator
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [fno:Implementation](https://w3id.org/function/spec/#Implementation)
 
-### aggr:Service ### {#aggr-service-class}
+### aggr:Service ### {#Service}
 Represents a configured Aggregator pipeline that can be created, inspected, and removed via the Service
 Management API (e.g., `/services/{service_id}`).
 
@@ -29,20 +29,20 @@ Management API (e.g., `/services/{service_id}`).
 **subClassOf:** [prov:SoftwareAgent](https://www.w3.org/TR/prov-o/#SoftwareAgent),
 [dcat:DataService](https://www.w3.org/TR/vocab-dcat-3/#DataService)
 
-### aggr:AggregatorServer ### {#aggr-aggregator-server-class}
+### aggr:AggregatorServer ### {#AggregatorServer}
 Describes the Aggregator Server Description document that advertises discovery metadata.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Service](https://schema.org/Service)
 
-### aggr:ServiceCollection ### {#aggr-service-discovery-class}
+### aggr:ServiceCollection ### {#ServiceCollection}
 Describes the service collection resource (e.g., `/services`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
 [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
 
-### aggr:TransformationCatalog ### {#aggr-transformation-catalog-class}
+### aggr:TransformationCatalog ### {#TransformationCatalog}
 Describes a transformation catalog resource that lists the transformations supported by an Aggregator Server
 (and optionally instance-specific transformations).
 
@@ -50,14 +50,14 @@ Describes a transformation catalog resource that lists the transformations suppo
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
 [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
 
-### aggr:ProvenanceLog ### {#aggr-provenance-log-class}
+### aggr:ProvenanceLog ### {#ProvenanceLog}
 Describes the provenance of generated entities and performed executions of a running Aggregator Service
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
 [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
 
-### aggr:RegistrationFlow ### {#aggr-registration-flow-class}
+### aggr:RegistrationFlow ### {#RegistrationFlow}
 Describes a registration flow supported by an Aggregator Server.
 This specification models each flow as an RDF class so that `aggr:supportedRegistrationType` can be
 semantically annotated by referencing the relevant flow class (e.g., `aggr:AuthorizationCodeFlow`).
@@ -65,222 +65,222 @@ semantically annotated by referencing the relevant flow class (e.g., `aggr:Autho
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)
 
-### aggr:NoAuthFlow ### {#aggr-no-auth-flow-class}
+### aggr:NoAuthFlow ### {#NoAuthFlow}
 Registration flow where the Aggregator Instance does not authenticate and only accesses public resources.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** `aggr:RegistrationFlow`
+**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
 
-### aggr:ProvisionFlow ### {#aggr-provision-flow-class}
+### aggr:ProvisionFlow ### {#ProvisionFlow}
 Registration flow where the Aggregator Server provisions an Aggregator Instance with its own identity.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** `aggr:RegistrationFlow`
+**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
 
-### aggr:AuthorizationCodeFlow ### {#aggr-authorization-code-flow-class}
+### aggr:AuthorizationCodeFlow ### {#AuthorizationCodeFlow}
 Registration flow based on OAuth 2.0 Authorization Code [[RFC6749]] (https://datatracker.ietf.org/doc/html/rfc6749)
 (via OpenID Connect), where the Aggregator acts on behalf of an end-user with a token scoped to the
 Aggregator.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** `aggr:RegistrationFlow`
+**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
 
-### aggr:DeviceCodeFlow ### {#aggr-device-code-flow-class}
+### aggr:DeviceCodeFlow ### {#DeviceCodeFlow}
 Registration flow based on OAuth 2.0 Device Authorization Grant [[RFC8628]].
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** `aggr:RegistrationFlow`
+**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
 
 Properties {#vocabulary-properties}
 ---------------------------
 
-### aggr:createdAt ### {#aggr-created-at-property}
+### aggr:createdAt ### {#createdAt}
 Timestamp when an `aggr:Aggregator` or `aggr:Service` was created.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Aggregator`, `aggr:Service`<br>
+**domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator), [aggr:Service](https://w3id.org/aggregator#Service)<br>
 **range:** [xsd:dateTime](https://www.w3.org/TR/xmlschema11-2/#dateTime)
 
-### aggr:loginStatus ### {#aggr-login-status-property}
+### aggr:loginStatus ### {#loginStatus}
 Indicates whether the stored token set for an `aggr:Aggregator` is currently valid.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Aggregator`<br>
+**domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator)<br>
 **range:** [xsd:boolean](https://www.w3.org/TR/xmlschema11-2/#boolean)
 
-### aggr:tokenExpiry ### {#aggr-token-expiry-property}
+### aggr:tokenExpiry ### {#tokenExpiry}
 Timestamp when the current access token for an `aggr:Aggregator` will expire.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Aggregator`<br>
+**domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator)<br>
 **range:** [xsd:dateTime](https://www.w3.org/TR/xmlschema11-2/#dateTime)
 
-### aggr:transformationsEndpoint ### {#aggr-transformations-endpoint-property}
+### aggr:transformationsEndpoint ### {#transformationsEndpoint}
 Links an `aggr:Aggregator` to its (possibly private) transformations endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Aggregator`<br>
+**domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator)<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:serviceCollectionEndpoint ### {#aggr-service-discovery-endpoint-property}
+### aggr:serviceCollectionEndpoint ### {#serviceCollectionEndpoint}
 Links an `aggr:Aggregator` to its service collection endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Aggregator`<br>
+**domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator)<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:hasService ### {#aggr-service-property}
+### aggr:hasService ### {#hasService}
 Links an `aggr:ServiceCollection` to the `aggr:Service` instances it advertises.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:ServiceCollection`<br>
-**range:** `aggr:Service`
+**domain:** [aggr:ServiceCollection](https://w3id.org/aggregator#ServiceCollection)<br>
+**range:** [aggr:Service](https://w3id.org/aggregator#Service)
 
-### aggr:hasTransformation ### {#aggr-has-transformation-property}
+### aggr:hasTransformation ### {#hasTransformation}
 Links an `aggr:TransformationCatalog` to a supported `fno:Function`. Composite transformations are also linked
 with this property because they remain `fno:Function` resources.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCatalog`<br>
+**domain:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Function)
 
-### aggr:hasAppliedFunction ### {#aggr-has-applied-function-property}
+### aggr:hasAppliedFunction ### {#hasAppliedFunction}
 Links an `aggr:TransformationCatalog` to a reusable `fno:AppliedFunction` template it advertises.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCatalog`<br>
+**domain:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)<br>
 **range:** [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
 
-### aggr:hasAlgorithm ### {#aggr-has-algorithm-property}
+### aggr:hasAlgorithm ### {#hasAlgorithm}
 Links an `aggr:TransformationCatalog` to an algorithm it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCatalog`<br>
+**domain:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)<br>
 **range:** [fno:Algorithm](https://w3id.org/function/spec/#Algorithm)
 
-### aggr:hasMapping ### {#aggr-has-mapping-property}
+### aggr:hasMapping ### {#hasMapping}
 Links an `aggr:TransformationCatalog` to a mapping it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCatalog`<br>
+**domain:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)<br>
 **range:** [fno:Mapping](https://w3id.org/function/spec/#Mapping)
 
-### aggr:hasComposition ### {#aggr-has-composition-property}
+### aggr:hasComposition ### {#hasComposition}
 Links an `aggr:TransformationCatalog` to a composition it supports.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:TransformationCatalog`<br>
+**domain:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Composition)
 
-### aggr:status ### {#aggr-status-property}
+### aggr:status ### {#status}
 Provides the lifecycle phase of an `aggr:Service` (values such as `running`, `stopped`, or `error`).
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
-### aggr:statusDetail ### {#aggr-status-detail-property}
+### aggr:statusDetail ### {#statusDetail}
 Provides a human-readable explanation of the current `aggr:Service` status (for example, a stop reason or error message).
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
-### aggr:performs ### {#aggr-performs-property}
+### aggr:performs ### {#performs}
 Provides the transformation an `aggr:Service` performs.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Function)
 
-### aggr:applies ### {#aggr-applies-property}
+### aggr:applies ### {#applies}
 Links an `aggr:Service` to the `fno:AppliedFunction` that captures the configured parameter bindings for that service.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
 **range:** [fno:AppliedFunction](https://w3id.org/function/spec/#AppliedFunction)
 
-### aggr:implements ### {#aggr-implements-property}
+### aggr:implements ### {#implements}
 Provides the implementation used by an `aggr:Service` to perform its transformation.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
 **range:** [fno:Implementation](https://w3id.org/function/spec/#Implementation)
 
-### aggr:forOutput ### {#aggr-for-output-property}
+### aggr:forOutput ### {#forOutput}
 Links a `dcat:Dataset` exposed by an `aggr:Service` to the `fno:Output` it represents.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** [dcat:Dataset](https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset)<br>
 **range:** [fno:Output](https://w3id.org/function/spec/#Output)
 
-### aggr:fromService ### {#aggr-from-service-property}
+### aggr:fromService ### {#fromService}
 Links a service output distribution to the `aggr:Service` that exposes it.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** [dcat:Distribution](https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution)<br>
-**range:** `aggr:Service`
+**range:** [aggr:Service](https://w3id.org/aggregator#Service)
 
-### aggr:provenanceLog ### {#aggr-provlog-property}
+### aggr:provenanceLog ### {#provenanceLog}
 Links an `aggr:Service` to its provenance log.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:Service`<br>
-**range:** `aggr:ProvenanceLog`
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
+**range:** [aggr:ProvenanceLog](https://w3id.org/aggregator#ProvenanceLog)
 
-### aggr:hasActivity ### {#aggr-has-activity-property}
+### aggr:hasActivity ### {#hasActivity}
 Links an `aggr:ProvenanceLog` to an activity it includes.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:ProvenanceLog`<br>
+**domain:** [aggr:ProvenanceLog](https://w3id.org/aggregator#ProvenanceLog)<br>
 **range:** [fno:Execution](https://w3id.org/function/spec/#Execution)
 
-### aggr:registrationEndpoint ### {#aggr-registration-endpoint-property}
+### aggr:registrationEndpoint ### {#registrationEndpoint}
 Links an `aggr:AggregatorServer` to its registration endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:AggregatorServer`<br>
+**domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:supportedRegistrationType ### {#aggr-supported-registration-type-property}
+### aggr:supportedRegistrationType ### {#supportedRegistrationType}
 Lists the registration flows advertised by an `aggr:AggregatorServer`.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:AggregatorServer`<br>
-**range:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class) (expected to be an `aggr:RegistrationFlow` class)
+**domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
+**range:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class) (expected to be an [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow) class)
 
-### aggr:registrationRequestFormatSupported ### {#aggr-registration-request-format-supported-property}
+### aggr:registrationRequestFormatSupported ### {#registrationRequestFormatSupported}
 Lists the supported request formats for an `aggr:AggregatorServer` registration endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:AggregatorServer`<br>
+**domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
-### aggr:specVersion ### {#aggr-spec-version-property}
+### aggr:specVersion ### {#specVersion}
 States which version of this specification an `aggr:AggregatorServer` implements.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:AggregatorServer`<br>
+**domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
 **range:** [xsd:string](https://www.w3.org/TR/xmlschema11-2/#string)
 
-### aggr:clientIdentifier ### {#aggr-client-id-property}
+### aggr:clientIdentifier ### {#clientIdentifier}
 Links an `aggr:AggregatorServer` to its Client ID Document.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:AggregatorServer`<br>
+**domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:transformationCatalog ### {#aggr-transformation-catalog-property}
+### aggr:transformationCatalog ### {#transformationCatalog}
 References the Aggregator Server’s server-level transformation catalog.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** `aggr:AggregatorServer`<br>
-**range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
+**domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
+**range:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)
 
 Claim Types {#vocabulary-claim-types}
 ---------------------------
 
-### aggr:transformation-description ### {#aggr-transformation-description-claim-type}
+### aggr:transformation-description ### {#transformation-description}
 Identifier for the UMA `claim_type` used to request or provide a transformation description.
 
 **type:** [rdfs:Resource](https://www.w3.org/TR/rdf-schema/#ch_resource)
@@ -289,7 +289,7 @@ Claim tokens of this type MUST be RDF descriptions of the intended transformatio
 reference to a transformation catalog entry). Acceptable `claim_token_format` values are URIs identifying RDF 
 serializations (such as `http://www.w3.org/ns/formats/Turtle` and `http://www.w3.org/ns/formats/JSON-LD`).
 
-### aggr:derivation-access ### {#aggr-derivation-access-claim-type}
+### aggr:derivation-access ### {#derivation-access}
 Identifier for the UMA `claim_type` used to request or provide upstream access tokens for derived resources.
 
 **type:** [rdfs:Resource](https://www.w3.org/TR/rdf-schema/#ch_resource)

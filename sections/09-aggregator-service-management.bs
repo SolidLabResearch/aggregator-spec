@@ -85,7 +85,7 @@ POST https://aggregator.example/agg1/services HTTP/1.1
 Host: aggregator.example
 Content-Type: text/turtle
 
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix aggr: <https://w3id.org/aggregator#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix fnoc: <https://w3id.org/function/vocabulary/composition#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
@@ -148,7 +148,7 @@ The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoint
 <div class="example">
 ```turtle
 @base <https://aggregator.example/agg1/services#>
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix aggr: <https://w3id.org/aggregator#> .
 
 <>
     a aggr:ServiceCollection ;
@@ -217,7 +217,7 @@ interpreted as the dataset. When a client requests a Service Output Endpoint, th
 
 <div class="example">
 ```http
-Link: <https://aggregator.example/agg1/services/service1/>; rel="https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#fromService"
+Link: <https://aggregator.example/agg1/services/service1/>; rel="https://w3id.org/aggregator#fromService"
 ```
 </div>
 
@@ -258,7 +258,7 @@ as a versioned dataset and references concrete dataset versions that are describ
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix freq: <http://purl.org/cld/freq/> .
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix aggr: <https://w3id.org/aggregator#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -288,7 +288,7 @@ as a versioned dataset and references concrete dataset versions that are describ
 <div class="example">
 The Provenance Log below illustrates two executions of a service that each produce a new version of the logical service dataset.
 ```turtle
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+@prefix aggr: <https://w3id.org/aggregator#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .

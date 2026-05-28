@@ -60,7 +60,7 @@ Namespaces {#aggregator-server-namespaces}
 The following namespace prefixes are used throughout this specification and SHOULD appear in RDF serializations
 (e.g., Turtle, JSON-LD contexts):
 
-- `aggr:` → `https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#`
+- `aggr:` → `https://w3id.org/aggregator#`
 - `dct:` → `http://purl.org/dc/terms/`
 - `fno:` → `https://w3id.org/function/ontology#`
 - `fnoc:` → `https://fno.io/vocabulary/composition/0.1.0/`
