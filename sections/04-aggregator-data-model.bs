@@ -146,29 +146,6 @@ inst-trans:sparql-query-view-applied-function
 ```
 </div>
 
-Service Collection {#data-model-service-collection}
----------------------------------------------------
-
-A Service Collection describes the set of services currently exposed by an Aggregator Instance.
-
-The Service Collection:
-  - **MUST** be described as an `aggr:ServiceCollection`.
-  - **MUST** reference each contained service using `aggr:hasService`.
-
-<div class="example">
-```turtle
-@prefix services: <https://example.org/agg1/services/> .
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-
-<https://example.org/agg1/services>
-  a aggr:ServiceCollection ;
-  aggr:hasService
-    services:sparql-query-view-service,
-    services:rml-mapper-service .
-```
-</div>
-
-
 Service {#data-model-service}
 -----------------------------
 
@@ -254,25 +231,6 @@ Core Ontology ([[!Hydra]]).
     dcat:accessService <https://example.org/agg1/services/sparql-query-view-service> .
 ```
 </div>
-
-Service Provenance Log {#data-model-service-provenance-log}
------------------------------
-
-An aggregator implementation **MAY** provide provenance information for a service. If it does, the service **MUST**
-link to its provenance log using `aggr:provenanceLog`, where the Service Provenance Log:
-  - **MUST** be described as an `aggr:ProvenanceLog`.
-  - **MUST** reference one or more execution activities using `aggr:hasActivity`.
-
-<div class="example">
-```turtle
-@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
-
-<https://example.org/agg1/services/sparql-query-view-service/provenance>
-  a aggr:ProvenanceLog ;
-  aggr:hasActivity :execution-0 .
-```
-</div>
-
 
 Execution {#data-model-service-execution}
 ------------------------------
