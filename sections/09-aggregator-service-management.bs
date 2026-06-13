@@ -35,44 +35,28 @@ The request body **MUST** be an RDF document that describes exactly one requeste
 service resource:
 - **MUST** be the only `aggr:Service` described in the request body.
 - **MUST** identify a new service resource using either a unique URI or a blank node.
-- **MUST** declare the requested transformation using `aggr:performs`, referencing a transformation from the
-    server-level or this aggregator's instance-level Transformation Catalog.
 - **MAY** specify an implementation to use with `aggr:implements`.
-- **MAY** declare an Applied Function ([[#data-model-applied-function]]) using `aggr:applies`.
+- **MUST** declare a Transformation using one of the following:
+    - An Applied Transformation via `aggr:applies`, which:
+        - **MUST** reference a Transformation from a Transformation Catalog using `fnoc:applies`.
+        - **MUST** bind a value to each required parameter of that Transformation.
+    - A Transformation via `aggr:performs`, if the Transformation requires no input values.
 
-If the request includes `aggr:applies`, the referenced Applied Function:
-- **MUST** apply the same transformation identified by `aggr:performs`.
-- **MUST** bind a value to each required parameter of that transformation.
-
-If the requested transformation defines one or more required parameters, the request **MUST** include `aggr:applies`
-with an Applied Function that binds those parameters.
-
-The new service object **MAY** be specified with a blank node or as a URI indicating the requested service endpoint 
-location. The Aggregator **MAY** ignore the requested URI and assign its own. If the requested URI is syntactically invalid 
+The requested Service **MAY** be identified by a blank node or a URI indicating the desired Service endpoint location. 
+The Aggregator **MAY** ignore the requested URI and assign its own. If the requested URI is syntactically invalid 
 or not permitted, the server **MUST** respond with `400 Bad Request`. If the requested URI is valid but already in use, 
 the server **MUST** respond with `409 Conflict`.
 
-Upon successful processing of a valid request:
-1. If the request includes an Applied Function via `aggr:applies`, the server **MUST** ensure that an equivalent
-    `fno:AppliedFunction` is present in the instance-level Transformation Catalog.
-    If no equivalent Applied Function already exists there, the server **MUST** create a separate
-    `fno:AppliedFunction` resource and advertise it in the transformation catalog using `aggr:hasAppliedFunction`.
-    If an equivalent Applied Function already exists there, the server **MUST NOT** create a duplicate catalog entry.
-
-    Two Applied Functions are equivalent when they:
-    - use the same `fnoc:applies` transformation; and
-    - bind the same set of parameter/value pairs, independent of binding order.
-2. If the request targets a composite transformation, the [[!FNO]] composition and composition function **MUST** be made 
-    available in a resource and advertised in the instance-level Transformation Catalog using `aggr:hasTransformation`, 
-    and the service **MUST** reference the composition function in its `aggr:performs` property.
-3. The server **MUST** deploy the new service on the aggregator and expose its Service Description Endpoint 
-    [[#service-endpoint]], acording to the data model in [[#data-model-service]].
-4. Update the Service Collection and its associated `ETag`.
-5. Register the service endpoint as a UMA resource at the Authorization Server, 
-    advertising at least the `read` and `delete` scopes.
-6. Register each service output endpoint as a UMA resource, advertising at least the `read` scope.
-7. Respond with a `201 Created` status code and include in the response body the service description (as defined in 
-    [[#data-model-service]]), and a `Location` header identifying the Service Description Endpoint.
+Upon successful processing, the Aggregator **MUST**:
+1. Deploy the new Service and expose its Service Description Endpoint [[#service-endpoint]] according to the data model 
+    in [[#data-model-service]]. If the request included an Applied Transformation, the Service description MUST reference 
+    the Applied Transformation (as identified by `fnoc:applies`) using `aggr:performs`.
+2. Update the Service Collection and its associated ETag.
+3. Register the Service Description Endpoint as a UMA resource at the Authorization Server, advertising at least the `read` 
+    and `delete` scopes.
+4. Register each Service output endpoint as a UMA resource, advertising at least the `read` scope.
+5. Respond with `201 Created`, including the Service description (as defined in [[#data-model-service]]) in the response body 
+    and a `Location` header identifying the Service Description Endpoint.
 
 If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
 referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`. If the request is valid but 
@@ -124,9 +108,24 @@ services.
 
 ### Service Discovery ### {#service-discovery}
 
-The Service Collection Endpoint **MUST** expose the [[#data-model-service-collection]], an RDF document including all 
-deployed service URIs. The endpoint **SHOULD** support HTTP content negotiation to allow clients to request different RDF 
-serializations (e.g., Turtle, JSON-LD) of the RDF Document.
+An `aggr:ServiceCollection` **MUST** reference all Service Description Endpoints using `aggr:hasService`.
+
+<div class="example">
+```turtle
+@base <https://aggregator.example/agg1/services#>
+@prefix aggr: <https://spec.knows.idlab.ugent.be/aggregator-protocol/latest/#> .
+
+<>
+    a aggr:ServiceCollection ;
+    aggr:hasService
+        <https://aggregator.example/agg1/services/service1/>,
+        <https://aggregator.example/agg1/services/service2/> .
+```
+</div>
+
+The Service Collection Endpoint **MUST** expose an RDF document containing an `aggr:ServiceCollection`. The endpoint **SHOULD** 
+support HTTP content negotiation to allow clients to request different RDF serializations (e.g., Turtle, JSON-LD) of the 
+RDF Document.
 
 : `HEAD`
 :: Enables clients to detect changes to the collection without retrieving the full representation. 
@@ -141,22 +140,7 @@ serializations (e.g., Turtle, JSON-LD) of the RDF Document.
     respond with:
         - `200 OK`
         - The same `ETag` value that would be returned in response to a `HEAD` request
-        - The serialized [[#data-model-service-collection]] in the body
-
-The `aggr:ServiceCollection` **MUST** reference all Service Description Endpoints using `aggr:hasService`.
-
-<div class="example">
-```turtle
-@base <https://aggregator.example/agg1/services#>
-@prefix aggr: <https://w3id.org/aggregator#> .
-
-<>
-    a aggr:ServiceCollection ;
-    aggr:hasService
-        <https://aggregator.example/agg1/services/service1/>,
-        <https://aggregator.example/agg1/services/service2/> .
-```
-</div>
+        - The serialized service collection in the body
 
 Service Description Endpoint {#service-endpoint}
 ------------------------------------------------
@@ -228,23 +212,22 @@ it **MAY** use this information to establish a provenance relationship between d
 Service **MAY** link the consumed service output dataset to the newly generated output dataset using `prov:wasDerivedFrom`.
 This enables explicit provenance chains to be constructed across multiple Aggregator Services.
 
-Provenance Log {#service-provenance}
----------------------------------
+Service Provenance {#service-provenance}
+----------------------------------------
 
 This section describes how an Aggregator **SHOULD** store, expose, and maintain provenance metadata describing service 
 [[#data-model-service-execution]]. An Aggregator is not required to manage provenance data. However, if it does, it 
-**MUST** conform to this specification. A service’s [[#data-model-service-provenance-log]] is an RDF document that 
-references **AT LEAST** the most recent [[#data-model-service-execution]] performed by the service using 
-`aggr:hasActivity`. Aggregator servers **MAY** publish a services' Provenance Log at any deployment-specific URL using the 
-`GET` method. The endpoint **MUST** be advertised in the Service Description through the `aggr:provenanceLog` predicate. 
-The endpoint **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations 
-(e.g., Turtle, JSON-LD). The executions that are defined in the provenance log **MAY** be embedded in the 
-Provenance Log document or **MAY** be hosted on separate endpoints as individual RDF documents.
+**MUST** conform to this specification. A service’s `aggr:ProvenanceLog` references **AT LEAST** the most recent 
+[[#data-model-service-execution]] performed by the service using `aggr:hasActivity`. Aggregator servers **MAY** publish 
+a services' Provenance Log as an RDF Document at any deployment-specific URL using the `GET` method. The endpoint **MUST** 
+be advertised in the Service Description through the `aggr:provenanceLog` predicate. The endpoint **SHOULD** support HTTP 
+content negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD). The executions that 
+are defined in the provenance log **MAY** be embedded in the Provenance Log document or **MAY** be hosted on separate endpoints 
+as individual RDF documents.
 
 If the Provenance Log keeps a history log of multiple executions, it **SHOULD** be subject to a retention policy 
 defining how long execution records remain included in the log. This prevents unbounded growth of the log over time 
-and ensures manageable storage and query performance. All retained executions **MUST** be included in the 
-[[#data-model-service-provenance-log]]. The executions **MUST NOT** link the the abstract dataset defined in the 
+and ensures manageable storage and query performance. The executions **MUST NOT** link the the abstract dataset defined in the 
 [[#data-model-service]]. When provenance is retained, the execution records **MUST** include 
 execution datasets as defined in [[#data-model-service-execution]]. If the performed transformation of the execution is 
 the same as the one defined in the service description, the execution datasets **MUST** be defined following the versioning 
@@ -255,6 +238,7 @@ This example shows a Service Description for a service that updates its dataset 
 In this example, the retained executions produce new versions of the logical service dataset, so that dataset is modeled
 as a versioned dataset and references concrete dataset versions that are described in the Provenance Log.
 ```turtle
+@base <https://aggregator.example/agg1/services/service1> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix freq: <http://purl.org/cld/freq/> .
@@ -262,93 +246,93 @@ as a versioned dataset and references concrete dataset versions that are describ
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:dataset
+<#dataset>
     a dcat:Dataset ;
-    aggr:forOutput :result ;
-    dcat:distribution :distribution ;
+    aggr:forOutput <#result> ;
+    dcat:distribution <#distribution> ;
     dcat:hasCurrentVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
-    dcat:hasVersion <https://aggregator.example/agg1/services/service1/provenance#dataset-0>,
+    dcat:hasVersion
+        <https://aggregator.example/agg1/services/service1/provenance#dataset-0>,
         <https://aggregator.example/agg1/services/service1/provenance#dataset-1> ;
     dct:accrualPeriodicity freq:daily ;
     dct:modified "2025-01-02T12:02:00Z"^^xsd:dateTime .
 
-:service
+<>
     a aggr:Service ;
     a dcat:DataService ;
     a prov:SoftwareAgent ;
-    dcat:servesDataset :dataset .
+    dcat:servesDataset <#dataset> ;
+    aggr:provenanceLog <https://aggregator.example/agg1/services/service1/provenance> ;
+    aggr:performs <https://aggregator.example/transformations#QueryView> .
 
-:distribution
+<#distribution>
     a dcat:Distribution ;
     dcat:accessURL <https://aggregator.example/agg1/services/service1/output> ;
-    dcat:accessService :service .
+    dcat:accessService <> .
 ```
 </div>
 
 <div class="example">
 The Provenance Log below illustrates two executions of a service that each produce a new version of the logical service dataset.
 ```turtle
+@base <https://aggregator.example/agg1/services/service1/provenance> .
 @prefix aggr: <https://w3id.org/aggregator#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix trans: <https://aggregator.example/transformations#> .
 
 <>
-  a aggr:ProvenanceLog ;
-  aggr:hasActivity :execution-0, :execution-1 .
+    a aggr:ProvenanceLog ;
+    aggr:hasActivity <#execution-0>, <#execution-1> .
 
-:dataset
-  a dcat:Dataset ;
-  dcat:hasCurrentVersion :dataset-1 ;
-  dcat:hasVersion :dataset-0, :dataset-1 .
+<#execution-0>
+    a fno:Execution ;
+    a prov:Activity ;
+    fno:executes trans:QueryView ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
+    trans:source "http://example.org/source1" ;
+    trans:result <#dataset-0> ;
+    prov:wasAssociatedWith <https://aggregator.example/agg1/services/service1> ;
+    prov:qualifiedAssociation [
+        a prov:Association ;
+        prov:agent <https://aggregator.example/agg1/services/service1> ;
+        prov:hadPlan trans:QueryView .
+    ] ;
+    prov:used trans:QueryView ;
+    prov:startedAtTime "2025-01-01T12:00:00Z"^^xsd:dateTime ;
+    prov:endedAtTime "2025-01-01T12:02:00Z"^^xsd:dateTime .
 
-:execution-0
-  a fno:Execution ;
-  a prov:Activity ;
-  fno:executes :query-view ;
-  :query "SELECT * WHERE { ?s ?p ?o }" ;
-  :source "http://example.org/source1" ;
-  :result :dataset-0 ;
-  prov:associatedWith :service ;
-  prov:qualifiedAssociation [
-    a prov:Association ;
-    prov:agent :service ;
-    prov:hadPlan :query-view .
-  ] ;
-  prov:used :query-view ;
-  prov:startedAtTime "2025-01-01T12:00:00Z"^^xsd:dateTime ;
-  prov:endedAtTime "2025-01-01T12:02:00Z"^^xsd:dateTime .
+<#execution-1>
+    a fno:Execution ;
+    a prov:Activity ;
+    fno:executes transQueryView ;
+    trans:query "SELECT * WHERE { ?s ?p ?o }" ;
+    trans:source "http://example.org/source1" ;
+    trans:result <#dataset-1> ;
+    prov:wasAssociatedWith <https://aggregator.example/agg1/services/service1> ;
+    prov:qualifiedAssociation [
+        a prov:Association ;
+        prov:agent <https://aggregator.example/agg1/services/service1> ;
+        prov:hadPlan <https://aggregator.example/agg1/services/service1/transformations#QueryView> .
+    ] ;
+    prov:used <https://aggregator.example/agg1/services/service1/transformations#QueryView> ;
+    prov:invalidated <#dataset-0> ;
+    prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
+    prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
 
-:execution-1
-  a fno:Execution ;
-  a prov:Activity ;
-  fno:executes :query-view ;
-  :query "SELECT * WHERE { ?s ?p ?o }" ;
-  :source "http://example.org/source1" ;
-  :result :dataset-1 ;
-  prov:associatedWith :service ;
-  prov:qualifiedAssociation [
-    a prov:Association ;
-    prov:agent :service ;
-    prov:hadPlan :query-view .
-  ] ;
-  prov:used :query-view ;
-  prov:invalidated :dataset-0 ;
-  prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
-  prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
-
-:dataset-0
+<#dataset-0>
     a dcat:Dataset ;
-    prov:wasGeneratedBy :execution-0 ;
-    prov:wasInvalidatedBy :execution-1 ;
-    dcat:isVersionOf :dataset .
+    prov:wasGeneratedBy <#execution-0> ;
+    prov:wasInvalidatedBy <#execution-1> ;
+    dcat:isVersionOf <https://aggregator.example/agg1/services/service1#dataset> .
 
-:dataset-1
+<#dataset-1>
     a dcat:Dataset ;
-    prov:wasGeneratedBy :execution-1 ;
-    dcat:isVersionOf :dataset ;
-    dcat:previousVersion :dataset-0 .
+    prov:wasGeneratedBy <#execution-1> ;
+    dcat:isVersionOf <https://aggregator.example/agg1/services/service1#dataset> ;
+    dcat:previousVersion <#dataset-0> .
 ```
 </div>
 

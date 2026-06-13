@@ -112,9 +112,9 @@ Server-level Transformation Catalog {#server-level-transformation-catalog}
 
 The Transformation Catalog is an RDF document describing the reusable transformation resources
 ([[#data-model]]) that an Aggregator Server makes available. These resources are primarily deployable
-`fno:Function`s, including composite transformations described using `fnoc:composition`. A server MAY additionally
+`fno:Function`s, including composite transformations described using `fnoc:composition`. A server **MAY** additionally
 publish reusable `fno:AppliedFunction` templates in the same catalog. Supporting resources such as mappings,
-algorithms, and composition descriptions MAY be included in the catalog document and linked from those primary
+algorithms, and composition descriptions **MAY** be included in the catalog document and linked from those primary
 resources. Aggregator servers **MAY** publish this catalog at any deployment-specific URL. The URL **MUST** be advertised 
 in the [[#server-description]] via the `transformation_catalog` field. The catalog **SHOULD** support HTTP content 
 negotiation, allowing clients to request different RDF serializations (e.g., Turtle, JSON-LD). Access **MAY** be protected 
@@ -122,7 +122,7 @@ using an OpenID Connect (OIDC) ID Token for authentication.
 
 The `aggr:TransformationCatalog`:
   - **MUST** reference all supported transformations using `aggr:hasTransformation`.
-  - **MAY** reference reusable Applied Functions using `aggr:hasAppliedFunction`.
+  - **MAY** reference reusable Applied Transformations using `aggr:hasAppliedTransformation`.
   - **MAY** reference a supported algorithm using `aggr:hasAlgorithm`.
   - **MAY** reference a supported mapping using `aggr:hasMapping`.
   - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
@@ -138,12 +138,13 @@ The `aggr:TransformationCatalog`:
 @prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 <> a aggr:TransformationCatalog ;
     dct:title "Aggregator transformations" ;
     aggr:hasTransformation <StaticSourcesQueryView> ;
     aggr:hasTransformation <DynamicSourcesQueryView> ;
-    aggr:hasAppliedFunction <StaticSourcesQueryViewTemplate> ;
+    aggr:hasAppliedTransformation <FoafNameQueryView> ;
     aggr:hasTransformation <http://example.org/external/ExternalFunction> ;
     rdfs:seeAlso <http://example.org/external/ExternalFunction> .
 
@@ -185,13 +186,13 @@ The `aggr:TransformationCatalog`:
     fno:type        dcat:Dataset ;
     fno:predicate   <result> .
 
-<StaticSourcesQueryViewTemplate>
+<FoafNameQueryView>
     a               fno:AppliedFunction ;
     fnoc:applies    <StaticSourcesQueryView> ;
     fnoc:parameterBindings (
       [
-        fnoc:boundParameter <StaticSources> ;
-        fnoc:boundToTerm <https://example.org/default-sources.txt>
+        fnoc:boundParameter <Query> ;
+        fnoc:boundToTerm "SELECT * WHERE { ?s foaf:givenName ?o }"
       ]
     ) .
 ```
