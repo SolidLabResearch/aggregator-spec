@@ -10,7 +10,7 @@ Abstract: The Aggregator Protocol defines an HTTP interface for discovering aggr
   leverages OIDC and User-Managed Access (UMA) for authentication and authorization, enabling secure access
   to protected derived resources.
 Markup Shorthands: markdown yes, css no
-
+Local Boilerplate: logo yes
 Canonical URL: _ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_
 Previous Version: _ORCHESTRATOR_PREVIOUS_BUILD_FULL_LINK_
 </pre>
