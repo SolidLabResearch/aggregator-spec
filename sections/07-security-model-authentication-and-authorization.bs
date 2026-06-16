@@ -16,7 +16,7 @@ The following terms are used throughout this section:
 - The **Upstream Resource Server (URS)** hosts the original data that the Aggregator consumes.
 - The **Upstream Authorization Server (UAS)** protects the URS and issues access tokens for upstream resources.
 - The **Aggregator Authorization Server (AAS)** protects the Aggregator itself and issues tokens (e.g., UMA RPTs)
-  for access to derived resources.
+    for access to derived resources.
 
 NOTE: The behavior described in this section extends the [[!A4DS]] specification.
 
