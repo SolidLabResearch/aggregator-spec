@@ -262,6 +262,15 @@ This section specifies the data model used to describe the aggregator components
 and the transformations they implement as well as the outputs they generate. By describing them as linked data the 
 model enables interoperable publication, discovery, execution, and provenance tracking of aggregator services.
 
+This specification publishes a predefined JSON-LD context at
+`https://w3id.org/aggregator/contexts/aggregator.jsonld` that maps the terms used throughout this data model
+(including the `aggr:` vocabulary defined in [[#vocabulary]] and the external vocabularies it reuses, such as [[!FNO]],
+[[!Data-Catalog]], and [[!PROV-O]]). JSON-LD representations of the resources defined in this section **MAY**
+reference this context using `@context`. Two additional contexts are published for the JSON documents that use
+specialized member names: `https://w3id.org/aggregator/contexts/aggregator-server-description.jsonld` for the
+[[#server-description]] and `https://w3id.org/aggregator/contexts/aggregator-description.jsonld` for the
+[[#aggregator-description]].
+
 Transformation {#data-model-transformation}
 -------------------------------------------
 
@@ -630,12 +639,12 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 
 : **management_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management-endpoint]]); 
-    in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` 
-    ([[#registrationEndpoint]]).
+    in the RDF representations, this member maps to the predicate `aggr:managementEndpoint` 
+    ([[#managementEndpoint]]).
 : **supported_management_flows** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported management flow tokens at `management_endpoint`; in 
-    the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
-    ([[#supportedRegistrationType]]) whose object is the corresponding flow class IRI.
+    the RDF representations, each entry maps to an `aggr:supportedManagementFlow` triple 
+    ([[#supportedManagementFlow]]) whose object is the corresponding flow class IRI.
 :: Each member MUST be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
     - `"none"` (RDF class `aggr:NoAuthFlow` ([[#NoAuthFlow]]))
     - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#ProvisionFlow]]))
@@ -644,7 +653,7 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 : **supported_management_request_formats** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported request formats for the
     `management_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
-    an `aggr:registrationRequestFormatSupported` triple ([[#registrationRequestFormatSupported]]).
+    an `aggr:managementRequestFormatSupported` triple ([[#managementRequestFormatSupported]]).
     Servers MUST include either `application/json` or `application/x-www-form-urlencoded` or both.
 : **version** (REQUIRED):
 :: The value is a string containing the semantic version ([[!SEMVER]]) of the Aggregator specification that the server 
@@ -662,33 +671,9 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 <div class="example">
 ```json
 {
-  "@context": {
-    "aggr": "https://w3id.org/aggregator#",
-    "provision": "aggr:ProvisionFlow",
-    "authorization_code": "aggr:AuthorizationCodeFlow",
-    "supported_management_request_formats": "aggr:registrationRequestFormatSupported",
-    "management_endpoint": {
-      "@id": "aggr:registrationEndpoint",
-      "@type": "@id"
-    },
-    "supported_management_flows": {
-      "@id": "aggr:supportedRegistrationType",
-      "@type": "@vocab"
-    },
-    "version": {
-      "@id": "aggr:specVersion"
-    },
-    "client_identifier": {
-      "@id": "aggr:clientIdentifier",
-      "@type": "@id"
-    },
-    "transformation_catalog": {
-      "@id": "aggr:transformationCatalog",
-      "@type": "@id"
-    }
-  },
-  "@id": "https://aggregator.example/",
-  "@type": "aggr:AggregatorServer",
+  "@context": "https://w3id.org/aggregator/contexts/aggregator-server-description.jsonld",
+  "aggregator_server_base_url": "https://aggregator.example/",
+  "type": "AggregatorServer",
   "management_endpoint": "https://aggregator.example/registration",
   "supported_management_flows": [
     "provision",
@@ -2039,7 +2024,7 @@ that the described resource has RDF type `aggr:Aggregator` ([[#Aggregator]]) (e.
 : **transformation_catalog** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Transformations Endpoint
     ([[#instance-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
-    `aggr:transformationsEndpoint` ([[#transformationsEndpoint]]).
+    `aggr:transformationCatalog` ([[#transformationCatalog]]).
 : **service_collection_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
     Services ([[#service-collection-endpoint]]); in the RDF representations, this member maps to the predicate
@@ -2051,35 +2036,9 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
 <div class="example">
 ```json
 {
-  "@context": {
-    "id": "@id",
-    "aggr": "https://w3id.org/aggregator#",
-    "oidcIssuer": "http://www.w3.org/ns/solid/terms#oidcIssuer",
-    "xsd": "http://www.w3.org/2001/XMLSchema#",
-
-    "created_at": {
-      "@id": "aggr:createdAt",
-      "@type": "xsd:dateTime"
-    },
-    "login_status": {
-      "@id": "aggr:loginStatus",
-      "@type": "xsd:boolean"
-    },
-    "token_expiry": {
-      "@id": "aggr:tokenExpiry",
-      "@type": "xsd:dateTime"
-    },
-    "transformation_catalog": {
-      "@id": "aggr:transformationsEndpoint",
-      "@type": "@id"
-    },
-    "service_collection_endpoint": {
-      "@id": "aggr:serviceCollectionEndpoint",
-      "@type": "@id"
-    }
-  },
-  "id": "https://aggregator.example/aggregators/agg-7890/",
-  "@type": "aggr:Aggregator",
+  "@context": "https://w3id.org/aggregator/contexts/aggregator-description.jsonld",
+  "aggregator_base_url": "https://aggregator.example/aggregators/agg-7890/",
+  "type": "Aggregator",
   "created_at": "2025-12-17T17:20:00Z",
   "login_status": true,
   "token_expiry": "2025-12-17T18:20:00Z",
@@ -2095,7 +2054,7 @@ Instance-level Transformation Catalog {#instance-level-transformation-catalog}
 
 This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
 [[#server-level-transformation-catalog]]. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
-advertise the correct location via its `transformation_catalog` field (`aggr:transformationsEndpoint`). It allows aggregator 
+advertise the correct location via its `transformation_catalog` field (`aggr:transformationCatalog`). It allows aggregator 
 implementations to expose user-specific transformations, protected/private transformations, and reusable
 instance-specific `fno:AppliedFunction` templates. This endpoint MAY be user specific and MUST require authentication.
 The endpoint MAY return a 404 Not Found if no user-specific resources are available. A client SHOULD combine the
@@ -2541,39 +2500,39 @@ Describes the provenance of generated entities and performed executions of a run
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
 [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
 
-### aggr:RegistrationFlow ### {#RegistrationFlow}
-Describes a registration flow supported by an Aggregator Server.
-This specification models each flow as an RDF class so that `aggr:supportedRegistrationType` can be
+### aggr:ManagementFlow ### {#ManagementFlow}
+Describes a management flow supported by an Aggregator Server.
+This specification models each flow as an RDF class so that `aggr:supportedManagementFlow` can be
 semantically annotated by referencing the relevant flow class (e.g., `aggr:AuthorizationCodeFlow`).
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
 **subClassOf:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)
 
 ### aggr:NoAuthFlow ### {#NoAuthFlow}
-Registration flow where the Aggregator Instance does not authenticate and only accesses public resources.
+Management flow where the Aggregator Instance does not authenticate and only accesses public resources.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
+**subClassOf:** [aggr:ManagementFlow](https://w3id.org/aggregator#ManagementFlow)
 
 ### aggr:ProvisionFlow ### {#ProvisionFlow}
-Registration flow where the Aggregator Server provisions an Aggregator Instance with its own identity.
+Management flow where the Aggregator Server provisions an Aggregator Instance with its own identity.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
+**subClassOf:** [aggr:ManagementFlow](https://w3id.org/aggregator#ManagementFlow)
 
 ### aggr:AuthorizationCodeFlow ### {#AuthorizationCodeFlow}
-Registration flow based on OAuth 2.0 Authorization Code [[RFC6749]] (https://datatracker.ietf.org/doc/html/rfc6749)
+Management flow based on OAuth 2.0 Authorization Code [[RFC6749]] (https://datatracker.ietf.org/doc/html/rfc6749)
 (via OpenID Connect), where the Aggregator acts on behalf of an end-user with a token scoped to the
 Aggregator.
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
+**subClassOf:** [aggr:ManagementFlow](https://w3id.org/aggregator#ManagementFlow)
 
 ### aggr:DeviceCodeFlow ### {#DeviceCodeFlow}
-Registration flow based on OAuth 2.0 Device Authorization Grant [[RFC8628]].
+Management flow based on OAuth 2.0 Device Authorization Grant [[RFC8628]].
 
 **type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow)
+**subClassOf:** [aggr:ManagementFlow](https://w3id.org/aggregator#ManagementFlow)
 
 Properties {#vocabulary-properties}
 ---------------------------
@@ -2598,13 +2557,6 @@ Timestamp when the current access token for an `aggr:Aggregator` will expire.
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator)<br>
 **range:** [xsd:dateTime](https://www.w3.org/TR/xmlschema11-2/#dateTime)
-
-### aggr:transformationsEndpoint ### {#transformationsEndpoint}
-Links an `aggr:Aggregator` to its (possibly private) transformations endpoint.
-
-**type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator)<br>
-**range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
 ### aggr:serviceCollectionEndpoint ### {#serviceCollectionEndpoint}
 Links an `aggr:Aggregator` to its service collection endpoint.
@@ -2719,22 +2671,22 @@ Links an `aggr:ProvenanceLog` to an activity it includes.
 **domain:** [aggr:ProvenanceLog](https://w3id.org/aggregator#ProvenanceLog)<br>
 **range:** [fno:Execution](https://w3id.org/function/spec/#Execution)
 
-### aggr:registrationEndpoint ### {#registrationEndpoint}
-Links an `aggr:AggregatorServer` to its registration endpoint.
+### aggr:managementEndpoint ### {#managementEndpoint}
+Links an `aggr:AggregatorServer` to its management endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
-### aggr:supportedRegistrationType ### {#supportedRegistrationType}
-Lists the registration flows advertised by an `aggr:AggregatorServer`.
+### aggr:supportedManagementFlow ### {#supportedManagementFlow}
+Lists the management flows advertised by an `aggr:AggregatorServer`.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
-**range:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class) (expected to be an [aggr:RegistrationFlow](https://w3id.org/aggregator#RegistrationFlow) class)
+**range:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class) (expected to be an [aggr:ManagementFlow](https://w3id.org/aggregator#ManagementFlow) class)
 
-### aggr:registrationRequestFormatSupported ### {#registrationRequestFormatSupported}
-Lists the supported request formats for an `aggr:AggregatorServer` registration endpoint.
+### aggr:managementRequestFormatSupported ### {#managementRequestFormatSupported}
+Lists the supported request formats for an `aggr:AggregatorServer` management endpoint.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
 **domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
@@ -2755,10 +2707,11 @@ Links an `aggr:AggregatorServer` to its Client ID Document.
 **range:** [xsd:anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI)
 
 ### aggr:transformationCatalog ### {#transformationCatalog}
-References the Aggregator Server’s server-level transformation catalog.
+References the transformation catalog of an `aggr:Aggregator` (its instance-level transformation catalog) or an
+`aggr:AggregatorServer` (its server-level transformation catalog).
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
+**domain:** [aggr:Aggregator](https://w3id.org/aggregator#Aggregator), [aggr:AggregatorServer](https://w3id.org/aggregator#AggregatorServer)<br>
 **range:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)
 
 Claim Types {#vocabulary-claim-types}

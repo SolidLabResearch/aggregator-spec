@@ -1488,7 +1488,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
+  <meta content="Bikeshed version d113b2e81, updated Tue Jun 9 14:57:55 2026 -0700" name="generator">
   <link href="_ORCHESTRATOR_CURRENT_BUILD_FULL_LINK_" rel="canonical">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
@@ -1784,7 +1784,7 @@ pre .property::before, pre .property::after {
 </style>
 <style>/* Boilerplate: style-counters */
 body {
-    counter-reset: example figure issue;
+    counter-reset: example figure issue table;
 }
 .issue {
     counter-increment: issue;
@@ -1809,6 +1809,13 @@ figcaption {
 }
 figcaption:not(.no-marker)::before {
     content: "Figure " counter(figure) " ";
+}
+
+figure.table figcaption {
+    counter-increment: table;
+}
+figure.table figcaption:not(.no-marker)::before {
+    content: "Table " counter(table) " ";
 }
 </style>
 <style>/* Boilerplate: style-issues */
@@ -2009,13 +2016,37 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
     c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
 }
+
+@media print {
+    /* Darken colors for print that would otherwise print too faintly */
+    c-[c]  { color: #555555 } /* Comment */
+    c-[d]  { color: #555555 } /* Comment.Multiline */
+    c-[cp] { color: #555555 } /* Comment.Preproc */
+    c-[c1] { color: #555555 } /* Comment.Single */
+    c-[cs] { color: #555555 } /* Comment.Special */
+    c-[o]  { color: #222222 } /* Operator */
+    c-[p]  { color: #222222 } /* Punctuation */
+    c-[ow] { color: #222222 } /* Operator.Word */
+    c-[s]  { color: #664400 } /* Literal.String */
+    c-[t]  { color: #664400 } /* Literal.String.Single */
+    c-[u]  { color: #664400 } /* Literal.String.Double */
+    c-[sb] { color: #664400 } /* Literal.String.Backtick */
+    c-[sc] { color: #664400 } /* Literal.String.Char */
+    c-[sd] { color: #664400 } /* Literal.String.Doc */
+    c-[se] { color: #664400 } /* Literal.String.Escape */
+    c-[sh] { color: #664400 } /* Literal.String.Heredoc */
+    c-[si] { color: #664400 } /* Literal.String.Interpol */
+    c-[sx] { color: #664400 } /* Literal.String.Other */
+    c-[sr] { color: #664400 } /* Literal.String.Regex */
+    c-[ss] { color: #664400 } /* Literal.String.Symbol */
+}
 </style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="no-ref p-name" id="title">Aggregator Specification</h1>
    <h2 class="heading no-num no-ref no-toc settled" id="profile-and-date"><span class="content">Living Document,
-    <time class="dt-updated" datetime="2026-05-28">28 May 2026</time></span></h2>
+    <time class="dt-updated" datetime="2026-06-16">16 June 2026</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Previous Versions:
@@ -2029,7 +2060,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" height="15" src="https://licensebuttons.net/p/zero/1.0/80x15.png" width="80"></a>
 To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 28 May 2026,
+In addition, as of 16 June 2026,
 the editors have made this specification available under the
 <a href="https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0.
@@ -2148,7 +2179,7 @@ to protected derived resources.</p>
         <li><a href="#ServiceCollection"><span class="secno">10.1.5</span> <span class="content">aggr:ServiceCollection</span></a>
         <li><a href="#TransformationCatalog"><span class="secno">10.1.6</span> <span class="content">aggr:TransformationCatalog</span></a>
         <li><a href="#ProvenanceLog"><span class="secno">10.1.7</span> <span class="content">aggr:ProvenanceLog</span></a>
-        <li><a href="#RegistrationFlow"><span class="secno">10.1.8</span> <span class="content">aggr:RegistrationFlow</span></a>
+        <li><a href="#ManagementFlow"><span class="secno">10.1.8</span> <span class="content">aggr:ManagementFlow</span></a>
         <li><a href="#NoAuthFlow"><span class="secno">10.1.9</span> <span class="content">aggr:NoAuthFlow</span></a>
         <li><a href="#ProvisionFlow"><span class="secno">10.1.10</span> <span class="content">aggr:ProvisionFlow</span></a>
         <li><a href="#AuthorizationCodeFlow"><span class="secno">10.1.11</span> <span class="content">aggr:AuthorizationCodeFlow</span></a>
@@ -2160,29 +2191,28 @@ to protected derived resources.</p>
         <li><a href="#createdAt"><span class="secno">10.2.1</span> <span class="content">aggr:createdAt</span></a>
         <li><a href="#loginStatus"><span class="secno">10.2.2</span> <span class="content">aggr:loginStatus</span></a>
         <li><a href="#tokenExpiry"><span class="secno">10.2.3</span> <span class="content">aggr:tokenExpiry</span></a>
-        <li><a href="#transformationsEndpoint"><span class="secno">10.2.4</span> <span class="content">aggr:transformationsEndpoint</span></a>
-        <li><a href="#serviceCollectionEndpoint"><span class="secno">10.2.5</span> <span class="content">aggr:serviceCollectionEndpoint</span></a>
-        <li><a href="#hasService"><span class="secno">10.2.6</span> <span class="content">aggr:hasService</span></a>
-        <li><a href="#hasTransformation"><span class="secno">10.2.7</span> <span class="content">aggr:hasTransformation</span></a>
-        <li><a href="#hasAppliedFunction"><span class="secno">10.2.8</span> <span class="content">aggr:hasAppliedFunction</span></a>
-        <li><a href="#hasAlgorithm"><span class="secno">10.2.9</span> <span class="content">aggr:hasAlgorithm</span></a>
-        <li><a href="#hasMapping"><span class="secno">10.2.10</span> <span class="content">aggr:hasMapping</span></a>
-        <li><a href="#hasComposition"><span class="secno">10.2.11</span> <span class="content">aggr:hasComposition</span></a>
-        <li><a href="#status"><span class="secno">10.2.12</span> <span class="content">aggr:status</span></a>
-        <li><a href="#statusDetail"><span class="secno">10.2.13</span> <span class="content">aggr:statusDetail</span></a>
-        <li><a href="#performs"><span class="secno">10.2.14</span> <span class="content">aggr:performs</span></a>
-        <li><a href="#applies"><span class="secno">10.2.15</span> <span class="content">aggr:applies</span></a>
-        <li><a href="#implements"><span class="secno">10.2.16</span> <span class="content">aggr:implements</span></a>
-        <li><a href="#forOutput"><span class="secno">10.2.17</span> <span class="content">aggr:forOutput</span></a>
-        <li><a href="#fromService"><span class="secno">10.2.18</span> <span class="content">aggr:fromService</span></a>
-        <li><a href="#provenanceLog"><span class="secno">10.2.19</span> <span class="content">aggr:provenanceLog</span></a>
-        <li><a href="#hasActivity"><span class="secno">10.2.20</span> <span class="content">aggr:hasActivity</span></a>
-        <li><a href="#registrationEndpoint"><span class="secno">10.2.21</span> <span class="content">aggr:registrationEndpoint</span></a>
-        <li><a href="#supportedRegistrationType"><span class="secno">10.2.22</span> <span class="content">aggr:supportedRegistrationType</span></a>
-        <li><a href="#registrationRequestFormatSupported"><span class="secno">10.2.23</span> <span class="content">aggr:registrationRequestFormatSupported</span></a>
-        <li><a href="#specVersion"><span class="secno">10.2.24</span> <span class="content">aggr:specVersion</span></a>
-        <li><a href="#clientIdentifier"><span class="secno">10.2.25</span> <span class="content">aggr:clientIdentifier</span></a>
-        <li><a href="#transformationCatalog"><span class="secno">10.2.26</span> <span class="content">aggr:transformationCatalog</span></a>
+        <li><a href="#serviceCollectionEndpoint"><span class="secno">10.2.4</span> <span class="content">aggr:serviceCollectionEndpoint</span></a>
+        <li><a href="#hasService"><span class="secno">10.2.5</span> <span class="content">aggr:hasService</span></a>
+        <li><a href="#hasTransformation"><span class="secno">10.2.6</span> <span class="content">aggr:hasTransformation</span></a>
+        <li><a href="#hasAppliedFunction"><span class="secno">10.2.7</span> <span class="content">aggr:hasAppliedFunction</span></a>
+        <li><a href="#hasAlgorithm"><span class="secno">10.2.8</span> <span class="content">aggr:hasAlgorithm</span></a>
+        <li><a href="#hasMapping"><span class="secno">10.2.9</span> <span class="content">aggr:hasMapping</span></a>
+        <li><a href="#hasComposition"><span class="secno">10.2.10</span> <span class="content">aggr:hasComposition</span></a>
+        <li><a href="#status"><span class="secno">10.2.11</span> <span class="content">aggr:status</span></a>
+        <li><a href="#statusDetail"><span class="secno">10.2.12</span> <span class="content">aggr:statusDetail</span></a>
+        <li><a href="#performs"><span class="secno">10.2.13</span> <span class="content">aggr:performs</span></a>
+        <li><a href="#applies"><span class="secno">10.2.14</span> <span class="content">aggr:applies</span></a>
+        <li><a href="#implements"><span class="secno">10.2.15</span> <span class="content">aggr:implements</span></a>
+        <li><a href="#forOutput"><span class="secno">10.2.16</span> <span class="content">aggr:forOutput</span></a>
+        <li><a href="#fromService"><span class="secno">10.2.17</span> <span class="content">aggr:fromService</span></a>
+        <li><a href="#provenanceLog"><span class="secno">10.2.18</span> <span class="content">aggr:provenanceLog</span></a>
+        <li><a href="#hasActivity"><span class="secno">10.2.19</span> <span class="content">aggr:hasActivity</span></a>
+        <li><a href="#managementEndpoint"><span class="secno">10.2.20</span> <span class="content">aggr:managementEndpoint</span></a>
+        <li><a href="#supportedManagementFlow"><span class="secno">10.2.21</span> <span class="content">aggr:supportedManagementFlow</span></a>
+        <li><a href="#managementRequestFormatSupported"><span class="secno">10.2.22</span> <span class="content">aggr:managementRequestFormatSupported</span></a>
+        <li><a href="#specVersion"><span class="secno">10.2.23</span> <span class="content">aggr:specVersion</span></a>
+        <li><a href="#clientIdentifier"><span class="secno">10.2.24</span> <span class="content">aggr:clientIdentifier</span></a>
+        <li><a href="#transformationCatalog"><span class="secno">10.2.25</span> <span class="content">aggr:transformationCatalog</span></a>
        </ol>
       <li>
        <a href="#vocabulary-claim-types"><span class="secno">10.3</span> <span class="content">Claim Types</span></a>
@@ -2197,7 +2227,7 @@ to protected derived resources.</p>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
       <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
-      <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
+      <li><a href="#informative"><span class="secno"></span> <span class="content">Non-Normative References</span></a>
      </ol>
    </ol>
   </nav>
@@ -2372,6 +2402,14 @@ Service in a path-based deployment:</p>
    <p>This section specifies the data model used to describe the aggregator components like running aggregator services
 and the transformations they implement as well as the outputs they generate. By describing them as linked data the 
 model enables interoperable publication, discovery, execution, and provenance tracking of aggregator services.</p>
+   <p>This specification publishes a predefined JSON-LD context at
+<code>https://w3id.org/aggregator/contexts/aggregator.jsonld</code> that maps the terms used throughout this data model
+(including the <code>aggr:</code> vocabulary defined in <a href="#vocabulary">§ 10 Vocabulary</a> and the external vocabularies it reuses, such as <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>,
+<a data-link-type="biblio" href="#biblio-data-catalog" title="Data Catalog Vocabulary">[Data-Catalog]</a>, and <a data-link-type="biblio" href="#biblio-prov-o" title="The Provenance Ontology">[PROV-O]</a>). JSON-LD representations of the resources defined in this section <strong>MAY</strong>
+reference this context using <code>@context</code>. Two additional contexts are published for the JSON documents that use
+specialized member names: <code>https://w3id.org/aggregator/contexts/aggregator-server-description.jsonld</code> for the
+<a href="#server-description">§ 5.1 Aggregator Server Description</a> and <code>https://w3id.org/aggregator/contexts/aggregator-description.jsonld</code> for the
+<a href="#aggregator-description">§ 8.1 Aggregator Description</a>.</p>
    <h3 class="heading settled" data-level="4.1" id="data-model-transformation"><span class="secno">4.1. </span><span class="content">Transformation</span><a class="self-link" href="#data-model-transformation"></a></h3>
    <p>An aggregator transformation defines a well-described functional interface using the Function Ontology <a data-link-type="biblio" href="#biblio-fno" title="Function Ontology (FnO)">[FNO]</a>.
 Each transformation <strong>MUST</strong> be described as an <code>fno:Function</code> that <strong>SHOULD</strong> use <code>dct:description</code> to provide a 
@@ -2775,13 +2813,13 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
     <dt data-md><strong>management_endpoint</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the Aggregator Management Endpoint (<a href="#aggregator-management-endpoint">§ 6.1 Aggregator Management Endpoint</a>);
-in the RDF representations, this member maps to the predicate <code>aggr:registrationEndpoint</code> 
-(<a href="#registrationEndpoint">§ 10.2.21 aggr:registrationEndpoint</a>).</p>
+in the RDF representations, this member maps to the predicate <code>aggr:managementEndpoint</code> 
+(<a href="#managementEndpoint">§ 10.2.20 aggr:managementEndpoint</a>).</p>
     <dt data-md><strong>supported_management_flows</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a JSON array of strings identifying the supported management flow tokens at <code>management_endpoint</code>; in
-the RDF representations, each entry maps to an <code>aggr:supportedRegistrationType</code> triple 
-(<a href="#supportedRegistrationType">§ 10.2.22 aggr:supportedRegistrationType</a>) whose object is the corresponding flow class IRI.</p>
+the RDF representations, each entry maps to an <code>aggr:supportedManagementFlow</code> triple 
+(<a href="#supportedManagementFlow">§ 10.2.21 aggr:supportedManagementFlow</a>) whose object is the corresponding flow class IRI.</p>
     <dd data-md>
      <p>Each member MUST be one of the management flow tokens defined in <a href="#aggregator-management-endpoint">§ 6.1 Aggregator Management Endpoint</a>:</p>
      <ul>
@@ -2798,55 +2836,31 @@ the RDF representations, each entry maps to an <code>aggr:supportedRegistrationT
     <dd data-md>
      <p>The value is a JSON array of strings identifying the supported request formats for the
 <code>management_endpoint</code>. Each entry MUST be a media type; in RDF representations, each entry maps to
-an <code>aggr:registrationRequestFormatSupported</code> triple (<a href="#registrationRequestFormatSupported">§ 10.2.23 aggr:registrationRequestFormatSupported</a>).
+an <code>aggr:managementRequestFormatSupported</code> triple (<a href="#managementRequestFormatSupported">§ 10.2.22 aggr:managementRequestFormatSupported</a>).
 Servers MUST include either <code>application/json</code> or <code>application/x-www-form-urlencoded</code> or both.</p>
     <dt data-md><strong>version</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the semantic version (<a data-link-type="biblio" href="#biblio-semver" title="Semantic Versioning 2.0.0">[SEMVER]</a>) of the Aggregator specification that the server
 adheres to; in the RDF representations, this member maps to the predicate <code>aggr:specVersion</code> 
-(<a href="#specVersion">§ 10.2.24 aggr:specVersion</a>).</p>
+(<a href="#specVersion">§ 10.2.23 aggr:specVersion</a>).</p>
     <dt data-md><strong>client_identifier</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the Client ID Document (<a href="#client-id-document">§ 5.2 Client ID Document</a>); in
 the RDF representations, this member maps to the predicate <code>aggr:clientIdentifier</code> 
-(<a href="#clientIdentifier">§ 10.2.25 aggr:clientIdentifier</a>).</p>
+(<a href="#clientIdentifier">§ 10.2.24 aggr:clientIdentifier</a>).</p>
     <dt data-md><strong>transformation_catalog</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the server-level Transformation Catalog
 (<a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>); in the RDF representations, this member maps to the predicate
-<code>aggr:transformationCatalog</code> (<a href="#transformationCatalog">§ 10.2.26 aggr:transformationCatalog</a>).</p>
+<code>aggr:transformationCatalog</code> (<a href="#transformationCatalog">§ 10.2.25 aggr:transformationCatalog</a>).</p>
    </dl>
-   <div class="example" id="example-4b781247">
-    <a class="self-link" href="#example-4b781247"></a>
+   <div class="example" id="example-c3dc5f2c">
+    <a class="self-link" href="#example-c3dc5f2c"></a>
 
 <pre class="highlight language-json"><c- p>{</c->
-  <c- f>"@context"</c-><c- p>:</c-> <c- p>{</c->
-    <c- f>"aggr"</c-><c- p>:</c-> <c- u>"https://w3id.org/aggregator#"</c-><c- p>,</c->
-    <c- f>"provision"</c-><c- p>:</c-> <c- u>"aggr:ProvisionFlow"</c-><c- p>,</c->
-    <c- f>"authorization_code"</c-><c- p>:</c-> <c- u>"aggr:AuthorizationCodeFlow"</c-><c- p>,</c->
-    <c- f>"supported_management_request_formats"</c-><c- p>:</c-> <c- u>"aggr:registrationRequestFormatSupported"</c-><c- p>,</c->
-    <c- f>"management_endpoint"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:registrationEndpoint"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"@id"</c->
-    <c- p>},</c->
-    <c- f>"supported_management_flows"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:supportedRegistrationType"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"@vocab"</c->
-    <c- p>},</c->
-    <c- f>"version"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:specVersion"</c->
-    <c- p>},</c->
-    <c- f>"client_identifier"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:clientIdentifier"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"@id"</c->
-    <c- p>},</c->
-    <c- f>"transformation_catalog"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:transformationCatalog"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"@id"</c->
-    <c- p>}</c->
-  <c- p>},</c->
-  <c- f>"@id"</c-><c- p>:</c-> <c- u>"https://aggregator.example/"</c-><c- p>,</c->
-  <c- f>"@type"</c-><c- p>:</c-> <c- u>"aggr:AggregatorServer"</c-><c- p>,</c->
+  <c- f>"@context"</c-><c- p>:</c-> <c- u>"https://w3id.org/aggregator/contexts/aggregator-server-description.jsonld"</c-><c- p>,</c->
+  <c- f>"aggregator_server_base_url"</c-><c- p>:</c-> <c- u>"https://aggregator.example/"</c-><c- p>,</c->
+  <c- f>"type"</c-><c- p>:</c-> <c- u>"AggregatorServer"</c-><c- p>,</c->
   <c- f>"management_endpoint"</c-><c- p>:</c-> <c- u>"https://aggregator.example/registration"</c-><c- p>,</c->
   <c- f>"supported_management_flows"</c-><c- p>:</c-> <c- p>[</c->
     <c- u>"provision"</c-><c- p>,</c->
@@ -4135,48 +4149,22 @@ the predicate <code>aggr:tokenExpiry</code> (<a href="#tokenExpiry">§ 10.2.3 
     <dd data-md>
      <p>The value is a string containing the absolute URL of the instance’s Transformations Endpoint
 (<a href="#instance-level-transformation-catalog">§ 8.2 Instance-level Transformation Catalog</a>); in the RDF representations, this member maps to the predicate
-<code>aggr:transformationsEndpoint</code> (<a href="#transformationsEndpoint">§ 10.2.4 aggr:transformationsEndpoint</a>).</p>
+<code>aggr:transformationCatalog</code> (<a href="#transformationCatalog">§ 10.2.25 aggr:transformationCatalog</a>).</p>
     <dt data-md><strong>service_collection_endpoint</strong> (REQUIRED):
     <dd data-md>
      <p>The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator
 Services (<a href="#service-collection-endpoint">§ 9.1 Service Collection Endpoint</a>); in the RDF representations, this member maps to the predicate
-<code>aggr:serviceCollectionEndpoint</code> (<a href="#serviceCollectionEndpoint">§ 10.2.5 aggr:serviceCollectionEndpoint</a>).</p>
+<code>aggr:serviceCollectionEndpoint</code> (<a href="#serviceCollectionEndpoint">§ 10.2.4 aggr:serviceCollectionEndpoint</a>).</p>
    </dl>
    <p>This document MAY be the WebID of the Aggregator Instance when the <code>provision</code> flow <a href="#creation-provision">§ 6.2.1 Creation provision Flow</a> was used. In
 that case this document MUST be an RDF document that conforms to the WebID Profile specification <a data-link-type="biblio" href="#biblio-webid-profile" title="WebID Profile">[WEBID-PROFILE]</a>.</p>
-   <div class="example" id="example-b8cac36b">
-    <a class="self-link" href="#example-b8cac36b"></a>
+   <div class="example" id="example-4134b19a">
+    <a class="self-link" href="#example-4134b19a"></a>
 
 <pre class="highlight language-json"><c- p>{</c->
-  <c- f>"@context"</c-><c- p>:</c-> <c- p>{</c->
-    <c- f>"id"</c-><c- p>:</c-> <c- u>"@id"</c-><c- p>,</c->
-    <c- f>"aggr"</c-><c- p>:</c-> <c- u>"https://w3id.org/aggregator#"</c-><c- p>,</c->
-    <c- f>"oidcIssuer"</c-><c- p>:</c-> <c- u>"http://www.w3.org/ns/solid/terms#oidcIssuer"</c-><c- p>,</c->
-    <c- f>"xsd"</c-><c- p>:</c-> <c- u>"http://www.w3.org/2001/XMLSchema#"</c-><c- p>,</c->
-
-    <c- f>"created_at"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:createdAt"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"xsd:dateTime"</c->
-    <c- p>},</c->
-    <c- f>"login_status"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:loginStatus"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"xsd:boolean"</c->
-    <c- p>},</c->
-    <c- f>"token_expiry"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:tokenExpiry"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"xsd:dateTime"</c->
-    <c- p>},</c->
-    <c- f>"transformation_catalog"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:transformationsEndpoint"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"@id"</c->
-    <c- p>},</c->
-    <c- f>"service_collection_endpoint"</c-><c- p>:</c-> <c- p>{</c->
-      <c- f>"@id"</c-><c- p>:</c-> <c- u>"aggr:serviceCollectionEndpoint"</c-><c- p>,</c->
-      <c- f>"@type"</c-><c- p>:</c-> <c- u>"@id"</c->
-    <c- p>}</c->
-  <c- p>},</c->
-  <c- f>"id"</c-><c- p>:</c-> <c- u>"https://aggregator.example/aggregators/agg-7890/"</c-><c- p>,</c->
-  <c- f>"@type"</c-><c- p>:</c-> <c- u>"aggr:Aggregator"</c-><c- p>,</c->
+  <c- f>"@context"</c-><c- p>:</c-> <c- u>"https://w3id.org/aggregator/contexts/aggregator-description.jsonld"</c-><c- p>,</c->
+  <c- f>"aggregator_base_url"</c-><c- p>:</c-> <c- u>"https://aggregator.example/aggregators/agg-7890/"</c-><c- p>,</c->
+  <c- f>"type"</c-><c- p>:</c-> <c- u>"Aggregator"</c-><c- p>,</c->
   <c- f>"created_at"</c-><c- p>:</c-> <c- u>"2025-12-17T17:20:00Z"</c-><c- p>,</c->
   <c- f>"login_status"</c-><c- p>:</c-> <c- kc>true</c-><c- p>,</c->
   <c- f>"token_expiry"</c-><c- p>:</c-> <c- u>"2025-12-17T18:20:00Z"</c-><c- p>,</c->
@@ -4189,7 +4177,7 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
    <h3 class="heading settled" data-level="8.2" id="instance-level-transformation-catalog"><span class="secno">8.2. </span><span class="content">Instance-level Transformation Catalog</span><a class="self-link" href="#instance-level-transformation-catalog"></a></h3>
    <p>This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
 <a href="#server-level-transformation-catalog">§ 5.3 Server-level Transformation Catalog</a>. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
-advertise the correct location via its <code>transformation_catalog</code> field (<code>aggr:transformationsEndpoint</code>). It allows aggregator 
+advertise the correct location via its <code>transformation_catalog</code> field (<code>aggr:transformationCatalog</code>). It allows aggregator 
 implementations to expose user-specific transformations, protected/private transformations, and reusable
 instance-specific <code>fno:AppliedFunction</code> templates. This endpoint MAY be user specific and MUST require authentication.
 The endpoint MAY return a 404 Not Found if no user-specific resources are available. A client SHOULD combine the
@@ -4679,10 +4667,10 @@ Describes the provenance of generated entities and performed executions of a run
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
 <strong>subClassOf:</strong> <a href="https://schema.org/Collection">schema:Collection</a>,
 <a href="https://www.hydra-cg.com/spec/latest/core/#collections">hydra:Collection</a></p>
-   <h4 class="heading settled" data-level="10.1.8" id="RegistrationFlow"><span class="secno">10.1.8. </span><span class="content">aggr:RegistrationFlow</span><a class="self-link" href="#RegistrationFlow"></a></h4>
+   <h4 class="heading settled" data-level="10.1.8" id="ManagementFlow"><span class="secno">10.1.8. </span><span class="content">aggr:ManagementFlow</span><a class="self-link" href="#ManagementFlow"></a></h4>
    
-Describes a registration flow supported by an Aggregator Server.
-This specification models each flow as an RDF class so that <code>aggr:supportedRegistrationType</code> can be
+Describes a management flow supported by an Aggregator Server.
+This specification models each flow as an RDF class so that <code>aggr:supportedManagementFlow</code> can be
 semantically annotated by referencing the relevant flow class (e.g., <code>aggr:AuthorizationCodeFlow</code>).
 
 
@@ -4690,34 +4678,34 @@ semantically annotated by referencing the relevant flow class (e.g., <code>aggr:
 <strong>subClassOf:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a></p>
    <h4 class="heading settled" data-level="10.1.9" id="NoAuthFlow"><span class="secno">10.1.9. </span><span class="content">aggr:NoAuthFlow</span><a class="self-link" href="#NoAuthFlow"></a></h4>
    
-Registration flow where the Aggregator Instance does not authenticate and only accesses public resources.
+Management flow where the Aggregator Instance does not authenticate and only accesses public resources.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
-<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#RegistrationFlow">aggr:RegistrationFlow</a></p>
+<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#ManagementFlow">aggr:ManagementFlow</a></p>
    <h4 class="heading settled" data-level="10.1.10" id="ProvisionFlow"><span class="secno">10.1.10. </span><span class="content">aggr:ProvisionFlow</span><a class="self-link" href="#ProvisionFlow"></a></h4>
    
-Registration flow where the Aggregator Server provisions an Aggregator Instance with its own identity.
+Management flow where the Aggregator Server provisions an Aggregator Instance with its own identity.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
-<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#RegistrationFlow">aggr:RegistrationFlow</a></p>
+<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#ManagementFlow">aggr:ManagementFlow</a></p>
    <h4 class="heading settled" data-level="10.1.11" id="AuthorizationCodeFlow"><span class="secno">10.1.11. </span><span class="content">aggr:AuthorizationCodeFlow</span><a class="self-link" href="#AuthorizationCodeFlow"></a></h4>
    
-Registration flow based on OAuth 2.0 Authorization Code <a data-link-type="biblio" href="#biblio-rfc6749" title="The OAuth 2.0 Authorization Framework">[RFC6749]</a> (https://datatracker.ietf.org/doc/html/rfc6749)
+Management flow based on OAuth 2.0 Authorization Code <a data-link-type="biblio" href="#biblio-rfc6749" title="The OAuth 2.0 Authorization Framework">[RFC6749]</a> (https://datatracker.ietf.org/doc/html/rfc6749)
 (via OpenID Connect), where the Aggregator acts on behalf of an end-user with a token scoped to the
 Aggregator.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
-<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#RegistrationFlow">aggr:RegistrationFlow</a></p>
+<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#ManagementFlow">aggr:ManagementFlow</a></p>
    <h4 class="heading settled" data-level="10.1.12" id="DeviceCodeFlow"><span class="secno">10.1.12. </span><span class="content">aggr:DeviceCodeFlow</span><a class="self-link" href="#DeviceCodeFlow"></a></h4>
    
-Registration flow based on OAuth 2.0 Device Authorization Grant <a data-link-type="biblio" href="#biblio-rfc8628" title="OAuth 2.0 Device Authorization Grant">[RFC8628]</a>.
+Management flow based on OAuth 2.0 Device Authorization Grant <a data-link-type="biblio" href="#biblio-rfc8628" title="OAuth 2.0 Device Authorization Grant">[RFC8628]</a>.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a><br>
-<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#RegistrationFlow">aggr:RegistrationFlow</a></p>
+<strong>subClassOf:</strong> <a href="https://w3id.org/aggregator#ManagementFlow">aggr:ManagementFlow</a></p>
    <h3 class="heading settled" data-level="10.2" id="vocabulary-properties"><span class="secno">10.2. </span><span class="content">Properties</span><a class="self-link" href="#vocabulary-properties"></a></h3>
    <h4 class="heading settled" data-level="10.2.1" id="createdAt"><span class="secno">10.2.1. </span><span class="content">aggr:createdAt</span><a class="self-link" href="#createdAt"></a></h4>
    
@@ -4743,15 +4731,7 @@ Timestamp when the current access token for an <code>aggr:Aggregator</code> will
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Aggregator">aggr:Aggregator</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#dateTime">xsd:dateTime</a></p>
-   <h4 class="heading settled" data-level="10.2.4" id="transformationsEndpoint"><span class="secno">10.2.4. </span><span class="content">aggr:transformationsEndpoint</span><a class="self-link" href="#transformationsEndpoint"></a></h4>
-   
-Links an <code>aggr:Aggregator</code> to its (possibly private) transformations endpoint.
-
-
-   <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
-<strong>domain:</strong> <a href="https://w3id.org/aggregator#Aggregator">aggr:Aggregator</a><br>
-<strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="10.2.5" id="serviceCollectionEndpoint"><span class="secno">10.2.5. </span><span class="content">aggr:serviceCollectionEndpoint</span><a class="self-link" href="#serviceCollectionEndpoint"></a></h4>
+   <h4 class="heading settled" data-level="10.2.4" id="serviceCollectionEndpoint"><span class="secno">10.2.4. </span><span class="content">aggr:serviceCollectionEndpoint</span><a class="self-link" href="#serviceCollectionEndpoint"></a></h4>
    
 Links an <code>aggr:Aggregator</code> to its service collection endpoint.
 
@@ -4759,7 +4739,7 @@ Links an <code>aggr:Aggregator</code> to its service collection endpoint.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Aggregator">aggr:Aggregator</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="10.2.6" id="hasService"><span class="secno">10.2.6. </span><span class="content">aggr:hasService</span><a class="self-link" href="#hasService"></a></h4>
+   <h4 class="heading settled" data-level="10.2.5" id="hasService"><span class="secno">10.2.5. </span><span class="content">aggr:hasService</span><a class="self-link" href="#hasService"></a></h4>
    
 Links an <code>aggr:ServiceCollection</code> to the <code>aggr:Service</code> instances it advertises.
 
@@ -4767,7 +4747,7 @@ Links an <code>aggr:ServiceCollection</code> to the <code>aggr:Service</code> in
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#ServiceCollection">aggr:ServiceCollection</a><br>
 <strong>range:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a></p>
-   <h4 class="heading settled" data-level="10.2.7" id="hasTransformation"><span class="secno">10.2.7. </span><span class="content">aggr:hasTransformation</span><a class="self-link" href="#hasTransformation"></a></h4>
+   <h4 class="heading settled" data-level="10.2.6" id="hasTransformation"><span class="secno">10.2.6. </span><span class="content">aggr:hasTransformation</span><a class="self-link" href="#hasTransformation"></a></h4>
    
 Links an <code>aggr:TransformationCatalog</code> to a supported <code>fno:Function</code>. Composite transformations are also linked
 with this property because they remain <code>fno:Function</code> resources.
@@ -4776,7 +4756,7 @@ with this property because they remain <code>fno:Function</code> resources.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#TransformationCatalog">aggr:TransformationCatalog</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Function">fno:Function</a></p>
-   <h4 class="heading settled" data-level="10.2.8" id="hasAppliedFunction"><span class="secno">10.2.8. </span><span class="content">aggr:hasAppliedFunction</span><a class="self-link" href="#hasAppliedFunction"></a></h4>
+   <h4 class="heading settled" data-level="10.2.7" id="hasAppliedFunction"><span class="secno">10.2.7. </span><span class="content">aggr:hasAppliedFunction</span><a class="self-link" href="#hasAppliedFunction"></a></h4>
    
 Links an <code>aggr:TransformationCatalog</code> to a reusable <code>fno:AppliedFunction</code> template it advertises.
 
@@ -4784,7 +4764,7 @@ Links an <code>aggr:TransformationCatalog</code> to a reusable <code>fno:Applied
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#TransformationCatalog">aggr:TransformationCatalog</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#AppliedFunction">fno:AppliedFunction</a></p>
-   <h4 class="heading settled" data-level="10.2.9" id="hasAlgorithm"><span class="secno">10.2.9. </span><span class="content">aggr:hasAlgorithm</span><a class="self-link" href="#hasAlgorithm"></a></h4>
+   <h4 class="heading settled" data-level="10.2.8" id="hasAlgorithm"><span class="secno">10.2.8. </span><span class="content">aggr:hasAlgorithm</span><a class="self-link" href="#hasAlgorithm"></a></h4>
    
 Links an <code>aggr:TransformationCatalog</code> to an algorithm it supports.
 
@@ -4792,7 +4772,7 @@ Links an <code>aggr:TransformationCatalog</code> to an algorithm it supports.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#TransformationCatalog">aggr:TransformationCatalog</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Algorithm">fno:Algorithm</a></p>
-   <h4 class="heading settled" data-level="10.2.10" id="hasMapping"><span class="secno">10.2.10. </span><span class="content">aggr:hasMapping</span><a class="self-link" href="#hasMapping"></a></h4>
+   <h4 class="heading settled" data-level="10.2.9" id="hasMapping"><span class="secno">10.2.9. </span><span class="content">aggr:hasMapping</span><a class="self-link" href="#hasMapping"></a></h4>
    
 Links an <code>aggr:TransformationCatalog</code> to a mapping it supports.
 
@@ -4800,7 +4780,7 @@ Links an <code>aggr:TransformationCatalog</code> to a mapping it supports.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#TransformationCatalog">aggr:TransformationCatalog</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Mapping">fno:Mapping</a></p>
-   <h4 class="heading settled" data-level="10.2.11" id="hasComposition"><span class="secno">10.2.11. </span><span class="content">aggr:hasComposition</span><a class="self-link" href="#hasComposition"></a></h4>
+   <h4 class="heading settled" data-level="10.2.10" id="hasComposition"><span class="secno">10.2.10. </span><span class="content">aggr:hasComposition</span><a class="self-link" href="#hasComposition"></a></h4>
    
 Links an <code>aggr:TransformationCatalog</code> to a composition it supports.
 
@@ -4808,7 +4788,7 @@ Links an <code>aggr:TransformationCatalog</code> to a composition it supports.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#TransformationCatalog">aggr:TransformationCatalog</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Composition">fno:Function</a></p>
-   <h4 class="heading settled" data-level="10.2.12" id="status"><span class="secno">10.2.12. </span><span class="content">aggr:status</span><a class="self-link" href="#status"></a></h4>
+   <h4 class="heading settled" data-level="10.2.11" id="status"><span class="secno">10.2.11. </span><span class="content">aggr:status</span><a class="self-link" href="#status"></a></h4>
    
 Provides the lifecycle phase of an <code>aggr:Service</code> (values such as <code>running</code>, <code>stopped</code>, or <code>error</code>).
 
@@ -4816,7 +4796,7 @@ Provides the lifecycle phase of an <code>aggr:Service</code> (values such as <co
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.13" id="statusDetail"><span class="secno">10.2.13. </span><span class="content">aggr:statusDetail</span><a class="self-link" href="#statusDetail"></a></h4>
+   <h4 class="heading settled" data-level="10.2.12" id="statusDetail"><span class="secno">10.2.12. </span><span class="content">aggr:statusDetail</span><a class="self-link" href="#statusDetail"></a></h4>
    
 Provides a human-readable explanation of the current <code>aggr:Service</code> status (for example, a stop reason or error message).
 
@@ -4824,7 +4804,7 @@ Provides a human-readable explanation of the current <code>aggr:Service</code> s
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.14" id="performs"><span class="secno">10.2.14. </span><span class="content">aggr:performs</span><a class="self-link" href="#performs"></a></h4>
+   <h4 class="heading settled" data-level="10.2.13" id="performs"><span class="secno">10.2.13. </span><span class="content">aggr:performs</span><a class="self-link" href="#performs"></a></h4>
    
 Provides the transformation an <code>aggr:Service</code> performs.
 
@@ -4832,7 +4812,7 @@ Provides the transformation an <code>aggr:Service</code> performs.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Function">fno:Function</a></p>
-   <h4 class="heading settled" data-level="10.2.15" id="applies"><span class="secno">10.2.15. </span><span class="content">aggr:applies</span><a class="self-link" href="#applies"></a></h4>
+   <h4 class="heading settled" data-level="10.2.14" id="applies"><span class="secno">10.2.14. </span><span class="content">aggr:applies</span><a class="self-link" href="#applies"></a></h4>
    
 Links an <code>aggr:Service</code> to the <code>fno:AppliedFunction</code> that captures the configured parameter bindings for that service.
 
@@ -4840,7 +4820,7 @@ Links an <code>aggr:Service</code> to the <code>fno:AppliedFunction</code> that 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#AppliedFunction">fno:AppliedFunction</a></p>
-   <h4 class="heading settled" data-level="10.2.16" id="implements"><span class="secno">10.2.16. </span><span class="content">aggr:implements</span><a class="self-link" href="#implements"></a></h4>
+   <h4 class="heading settled" data-level="10.2.15" id="implements"><span class="secno">10.2.15. </span><span class="content">aggr:implements</span><a class="self-link" href="#implements"></a></h4>
    
 Provides the implementation used by an <code>aggr:Service</code> to perform its transformation.
 
@@ -4848,7 +4828,7 @@ Provides the implementation used by an <code>aggr:Service</code> to perform its 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Implementation">fno:Implementation</a></p>
-   <h4 class="heading settled" data-level="10.2.17" id="forOutput"><span class="secno">10.2.17. </span><span class="content">aggr:forOutput</span><a class="self-link" href="#forOutput"></a></h4>
+   <h4 class="heading settled" data-level="10.2.16" id="forOutput"><span class="secno">10.2.16. </span><span class="content">aggr:forOutput</span><a class="self-link" href="#forOutput"></a></h4>
    
 Links a <code>dcat:Dataset</code> exposed by an <code>aggr:Service</code> to the <code>fno:Output</code> it represents.
 
@@ -4856,7 +4836,7 @@ Links a <code>dcat:Dataset</code> exposed by an <code>aggr:Service</code> to the
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset">dcat:Dataset</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Output">fno:Output</a></p>
-   <h4 class="heading settled" data-level="10.2.18" id="fromService"><span class="secno">10.2.18. </span><span class="content">aggr:fromService</span><a class="self-link" href="#fromService"></a></h4>
+   <h4 class="heading settled" data-level="10.2.17" id="fromService"><span class="secno">10.2.17. </span><span class="content">aggr:fromService</span><a class="self-link" href="#fromService"></a></h4>
    
 Links a service output distribution to the <code>aggr:Service</code> that exposes it.
 
@@ -4864,7 +4844,7 @@ Links a service output distribution to the <code>aggr:Service</code> that expose
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution">dcat:Distribution</a><br>
 <strong>range:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a></p>
-   <h4 class="heading settled" data-level="10.2.19" id="provenanceLog"><span class="secno">10.2.19. </span><span class="content">aggr:provenanceLog</span><a class="self-link" href="#provenanceLog"></a></h4>
+   <h4 class="heading settled" data-level="10.2.18" id="provenanceLog"><span class="secno">10.2.18. </span><span class="content">aggr:provenanceLog</span><a class="self-link" href="#provenanceLog"></a></h4>
    
 Links an <code>aggr:Service</code> to its provenance log.
 
@@ -4872,7 +4852,7 @@ Links an <code>aggr:Service</code> to its provenance log.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#Service">aggr:Service</a><br>
 <strong>range:</strong> <a href="https://w3id.org/aggregator#ProvenanceLog">aggr:ProvenanceLog</a></p>
-   <h4 class="heading settled" data-level="10.2.20" id="hasActivity"><span class="secno">10.2.20. </span><span class="content">aggr:hasActivity</span><a class="self-link" href="#hasActivity"></a></h4>
+   <h4 class="heading settled" data-level="10.2.19" id="hasActivity"><span class="secno">10.2.19. </span><span class="content">aggr:hasActivity</span><a class="self-link" href="#hasActivity"></a></h4>
    
 Links an <code>aggr:ProvenanceLog</code> to an activity it includes.
 
@@ -4880,31 +4860,31 @@ Links an <code>aggr:ProvenanceLog</code> to an activity it includes.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#ProvenanceLog">aggr:ProvenanceLog</a><br>
 <strong>range:</strong> <a href="https://w3id.org/function/spec/#Execution">fno:Execution</a></p>
-   <h4 class="heading settled" data-level="10.2.21" id="registrationEndpoint"><span class="secno">10.2.21. </span><span class="content">aggr:registrationEndpoint</span><a class="self-link" href="#registrationEndpoint"></a></h4>
+   <h4 class="heading settled" data-level="10.2.20" id="managementEndpoint"><span class="secno">10.2.20. </span><span class="content">aggr:managementEndpoint</span><a class="self-link" href="#managementEndpoint"></a></h4>
    
-Links an <code>aggr:AggregatorServer</code> to its registration endpoint.
+Links an <code>aggr:AggregatorServer</code> to its management endpoint.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#AggregatorServer">aggr:AggregatorServer</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="10.2.22" id="supportedRegistrationType"><span class="secno">10.2.22. </span><span class="content">aggr:supportedRegistrationType</span><a class="self-link" href="#supportedRegistrationType"></a></h4>
+   <h4 class="heading settled" data-level="10.2.21" id="supportedManagementFlow"><span class="secno">10.2.21. </span><span class="content">aggr:supportedManagementFlow</span><a class="self-link" href="#supportedManagementFlow"></a></h4>
    
-Lists the registration flows advertised by an <code>aggr:AggregatorServer</code>.
+Lists the management flows advertised by an <code>aggr:AggregatorServer</code>.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#AggregatorServer">aggr:AggregatorServer</a><br>
-<strong>range:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a> (expected to be an <a href="https://w3id.org/aggregator#RegistrationFlow">aggr:RegistrationFlow</a> class)</p>
-   <h4 class="heading settled" data-level="10.2.23" id="registrationRequestFormatSupported"><span class="secno">10.2.23. </span><span class="content">aggr:registrationRequestFormatSupported</span><a class="self-link" href="#registrationRequestFormatSupported"></a></h4>
+<strong>range:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_class">rdfs:Class</a> (expected to be an <a href="https://w3id.org/aggregator#ManagementFlow">aggr:ManagementFlow</a> class)</p>
+   <h4 class="heading settled" data-level="10.2.22" id="managementRequestFormatSupported"><span class="secno">10.2.22. </span><span class="content">aggr:managementRequestFormatSupported</span><a class="self-link" href="#managementRequestFormatSupported"></a></h4>
    
-Lists the supported request formats for an <code>aggr:AggregatorServer</code> registration endpoint.
+Lists the supported request formats for an <code>aggr:AggregatorServer</code> management endpoint.
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#AggregatorServer">aggr:AggregatorServer</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.24" id="specVersion"><span class="secno">10.2.24. </span><span class="content">aggr:specVersion</span><a class="self-link" href="#specVersion"></a></h4>
+   <h4 class="heading settled" data-level="10.2.23" id="specVersion"><span class="secno">10.2.23. </span><span class="content">aggr:specVersion</span><a class="self-link" href="#specVersion"></a></h4>
    
 States which version of this specification an <code>aggr:AggregatorServer</code> implements.
 
@@ -4912,7 +4892,7 @@ States which version of this specification an <code>aggr:AggregatorServer</code>
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#AggregatorServer">aggr:AggregatorServer</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#string">xsd:string</a></p>
-   <h4 class="heading settled" data-level="10.2.25" id="clientIdentifier"><span class="secno">10.2.25. </span><span class="content">aggr:clientIdentifier</span><a class="self-link" href="#clientIdentifier"></a></h4>
+   <h4 class="heading settled" data-level="10.2.24" id="clientIdentifier"><span class="secno">10.2.24. </span><span class="content">aggr:clientIdentifier</span><a class="self-link" href="#clientIdentifier"></a></h4>
    
 Links an <code>aggr:AggregatorServer</code> to its Client ID Document.
 
@@ -4920,13 +4900,14 @@ Links an <code>aggr:AggregatorServer</code> to its Client ID Document.
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
 <strong>domain:</strong> <a href="https://w3id.org/aggregator#AggregatorServer">aggr:AggregatorServer</a><br>
 <strong>range:</strong> <a href="https://www.w3.org/TR/xmlschema11-2/#anyURI">xsd:anyURI</a></p>
-   <h4 class="heading settled" data-level="10.2.26" id="transformationCatalog"><span class="secno">10.2.26. </span><span class="content">aggr:transformationCatalog</span><a class="self-link" href="#transformationCatalog"></a></h4>
+   <h4 class="heading settled" data-level="10.2.25" id="transformationCatalog"><span class="secno">10.2.25. </span><span class="content">aggr:transformationCatalog</span><a class="self-link" href="#transformationCatalog"></a></h4>
    
-References the Aggregator Server’s server-level transformation catalog.
+References the transformation catalog of an <code>aggr:Aggregator</code> (its instance-level transformation catalog) or an
+<code>aggr:AggregatorServer</code> (its server-level transformation catalog).
 
 
    <p><strong>type:</strong> <a href="https://www.w3.org/TR/rdf-schema/#ch_property">rdf:Property</a><br>
-<strong>domain:</strong> <a href="https://w3id.org/aggregator#AggregatorServer">aggr:AggregatorServer</a><br>
+<strong>domain:</strong> <a href="https://w3id.org/aggregator#Aggregator">aggr:Aggregator</a>, <a href="https://w3id.org/aggregator#AggregatorServer">aggr:AggregatorServer</a><br>
 <strong>range:</strong> <a href="https://w3id.org/aggregator#TransformationCatalog">aggr:TransformationCatalog</a></p>
    <h3 class="heading settled" data-level="10.3" id="vocabulary-claim-types"><span class="secno">10.3. </span><span class="content">Claim Types</span><a class="self-link" href="#vocabulary-claim-types"></a></h3>
    <h4 class="heading settled" data-level="10.3.1" id="transformation-description"><span class="secno">10.3.1. </span><span class="content">aggr:transformation-description</span><a class="self-link" href="#transformation-description"></a></h4>
@@ -5141,7 +5122,7 @@ Identifier for the UMA <code>claim_type</code> used to request or provide upstre
    <dt id="biblio-webid-profile">[WEBID-PROFILE]
    <dd><a href="https://solid.github.io/webid-profile/"><cite>WebID Profile</cite></a>. URL: <a href="https://solid.github.io/webid-profile/">https://solid.github.io/webid-profile/</a>
   </dl>
-  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Non-Normative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-rfc3339">[RFC3339]
    <dd>G. Klyne; C. Newman. <a href="https://www.rfc-editor.org/rfc/rfc3339"><cite>Date and Time on the Internet: Timestamps</cite></a>. July 2002. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc3339">https://www.rfc-editor.org/rfc/rfc3339</a>

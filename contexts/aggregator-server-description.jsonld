@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "aggr": "https://w3id.org/aggregator#",
+
+    "aggregator_server_base_url": "@id",
+    "type": "@type",
+
+    "AggregatorServer": "aggr:AggregatorServer",
+
+    "none": "aggr:NoAuthFlow",
+    "provision": "aggr:ProvisionFlow",
+    "authorization_code": "aggr:AuthorizationCodeFlow",
+    "device_code": "aggr:DeviceCodeFlow",
+
+    "management_endpoint": {
+      "@id": "aggr:managementEndpoint",
+      "@type": "@id"
+    },
+    "supported_management_flows": {
+      "@id": "aggr:supportedManagementFlow",
+      "@type": "@vocab"
+    },
+    "supported_management_request_formats": "aggr:managementRequestFormatSupported",
+    "version": {
+      "@id": "aggr:specVersion"
+    },
+    "client_identifier": {
+      "@id": "aggr:clientIdentifier",
+      "@type": "@id"
+    },
+    "transformation_catalog": {
+      "@id": "aggr:transformationCatalog",
+      "@type": "@id"
+    }
+  }
+}

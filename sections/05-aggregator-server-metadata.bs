@@ -21,12 +21,12 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 
 : **management_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management-endpoint]]); 
-    in the RDF representations, this member maps to the predicate `aggr:registrationEndpoint` 
-    ([[#registrationEndpoint]]).
+    in the RDF representations, this member maps to the predicate `aggr:managementEndpoint` 
+    ([[#managementEndpoint]]).
 : **supported_management_flows** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported management flow tokens at `management_endpoint`; in 
-    the RDF representations, each entry maps to an `aggr:supportedRegistrationType` triple 
-    ([[#supportedRegistrationType]]) whose object is the corresponding flow class IRI.
+    the RDF representations, each entry maps to an `aggr:supportedManagementFlow` triple 
+    ([[#supportedManagementFlow]]) whose object is the corresponding flow class IRI.
 :: Each member MUST be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
     - `"none"` (RDF class `aggr:NoAuthFlow` ([[#NoAuthFlow]]))
     - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#ProvisionFlow]]))
@@ -35,7 +35,7 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 : **supported_management_request_formats** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported request formats for the
     `management_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
-    an `aggr:registrationRequestFormatSupported` triple ([[#registrationRequestFormatSupported]]).
+    an `aggr:managementRequestFormatSupported` triple ([[#managementRequestFormatSupported]]).
     Servers MUST include either `application/json` or `application/x-www-form-urlencoded` or both.
 : **version** (REQUIRED):
 :: The value is a string containing the semantic version ([[!SEMVER]]) of the Aggregator specification that the server 
@@ -53,33 +53,9 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 <div class="example">
 ```json
 {
-  "@context": {
-    "aggr": "https://w3id.org/aggregator#",
-    "provision": "aggr:ProvisionFlow",
-    "authorization_code": "aggr:AuthorizationCodeFlow",
-    "supported_management_request_formats": "aggr:registrationRequestFormatSupported",
-    "management_endpoint": {
-      "@id": "aggr:registrationEndpoint",
-      "@type": "@id"
-    },
-    "supported_management_flows": {
-      "@id": "aggr:supportedRegistrationType",
-      "@type": "@vocab"
-    },
-    "version": {
-      "@id": "aggr:specVersion"
-    },
-    "client_identifier": {
-      "@id": "aggr:clientIdentifier",
-      "@type": "@id"
-    },
-    "transformation_catalog": {
-      "@id": "aggr:transformationCatalog",
-      "@type": "@id"
-    }
-  },
-  "@id": "https://aggregator.example/",
-  "@type": "aggr:AggregatorServer",
+  "@context": "https://w3id.org/aggregator/contexts/aggregator-server-description.jsonld",
+  "aggregator_server_base_url": "https://aggregator.example/",
+  "type": "AggregatorServer",
   "management_endpoint": "https://aggregator.example/registration",
   "supported_management_flows": [
     "provision",

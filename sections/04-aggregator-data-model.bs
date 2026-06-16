@@ -5,6 +5,15 @@ This section specifies the data model used to describe the aggregator components
 and the transformations they implement as well as the outputs they generate. By describing them as linked data the 
 model enables interoperable publication, discovery, execution, and provenance tracking of aggregator services.
 
+This specification publishes a predefined JSON-LD context at
+`https://w3id.org/aggregator/contexts/aggregator.jsonld` that maps the terms used throughout this data model
+(including the `aggr:` vocabulary defined in [[#vocabulary]] and the external vocabularies it reuses, such as [[!FNO]],
+[[!Data-Catalog]], and [[!PROV-O]]). JSON-LD representations of the resources defined in this section **MAY**
+reference this context using `@context`. Two additional contexts are published for the JSON documents that use
+specialized member names: `https://w3id.org/aggregator/contexts/aggregator-server-description.jsonld` for the
+[[#server-description]] and `https://w3id.org/aggregator/contexts/aggregator-description.jsonld` for the
+[[#aggregator-description]].
+
 Transformation {#data-model-transformation}
 -------------------------------------------
 

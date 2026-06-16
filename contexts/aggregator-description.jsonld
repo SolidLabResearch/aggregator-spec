@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "aggr": "https://w3id.org/aggregator#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "aggregator_base_url": "@id",
+    "type": "@type",
+
+    "Aggregator": "aggr:Aggregator",
+    "oidcIssuer": {
+      "@id": "http://www.w3.org/ns/solid/terms#oidcIssuer",
+      "@type": "@id"
+    },
+
+    "created_at": {
+      "@id": "aggr:createdAt",
+      "@type": "xsd:dateTime"
+    },
+    "login_status": {
+      "@id": "aggr:loginStatus",
+      "@type": "xsd:boolean"
+    },
+    "token_expiry": {
+      "@id": "aggr:tokenExpiry",
+      "@type": "xsd:dateTime"
+    },
+    "transformation_catalog": {
+      "@id": "aggr:transformationCatalog",
+      "@type": "@id"
+    },
+    "service_collection_endpoint": {
+      "@id": "aggr:serviceCollectionEndpoint",
+      "@type": "@id"
+    }
+  }
+}
