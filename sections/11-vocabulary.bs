@@ -137,7 +137,7 @@ with this property because they remain `fno:Function` resources.
 **domain:** [aggr:TransformationCatalog](https://w3id.org/aggregator#TransformationCatalog)<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Function)
 
-### aggr:hasAppliedFunction ### {#hasAppliedFunction}
+### aggr:hasAppliedTransformation ### {#aggr-has-applied-function-property}
 Links an `aggr:TransformationCatalog` to a reusable `fno:AppliedFunction` template it advertises.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>

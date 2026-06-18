@@ -24,8 +24,8 @@ the transformation, but clients SHOULD NOT rely on this property for unique iden
 describe zero or more `fno:Parameters` and `fno:Outputs` using the `fno:expects` and `fno:returns` properties respectively. 
 Each parameter and output:
   - **MUST** be a `fno:Parameter` or `fno:Output` respectively.
-  - **MUST** use `fno:predicate` to specify the predicate that will be used to bind the parameter or output value in an 
-    `fno:AppliedFunction` or `fno:Execution`.
+  - **MUST** use `fno:predicate` to specify the predicate that will be used to signify its 
+    value used by an `fno:Execution` and `aggr:ServiceRequest`.
   - **MUST** define the `fno:type` of the output as a `dcat:Dataset`.
   - **SHOULD** use `fno:type` to describe the parameter types.
   - **MAY** use `dct:format` to describe the format of the parameter.
@@ -40,7 +40,7 @@ algorithm it implements using `fno:Algorithm` as specified by [[!FNO]].
 
 <div class="example">
 ```turtle
-@prefix server-trans: <https://example.org/transformations#> .
+@prefix ex: <http://example.org/> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
@@ -49,147 +49,142 @@ algorithm it implements using `fno:Algorithm` as specified by [[!FNO]].
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
-server-trans:sparql-query-view
+ex:sparql-query-view
   a                   fno:Function ;
   fno:name            "The SPARQL QueryView function"^^xsd:string ;
   dct:description     "Performs a query on a source and materializes view as a SPARQL endpoint"^^xsd:string ;
-  fno:expects         ( server-trans:query-source server-trans:sparql-query-string ) ;
-  fno:returns         ( server-trans:view-output ) .
+  fno:expects         ( ex:query-source ex:sparql-query-string ) ;
+  fno:returns         ( ex:view-output ) .
 
-server-trans:query-source
+ex:query-source
   a                   fno:Parameter ;
-  fno:predicate       server-trans:source ;
+  fno:predicate       ex:source ;
   fno:type            xsd:anyURI ;
   fno:required        "true"^^xsd:boolean .
 
-server-trans:sparql-query-string
+ex:sparql-query-string
   a               fno:Parameter ;
-  fno:predicate   server-trans:query ;
+  fno:predicate   ex:query ;
   fno:type        xsd:string ;
   dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
   fno:required    "true"^^xsd:boolean .
 
-server-trans:view-output
+ex:view-output
   a               fno:Output ;
   fno:type        dcat:Dataset ;
-  dct:conformsTo  server-trans:SPARQLResultDatasetShape .
-  fno:predicate   server-trans:view .
+  dct:conformsTo  ex:SPARQLResultDatasetShape .
+  fno:predicate   ex:view .
 
-server-trans:SPARQLResultDatasetShape
+ex:SPARQLResultDatasetShape
   a sh:NodeShape ;
   sh:targetClass dcat:Dataset ;
   sh:property [
     sh:path dcat:distribution ;
     sh:minCount 1 ;
-    sh:node server-trans:SPARQLXMLDistributionShape
+    sh:node ex:SPARQLXMLDistributionShape
   ] ;
   sh:property [
     sh:path dcat:distribution ;
     sh:minCount 1 ;
-    sh:node server-trans:SPARQLJSONDistributionShape
+    sh:node ex:SPARQLJSONDistributionShape
   ] .
 
-server-trans:SPARQLXMLDistributionShape
+ex:SPARQLXMLDistributionShape
   a sh:NodeShape ;
   sh:property [
     sh:path dcat:mediaType ;
     sh:hasValue <http://www.iana.org/assignments/media-types/application/sparql-results+xml>
   ] .
 
-server-trans:SPARQLJSONDistributionShape
+ex:SPARQLJSONDistributionShape
   a sh:NodeShape ;
   sh:property [
     sh:path dcat:mediaType ;
     sh:hasValue <http://www.iana.org/assignments/media-types/application/sparql-results+json>
   ] .
 
-server-trans:rml-mapper
+ex:rml-mapper
   a fno:Function ;
   fno:name "The RML Mapper Function"^^xsd:string ;
   dct:description "Performs RML mappings on a source and materializes results as a SPARQL endpoint"^^xsd:string ;
-  fno:expects ( server-trans:rml-mapping ) ;
-  fno:returns ( server-trans:rml-output ) .
+  fno:expects ( ex:rml-mapping ) ;
+  fno:returns ( ex:rml-output ) .
 
-server-trans:rml-mapping 
+ex:rml-mapping 
   a                   fno:Parameter ;
   fno:type            rr:TriplesMap ;
   dct:format          <http://www.w3.org/ns/formats/Turtle> ;
-  fno:predicate       server-trans:mapping ;
+  fno:predicate       ex:mapping ;
   fno:required        "true"^^xsd:boolean .
 
-server-trans:rml-output
+ex:rml-output
   a               fno:Output ;
   fno:type        dcat:Dataset ;
-  fno:predicate   server-trans:table .
+  fno:predicate   ex:table .
 ```
 </div>
 
-Applied Function {#data-model-applied-function}
----------------------------------------------
-
-An Applied Function describes the requested transformation and the parameter values that an Aggregator should use when
-deploying a service. When requesting a service an `fno:AppliedFunction` is used to capture those bindings.
-An Applied Function **MUST** be described as an `fno:AppliedFunction`.
-
-The Applied Function:
-  - **MUST** use `fnoc:applies` to reference a transformation from the [[#server-level-transformation-catalog]] or 
-    [[#instance-level-transformation-catalog]].
-  - **MUST** bind a value to each required parameter of the referenced transformation, and **MAY** bind values to optional 
-    parameters as defined by [[!FNO]].
-  - **MAY** reference a composite transformation. If the referenced transformation is described using `fnoc:composition`,
-    the Applied Function binds the exposed composite parameters in the same way as for any other transformation.
-  - **MAY** be published as a reusable template in the [[#server-level-transformation-catalog]] or
-    [[#instance-level-transformation-catalog]]. When a catalog advertises an Applied Function, it **MUST** link to it
-    using `aggr:hasAppliedFunction` and **MUST NOT** use `aggr:hasTransformation`.
-
-An `aggr:Service` **MAY** link to its Applied Function using `aggr:applies`.
+An Applied Transformation is a Transformation in which one or more parameters are bound to concrete values and is
+represented using an `fno:AppliedFunction` from [[!FNO]].
 
 <div class="example">
 ```turtle
-@prefix inst-trans: <https://example.org/agg1/transformations/> .
-@prefix server-trans: <https://example.org/transformations#> .
+@prefix ex: <http://example.org/> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-inst-trans:sparql-query-view-applied-function
+ex:sparql-query-view-applied-function
   a fno:AppliedFunction ;
-  fnoc:applies server-trans:sparql-query-view ;
+  fnoc:applies ex:sparql-query-view ;
   fnoc:parameterBindings (
     [
-      fnoc:boundParameter server-trans:query-source ;
+      fnoc:boundParameter ex:query-source ;
       fnoc:boundToTerm "http://example.org/source1"
     ]
     [
-      fnoc:boundParameter server-trans:sparql-query-string ;
+      fnoc:boundParameter ex:sparql-query-string ;
       fnoc:boundToTerm "SELECT * WHERE { ?s ?p ?o }"^^xsd:string
     ]
   ) .
 ```
 </div>
 
-Service Collection {#data-model-service-collection}
------------------------------
+Transformation Catalog {#data-model-tf-catalog}
+-----------------------------------------------
 
-A Service Collection describes the set of services currently exposed by an Aggregator Instance.
+A Transformation Catalog references all transformations made available on an Aggregator Server including any metadata
+mentioned earlier.
 
-The Service Collection:
-  - **MUST** be described as an `aggr:ServiceCollection`.
-  - **MUST** reference each contained service using `aggr:hasService`.
+The Transformation Catalog:
+  - **MUST** be described as an `aggr:TransformationCatalog`.
+  - **MUST** reference all supported (applied) transformations using `aggr:hasTransformation`.
+  - **MAY** reference a supported algorithm using `aggr:hasAlgorithm`.
+  - **MAY** reference a supported mapping using `aggr:hasMapping`.
+  - **MUST** reference all resources not hosted by the Aggregator Server using `rdfs:seeAlso`.
 
 <div class="example">
 ```turtle
-@prefix services: <https://example.org/agg1/services/> .
+@base <http://aggregator.example.org/transformations#> .
 @prefix aggr: <https://w3id.org/aggregator#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/>
 
-<https://example.org/agg1/services>
-  a aggr:ServiceCollection ;
-  aggr:hasService
-    services:sparql-query-view-service,
-    services:rml-mapper-service .
+<> a aggr:TransformationCatalog ;
+    aggr:hasTransformation 
+      <sparql-query-view> , 
+      <sparql-query-view-applied-function> ,
+      <rml-mapper> ,
+      <http://example.org/external/ExternalFunction> ;
+    rdfs:seeAlso <http://example.org/external/ExternalFunction> .
 ```
 </div>
-
 
 Service {#data-model-service}
 -----------------------------
@@ -205,16 +200,14 @@ Furthermore, the service:
   - **MUST** link using `dcat:servesDataset` to the corresponding dataset described as a `dcat:Dataset`.
   - **SHOULD** declare operational metadata such as status and creation time.
   - **SHOULD** indicate it adheres to the aggregator protocol using `dct:conformsTo`.
-  - **SHOULD** link using `aggr:applies` to the corresponding Applied Function
-    ([[#data-model-applied-function]]) when the deployment allows the configured parameter values to be disclosed.
+  - **MAY** link using `aggr:applies` to an applied transformation that applies the performed function 
+    with a set of input values when the usecase allows these to be disclosed.
   - **MAY** specify the exact implementation using a link to an `fno:Implementation` with `aggr:implements`.
 
 The corresponding dataset:
   - **MUST** be described as a `dcat:Dataset`.
   - **MUST** link to exactly one `fno:Output` of that transformation using `aggr:forOutput`.
   - **MUST** reference a `dcat:distribution`.
-  - **MUST** declare the latest known version using `dcat:hasCurrentVersion` when version history is retained.
-  - **MUST** declare other known versions using `dcat:hasVersion` when version history is retained.
 
 The corresponding distribution **MUST** be described as a `dcat:Distribution`, where each distribution:
   - **MUST** reference the corresponding output endpoint using `dcat:accessURL`.
@@ -224,28 +217,23 @@ The corresponding distribution **MUST** be described as a `dcat:Distribution`, w
     - `dct:format` when the format is not an IANA-conformant media type.
   - **SHOULD** declare conformity using `dct:conformsTo` if defined.
 
-The dataset and the output endpoint are distinct resources. The `dcat:Dataset` identifies the logical result of
-the transformation output, while the Service Output Endpoint is an access interface for a `dcat:Distribution` of that
-dataset and **MUST NOT** itself be treated as the dataset resource.
 This ensures that consumers can reliably discover and access the latest available aggregated results. Furthermore, Service 
 descriptions **MAY** be semantically enriched to provide more detailed information about their outputs and capabilities.
-For example, Services can describe a service output endpoint as a SPARQL endpoint using `sd:Service`, use 
-`dct:accrualPeriodicity` on the dataset to indicate the frequency of updates, or describe the service API using the Hydra 
-Core Ontology ([[!Hydra]]).
+For example, use  `dct:accrualPeriodicity` on the dataset to indicate the frequency of updates, 
+or describe the service API using the Hydra Core Ontology ([[!Hydra]]).
 
 <div class="example">
 ```turtle
-@prefix : <https://example.org/agg1/services/sparql-query-view-service#> .
-@prefix inst-trans: <https://example.org/agg1/transformations/> .
-@prefix server-trans: <https://example.org/transformations#> .
-@prefix provlog: <https://example.org/agg1/services/sparql-query-view-service/provenance#> .
+@base <https://aggregator.example.org/agg1/services/sparql-query-view-service#> .
+@prefix inst-trans: <https://aggregator.example.org/agg1/transformations/> .
+@prefix server-trans: <https://aggregator.example.org/transformations#> .
 @prefix aggr: <https://w3id.org/aggregator#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://example.org/agg1/services/sparql-query-view-service>
+<>
     a aggr:Service ;
     a dcat:DataService ;
     a prov:SoftwareAgent ;
@@ -254,57 +242,58 @@ Core Ontology ([[!Hydra]]).
     aggr:performs server-trans:sparql-query-view ;
     aggr:applies inst-trans:sparql-query-view-applied-function ;
     dct:conformsTo <https://w3id.org/aggregator#> ;
-    dcat:servesDataset :dataset .
+    dcat:servesDataset <#dataset> .
 
-:dataset
+<#dataset>
     a dcat:Dataset ;
     aggr:forOutput server-trans:view-output ;
-    dcat:distribution :distribution-xml ,
-     :distribution-json ;
-    dcat:hasCurrentVersion provlog:dataset-0 .
+    dcat:distribution <#distribution-xml> ,
+     <#distribution-json> .
 
-:distribution-xml
+<#distribution-xml>
     a dcat:Distribution ;
     dcat:mediaType <http://www.iana.org/assignments/media-types/application/sparql-results+xml> ;
-    dcat:accessURL <https://example.org/agg1/services/sparql-query-view-service/output> ;
-    dcat:accessService <https://example.org/agg1/services/sparql-query-view-service> .
+    dcat:accessURL <https://aggregator.example.org/agg1/services/sparql-query-view-service/output> ;
+    dcat:accessService <> .
 
-:distribution-json
+<#distribution-json>
     a dcat:Distribution ;
     dcat:mediaType <http://www.iana.org/assignments/media-types/application/sparql-results+json> ;
-    dcat:accessURL <https://example.org/agg1/services/sparql-query-view-service/output> ;
-    dcat:accessService <https://example.org/agg1/services/sparql-query-view-service> .
+    dcat:accessURL <https://aggregator.example.org/agg1/services/sparql-query-view-service/output> ;
+    dcat:accessService <> .
 ```
 </div>
 
-Service Provenance Log {#data-model-service-provenance-log}
------------------------------
+Service Collection {#data-model-service-collection}
+---------------------------------------------------
 
-An aggregator implementation **MAY** provide provenance information for a service. If it does, the service **MUST**
-link to its provenance log using `aggr:provenanceLog`, where the Service Provenance Log:
-  - **MUST** be described as an `aggr:ProvenanceLog`.
-  - **MUST** reference one or more execution activities using `aggr:hasActivity`.
+A Service Collection describes the set of services currently exposed by an Aggregator Instance.
+
+The Service Collection:
+  - **MUST** be described as an `aggr:ServiceCollection`.
+  - **MUST** reference each contained service using `aggr:hasService`.
 
 <div class="example">
 ```turtle
+@base <http://aggregator.example.org/agg1/services> .
 @prefix aggr: <https://w3id.org/aggregator#> .
 
-<https://example.org/agg1/services/sparql-query-view-service/provenance>
-  a aggr:ProvenanceLog ;
-  aggr:hasActivity :execution-0 .
+<> a aggr:ServiceCollection ;
+  aggr:hasService
+    <http://aggregator.example.org/agg1/services/sparql-query-view-service> ,
+    <http://aggregator.example.org/agg1/services/rml-mapper-service> .
 ```
 </div>
 
-
 Execution {#data-model-service-execution}
-------------------------------
+-----------------------------------------
 
-If the aggregator provides provenance information, each execution:
+An Execution represents the service output provenance information. Each execution:
   - **MUST** be a `fno:Execution`.
   - **MUST** link to the executed transformation using `fno:executes`.
-  - **MUST** link to the generated dataset using an output predicate defined in [[#data-model-transformation]].
-  - **SHOULD** link to the used parameter values using the parameter predicates defined in [[#data-model-transformation]].
-  - **SHOULD** link to the used mapping using `fno:uses` to indicate the used implementation, if relevant.
+  - **MUST** link to the generated datasets using the output predicates defined in [[#data-model-transformation]].
+  - **MUST** link to the used parameter values using the parameter predicates defined in [[#data-model-transformation]].
+  - **MAY** link to the used mapping using `fno:uses` to indicate the used implementation
   - **MUST** be a `prov:Activity`.
   - **MUST** be associated with the service using `prov:associatedWith`.
   - **MUST** include a start time using `prov:startedAtTime`.
@@ -312,47 +301,102 @@ If the aggregator provides provenance information, each execution:
 
 The execution **MAY** provide additional metadata such as `prov:qualifiedAssociation`, or any other 
 relevant provenance information. The executed transformation **MUST** be the same as the transformation declared in the 
-service description.
+service description using `aggr:performs`.
 
-The generated dataset is a virtual entity that represents the output of the execution. When the execution uses the same
-transformation as the one described in the service description, or otherwise produces a new version of the logical
-dataset served by the service, the generated dataset represents a version of that service dataset. Otherwise, it
-represents only the result of that specific execution. The dataset:
+The generated dataset produced by an execution either *is* the logical dataset served by the
+service, or it is a distinct version of that logical dataset, depending on whether the service
+retains version history.
+
+In either case, the generated dataset:
   - **MUST** be typed as a `dcat:Dataset`.
   - **MUST** be typed as a `prov:Entity`.
-  - **MUST** specify it is a version of the service dataset using `dcat:isVersionOf` when the execution produced a new
-    version of the dataset described by the service.
   - **MUST** link to the execution using `prov:wasGeneratedBy`.
   - **SHOULD** include `prov:wasGeneratedAtTime`.
 
-The following example shows an execution that produces a new version of the service dataset.
+If the service retains version history, the generated dataset additionally:
+  - **MUST** specify it is a version of the service dataset using `dcat:isVersionOf`.
+
+If the service retains version history, the logical dataset:
+  - **MUST** declare the latest known version using `dcat:hasCurrentVersion`.
+  - **MUST** declare other known versions using `dcat:hasVersion`.
+
+The following example shows an execution that produces a new version of a service dataset.
 
 <div class="example">
 ```turtle
-@prefix : <https://example.org/agg1/services/sparql-query-view-service/provenance#> .
-@prefix inst-trans: <https://example.org/agg1/transformations/> .
+@base <https://aggregator.example.org/agg1/services/sparql-query-view-service/provenance#> .
+@prefix svc: <https://aggregator.example.org/agg1/services/sparql-query-view-service#> .
+@prefix server-trans: <https://aggregator.example.org/transformations#> .
 @prefix aggr: <https://w3id.org/aggregator#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:execution-0
+<execution-1>
   a fno:Execution ;
   a prov:Activity ;
-  fno:executes inst-trans:sparql-query-view ;
-  inst-trans:query "SELECT * WHERE { ?s ?p ?o }" ;
-  inst-trans:source "http://example.org/source1" ;
-  inst-trans:view :dataset-0 ;
+  fno:executes server-trans:sparql-query-view ;
+  server-trans:query "SELECT * WHERE { ?s ?p ?o }" ;
+  server-trans:source "http://example.org/source1" ;
+  server-trans:view <dataset-1> ;
   prov:associatedWith <https://example.org/agg1/services/sparql-query-view-service> ;
   prov:startedAtTime "2025-01-02T12:00:00Z"^^xsd:dateTime ;
   prov:endedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
 
-:dataset-0
+<dataset-1>
   a dcat:Dataset ;
   a prov:Entity ;
-  dcat:isVersionOf :dataset ;
-  prov:wasGeneratedBy :execution-0 ;
+  dcat:isVersionOf svc:dataset ;
+  prov:wasGeneratedBy <execution-1> ;
   prov:wasGeneratedAtTime "2025-01-02T12:02:00Z"^^xsd:dateTime .
+```
+</div>
+
+With the logical dataset referencing the generated datasets.
+
+<div class="example">
+```turtle
+@base : <https://aggregator.example.org/agg1/services/sparql-query-view-service> .
+@prefix provlog: <https://aggregator.example.org/agg1/services/sparql-query-view-service/provenance#> .
+@prefix server-trans: <https://aggregator.example.org/transformations#> .
+@prefix aggr: <https://w3id.org/aggregator#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<#dataset>
+    a dcat:Dataset ;
+    aggr:forOutput server-trans:view-output ;
+    dcat:distribution <#distribution-xml> ,
+     <#distribution-json> ;
+    dcat:hasCurrentVersion provlog:dataset-1 ;
+    dcat:hasVersion provlog:dataset-0 ,
+      provlog:dataset-1 .
+```
+</div>
+
+Provenance Log {#data-model-provenance-log}
+-------------------------------------------
+
+A Provenance Log consolidates all service output provenance information by referencing executions.
+
+The Provenance Log:
+  - **MUST** be described as an `aggr:ProvenanceLog`.
+  - **MUST** reference one or more execution activities using `aggr:hasActivity`.
+
+The Service:
+  - **MUST** link its provenance log using `aggr:provenanceLog`.
+  
+
+<div class="example">
+```turtle
+@base <https://aggregator.example.org/agg1/services/sparql-query-view-service/provenance>
+@prefix aggr: <https://w3id.org/aggregator#> .
+
+<>
+  a aggr:ProvenanceLog ;
+  aggr:hasActivity :execution-0 .
 ```
 </div>

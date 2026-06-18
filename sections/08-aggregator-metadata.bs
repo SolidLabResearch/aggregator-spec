@@ -65,7 +65,7 @@ that case this document MUST be an RDF document that conforms to the WebID Profi
 </div>
 
 Instance-level Transformation Catalog {#instance-level-transformation-catalog}
--------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 This endpoint is the instance-level extension on the server-level Transformation Catalog defined in
 [[#server-level-transformation-catalog]]. Implementations MAY expose it at any URL, but the Aggregator Description MUST 
@@ -79,9 +79,9 @@ other requirements as the server-level Transformation Catalog.
 
 The instance-level Transformation Catalog:
   - **MUST** reference each directly available `fno:Function` using `aggr:hasTransformation`.
-  - **MAY** reference reusable instance-specific `fno:AppliedFunction` resources using `aggr:hasAppliedFunction`.
+  - **MAY** reference reusable instance-specific `fno:AppliedFunction` resources using `aggr:hasAppliedTransformation`.
   - **MAY** include supporting resources such as mappings, algorithms, or `fnoc:Composition` descriptions linked from
     those functions or Applied Functions.
 
-The Aggregator MAY put these resources in different resources so different policies can be added, and link to them
-using `rdfs:seeAlso`. The endpoint MUST at least return the resources that are directly available at the endpoint URL.
+The Aggregator **MAY** put these resources in different resources so different policies can be added, and link to them
+using `rdfs:seeAlso`. The endpoint **MUST** at least return the resources that are directly available at the endpoint URL.
