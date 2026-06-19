@@ -47,14 +47,17 @@ the server **MUST** respond with `409 Conflict`.
 
 Upon successful processing, the Aggregator **MUST**:
 
-1. Deploy a new Service that performs the transformation indicated by `performs` (and, if present, the implementation
+1. Include an Applied Transformation representing the performed Transformation with the given inputs to the 
+    Instance-Level Transformation Catalog. This resource **MUST** be referenced using `aggr:applies` and protected
+    using the [[#aggregator-security-model]].
+2. Deploy a new Service that performs the transformation indicated by `performs` (and, if present, the implementation
     indicated by `implements`), and expose a Service Description Endpoint [[#service-endpoint]] describing it according
     to the data model in [[#data-model-service]].
-2. Update the Service Collection and its associated ETag.
-3. Register the Service Description Endpoint as a UMA resource at the Authorization Server, advertising at least the
+3. Update the Service Collection and its associated ETag.
+4. Register the Service Description Endpoint as a UMA resource at the Authorization Server, advertising at least the
     `read`, `update`, and `delete` scopes.
-4. Register each distinct Service output endpoint URL as a UMA resource, advertising at least the `read` scope.
-5. Respond with `201 Created`, including the Service description (as defined in [[#data-model-service]]) in the
+5. Register each distinct Service output endpoint URL as a UMA resource, advertising at least the `read` scope.
+6. Respond with `201 Created`, including the Service description (as defined in [[#data-model-service]]) in the
     response body and a `Location` header identifying the Service Description Endpoint.
 
 Error Responses:
@@ -65,43 +68,7 @@ Error Responses:
 - **MUST** respond with `500 Internal Server Error` if the request is valid but the Aggregator fails to deploy the
     Service.
 
-The following example defines the `QueryView` transformation, followed by a request that deploys a service performing it.
-
-<div class="example">
-```turtle
-@base <http://aggregator.example.org/transformations#> .
-@prefix dcat: <http://www.w3.org/ns/dcat#> .
-@prefix fno: <https://w3id.org/function/ontology#> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-
-<QueryView>
-  a                   fno:Function ;
-  fno:name            "The SPARQL QueryView function"^^xsd:string ;
-  dct:description     "Performs a query on a source and materializes view as a SPARQL endpoint"^^xsd:string ;
-  fno:expects         ( <QuerySource> <QueryString> ) ;
-  fno:returns         ( <ViewOutput> ) .
-
-<QuerySource>
-  a                   fno:Parameter ;
-  fno:predicate       <source> ;
-  fno:type            xsd:anyURI ;
-  fno:required        "true"^^xsd:boolean .
-
-<QueryString>
-  a               fno:Parameter ;
-  fno:predicate   <query> ;
-  fno:type        xsd:string ;
-  dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
-  fno:required    "true"^^xsd:boolean .
-
-<ViewOutput>
-  a               fno:Output ;
-  fno:type        dcat:Dataset ;
-  fno:predicate   <view> .
-```
-</div>
+The following example depicts a request that deploys a service performing the `QueryView` Transformation.
 
 <div class="example">
 ```http
@@ -120,7 +87,7 @@ Content-Type: application/ld+json
     "@id": "https://aggregator.example/agg1/services/query-view-service/",
     "@type": "ServiceRequest",
     "performs": "https://aggregator.example/transformations#QueryView",
-    "implements": "https://aggregator.example/transformations#QueryViewImplementation",
+    "implements": "https://aggregator.example/transformations#QueryViewIncremunica",
     "query": "SELECT * WHERE { ?s ?p ?o }",
     "source": "http://example.org/source"
 }

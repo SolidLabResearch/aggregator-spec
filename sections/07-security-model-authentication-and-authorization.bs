@@ -1,5 +1,5 @@
 Aggregator Security Model (Authentication & Authorization) {#aggregator-security-model}
-===============================================================
+=======================================================================================
 
 This section describes how the Aggregator handles authentication and authorization for:
 

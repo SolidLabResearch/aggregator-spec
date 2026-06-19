@@ -91,8 +91,11 @@ own retrieval URL, **MUST** be described as an `aggr:TransformationCatalog` ([[#
 Aggregator servers **MUST** publish this catalog, at any deployment-specific URL of their choosing using the `GET` method. 
 The URL **MUST** be advertised in the [[#server-description]] via the `transformation_catalog` field. 
 The catalog **SHOULD** support HTTP content negotiation, allowing clients to request different RDF serializations 
-(e.g., Turtle, JSON-LD). Access to the document **MAY** be protected. Resources referenced by the transformation 
-catalog **MAY** either be included directly in the RDF document or hosted by the Aggregator Server in separate documents.
+(e.g., Turtle, JSON-LD). 
+
+Resources referenced by the Transformation Catalog **MAY** either be included directly in the RDF document or 
+hosted by the Aggregator Server in separate documents. The transformation Catalog, along with each resource referenced by it
+**MAY** be protected using the [[#aggregator-security-model]].
 
 A transformation **MAY** be linked to an `fnoc:Composition` using `fnoc:composition`. This **MAY** be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata 

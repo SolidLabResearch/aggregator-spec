@@ -68,10 +68,6 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/#
     "href": "https://www.w3.org/TR/vocab-dcat-3/",
     "title": "Data Catalog Vocabulary"
   },
-  "LDP": {
-    "href": "https://www.w3.org/TR/ldp/",
-    "title": "Linked Data Platform"
-  },
   "PROV-O": {
     "href": "https://www.w3.org/TR/prov-o/",
     "title": "The Provenance Ontology"
