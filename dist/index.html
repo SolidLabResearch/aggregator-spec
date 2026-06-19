@@ -2969,13 +2969,12 @@ implementation to restrict which clients may create aggregators on the server.</
    <h3 class="heading settled" data-level="5.3" id="server-level-transformation-catalog"><span class="secno">5.3. </span><span class="content">Server-level Transformation Catalog</span><a class="self-link" href="#server-level-transformation-catalog"></a></h3>
    <p>TThe Transformation Catalog is an RDF document whose base resource, identified by the document’s
 own retrieval URL, <strong>MUST</strong> be described as an <code>aggr:TransformationCatalog</code> (<a href="#data-model-tf-catalog">§ 4.2 Transformation Catalog</a>). 
-Aggregator servers <strong>MUST</strong> publish this catalog, at any deployment-specific URL of their choosing using the <code>GET</code> method. 
+Resources referenced by the Transformation Catalog <strong>MAY</strong> either be included directly in the RDF document or 
+hosted by the Aggregator Server in separate documents.</p>
+   <p>Aggregator servers <strong>MUST</strong> publish this catalog, at any deployment-specific URL of their choosing using the <code>GET</code> method.
 The URL <strong>MUST</strong> be advertised in the <a href="#server-description">§ 5.1 Aggregator Server Description</a> via the <code>transformation_catalog</code> field. 
 The catalog <strong>SHOULD</strong> support HTTP content negotiation, allowing clients to request different RDF serializations 
 (e.g., Turtle, JSON-LD).</p>
-   <p>Resources referenced by the Transformation Catalog <strong>MAY</strong> either be included directly in the RDF document or
-hosted by the Aggregator Server in separate documents. The transformation Catalog, along with each resource referenced by it
-<strong>MAY</strong> be protected using the <a href="#aggregator-security-model">§ 7 Aggregator Security Model (Authentication &amp; Authorization)</a>.</p>
    <p>A transformation <strong>MAY</strong> be linked to an <code>fnoc:Composition</code> using <code>fnoc:composition</code>. This <strong>MAY</strong> be done
 solely to describe the internal structure of a transformation. In this case, the composition serves as descriptive metadata 
 to provide additional transparency. Composite transformations remain <code>fno:Function</code> resources and therefore <strong>MUST</strong> be 
@@ -3707,32 +3706,40 @@ for access to derived resources.</p>
    </ul>
    <p class="note" role="note"><span class="marker">NOTE:</span> The behavior described in this section extends the <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a> specification.</p>
    <h3 class="heading settled" data-level="7.1" id="requesting-flow"><span class="secno">7.1. </span><span class="content">Upstream Access</span><a class="self-link" href="#requesting-flow"></a></h3>
-   <p>The Aggregator Service MUST obtain upstream access tokens following the UMA grant flow defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. When the
-UAS requests proof of identity, the Aggregator Service MUST present the ID token (<code>IDP_aggregator_token</code>) obtained
+   <p>The Aggregator <strong>MUST</strong> obtain upstream access tokens following the UMA grant flow defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. When the
+UAS requests proof of identity, the Aggregator <strong>MUST</strong> present the ID token (<code>IDP_aggregator_token</code>) obtained
 during aggregator creation (<a href="#aggregator-management">§ 6 Aggregator Management</a>) as its identity claim, with <code>claim_token_format</code>
 <code>http://openid.net/specs/openid-connect-core-1_0.html#IDToken</code>.</p>
-   <p><img alt="PlantUML Diagram" src="uml/5bb9f466e19bbe709c689bdddd1dc2eaa49ce2cb.svg"></p>
+   <p><img alt="PlantUML Diagram" src="uml/f6dffa4edc9bccdc2cbc1acf171fd071c41d3419.svg"></p>
    <h3 class="heading settled" data-level="7.2" id="serving-flow"><span class="secno">7.2. </span><span class="content">Client Access</span><a class="self-link" href="#serving-flow"></a></h3>
-   <p>All derived resources produced by the Aggregator Service MUST be registered at the AAS before they are served to
-Clients. When the Aggregator receives a request without a valid Requesting Party Token (RPT), or with an RPT that does
-not grant sufficient permissions, it MUST request a UMA ticket from the AAS and return a <code>401 Unauthorized</code> response
-containing that ticket. The Client MUST present the ticket to the AAS and satisfy the applicable claims-based policies
-to obtain an RPT, following the UMA grant flow defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. The Aggregator Service MUST validate or introspect
-the RPT before serving the derived resource. The Aggregator MAY implement SA4DS for streaming or non-HTTP interfaces.</p>
-   <p><img alt="PlantUML Diagram" src="uml/f109aa650e335683e013abd620408f6fcc5cf985.svg"></p>
+   <p>All instance-level resources of an Aggregator <strong>MUST</strong> be registered at the AAS, following
+the model defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>, with the scopes necessary for their protection determined by the implementation.</p>
+   <p>Each implementation <strong>SHOULD</strong> document:</p>
+   <ul>
+    <li data-md>
+     <p>which scopes are registered for each resource; and</p>
+    <li data-md>
+     <p>which scope, or combination of scopes, is required to authorize each action on that resource.</p>
+   </ul>
+   <p>When the Aggregator receives a request without a valid Requesting Party Token (RPT), or with an RPT that does
+not grant sufficient permissions, it <strong>MUST</strong> request a UMA ticket from the AAS and return a <code>401 Unauthorized</code> response
+containing that ticket. The Client <strong>MUST</strong> present the ticket to the AAS and satisfy the applicable claims-based policies
+to obtain an RPT, following the UMA grant flow defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. The Aggregator <strong>MUST</strong> validate or introspect
+the RPT before serving the derived resource. The Aggregator <strong>MAY</strong> implement SA4DS for streaming or non-HTTP interfaces.</p>
+   <p><img alt="PlantUML Diagram" src="uml/656eb3fe0941d0f4093aa1d93aee777544a88c37.svg"></p>
    <h3 class="heading settled" data-level="7.3" id="advanced-features"><span class="secno">7.3. </span><span class="content">Advanced Features</span><a class="self-link" href="#advanced-features"></a></h3>
    <p>The features in this section extend the baseline flows above. They MAY be implemented by conforming Aggregator Services
 and their associated Authorization Servers.</p>
    <h4 class="heading settled" data-level="7.3.1" id="transformation-claims"><span class="secno">7.3.1. </span><span class="content">Transformation Claims</span><a class="self-link" href="#transformation-claims"></a></h4>
-   <p>When the UAS requires details about the intended data transformation before granting access, the Aggregator Service
-MAY include a transformation description as a claim token in the UMA grant request. The <code>claim_type</code> for a
+   <p>When the UAS requires details about the intended data transformation before granting access, the Aggregator
+<strong>MAY</strong> include a transformation description as a claim token in the UMA grant request. The <code>claim_type</code> for a
 transformation description MUST be <code>https://w3id.org/aggregator#transformation-description</code>. The <code>claim_token_format</code>
 MUST identify the RDF serialization of the description as a URI (e.g., <code>http://www.w3.org/ns/formats/Turtle</code>). If the
 UAS requires this claim and the Aggregator has not provided one, the UAS MUST respond with a UMA <code>need_info</code> error and
 a <code>required_claims</code> entry as defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>. If the transformation description or its associated catalog entry is
 dereferenceable by the UAS, the Aggregator MAY provide a URI reference rather than embedding the description inline.</p>
    <p>This extends the upstream access flow between steps 2 and 3:</p>
-   <p><img alt="PlantUML Diagram" src="uml/452e23911781812a666aecf2e0458db803183799.svg"></p>
+   <p><img alt="PlantUML Diagram" src="uml/0dd035104ee3f95427cdaaa1921b977ba6441e70.svg"></p>
    <p><strong>2.1 UAS requests transformation claim</strong></p>
    <div class="example" id="example-0f8eb482">
     <a class="self-link" href="#example-0f8eb482"></a>
@@ -3772,12 +3779,12 @@ dereferenceable by the UAS, the Aggregator MAY provide a URI reference rather th
    </div>
    <h4 class="heading settled" data-level="7.3.2" id="access-delegation"><span class="secno">7.3.2. </span><span class="content">Access Delegation via Derivation Resource Identifiers</span><a class="self-link" href="#access-delegation"></a></h4>
    <p>Access delegation allows upstream data owners to retain policy control over who may access derived resources after
-those resources have been transformed and republished by the Aggregator Service. It operates through a
+those resources have been transformed and republished by an Aggregator Service. It operates through a
 <code>derivation_resource_id</code> issued by the UAS that binds the upstream resource, the intended transformation, and the
 resulting derived resource. Clients wishing to access a derived resource must demonstrate to the AAS that they also
 hold access to the upstream resources it was derived from.</p>
    <h5 class="heading settled" data-level="7.3.2.1" id="derivation-upstream"><span class="secno">7.3.2.1. </span><span class="content">Upstream: Requesting Derivation Creation Access</span><a class="self-link" href="#derivation-upstream"></a></h5>
-   <p>When the Aggregator Service intends to create a derived resource, it MUST include the scope
+   <p>When the Aggregator intends to create a derived resource, it MUST include the scope
 <code>urn:knows:uma:scopes:derivation-creation</code> in the UMA token request to the UAS. If the URS is itself an Aggregator
 Service, the same scope MUST be included in that nested request as well.</p>
    <p>If the UAS grants access for derivation creation, it MUST include a <code>derivation_resource_id</code> and a
@@ -3785,7 +3792,7 @@ Service, the same scope MUST be included in that nested request as well.</p>
 <code>derivation_resource_id</code> is a stable identifier string that binds the upstream resource and transformation to the
 derived resource the Aggregator will create. If the Aggregator does not receive a <code>derivation_resource_id</code>, it MUST
 NOT use the upstream resource to create derived resources.</p>
-   <p>If the Aggregator Service previously obtained a <code>derivation_resource_id</code> for the same upstream resource and
+   <p>If the Aggregator previously obtained a <code>derivation_resource_id</code> for the same upstream resource and
 transformation, it SHOULD include it as a hint in the token request. The UAS SHOULD reuse it if the hint is still
 valid and bound to the authenticated Aggregator and resource; otherwise it SHOULD ignore the hint and issue a new
 identifier.</p>
@@ -3799,16 +3806,16 @@ including the same <code>derivation_resource_id</code>.</p>
 to include at minimum the <code>resource_scopes</code> of the derived resource, and SHOULD also include its <code>name</code>,
 <code>description</code>, and <code>icon_uri</code>. This allows the UAS to validate scope requests from Clients and apply policies
 accordingly.</p>
-   <p>The Aggregator Service MUST update the resource registration of the derived resource at the AAS to include a
+   <p>The Aggregator MUST update the resource registration of the derived resource at the AAS to include a
 <code>derived_from</code> entry containing the <code>issuer</code> (the UAS) and <code>derivation_resource_id</code>. The AAS MUST expire any
-previously issued access tokens for that derived resource upon this update. The Aggregator Service SHOULD only begin
+previously issued access tokens for that derived resource upon this update. The Aggregator SHOULD only begin
 serving the derived resource after this AAS registration update has succeeded.</p>
    <p>If access to the upstream resource is revoked for the Aggregator, the UAS MUST also revoke all associated
 <code>derivation_resource_id</code> identifiers and their related tokens. When a derived resource is no longer in use, the
-Aggregator Service SHOULD remove the <code>derived_from</code> entry at the AAS, MAY expire previous access tokens, and SHOULD
+Aggregator SHOULD remove the <code>derived_from</code> entry at the AAS, MAY expire previous access tokens, and SHOULD
 delete the <code>derivation_resource_id</code> at the UAS using the <code>management_access_token</code>.</p>
    <p>This extends the upstream access flow after step 2:</p>
-   <p><img alt="PlantUML Diagram" src="uml/a3d1d17e97df784cd9549f9fb004848bef110503.svg"></p>
+   <p><img alt="PlantUML Diagram" src="uml/8ea1e1a91d2c6d522574ce6eeee44e9817e2f87c.svg"></p>
    <p><strong>2.1 UAS returns access token with derivation resource identifier</strong></p>
    <div class="example" id="example-ee218924">
     <a class="self-link" href="#example-ee218924"></a>
@@ -3883,11 +3890,11 @@ with a <code>need_info</code> error. The <code>required_claims</code> array MUST
 request with <code>resource_id</code> set to <code>derivation_resource_id</code> and <code>resource_scopes</code> as specified. The Client MUST then
 present each obtained upstream access token as a claim token to the AAS with <code>claim_token_format</code>
 <code>urn:ietf:params:oauth:token-type:access_token</code>. The AAS MUST validate each presented upstream access token with its
-corresponding UAS before issuing an RPT. The Aggregator Service SHOULD verify that the <code>derivation_resource_id</code>
+corresponding UAS before issuing an RPT. The Aggregator SHOULD verify that the <code>derivation_resource_id</code>
 associated with the derived resource remains valid at the UAS before serving it, using the <code>management_access_token</code>
 on the resource registration endpoint defined in <a data-link-type="biblio" href="#biblio-a4ds" title="Authorization for Data Spaces (A4DS)">[A4DS]</a>.</p>
    <p>This extends the client access flow between steps 2 and 3:</p>
-   <p><img alt="PlantUML Diagram" src="uml/5e7321eea06613408b9cf87a29a2ebdbd3b4529b.svg"></p>
+   <p><img alt="PlantUML Diagram" src="uml/2f3c16c769e44f835c65a24b53afe6f051111625.svg"></p>
    <p><strong>2.1 AAS responds with need_info requesting upstream access token</strong></p>
    <div class="example" id="example-7ccd515b">
     <a class="self-link" href="#example-7ccd515b"></a>
@@ -4049,11 +4056,8 @@ Catalog, along with each resource referenced by it, <strong>MUST</strong> be pro
    <p>The location of this endpoint <strong>MUST</strong> be advertised in the Aggregator Description (<a href="#aggregator-description">§ 8.1 Aggregator Description</a>)
 using the <code>service_collection_endpoint</code> field. Clients <strong>MUST</strong> treat the advertised URL as authoritative and <strong>MUST NOT</strong>
 assume a fixed path. Examples shown in this section use <code>https://aggregator.example/agg1/services</code> for illustration purposes only.</p>
-   <p>The Aggregator <strong>MUST</strong> register this endpoint as an UMA resource with the Authorization Server and <strong>MUST</strong> advertise
-at least the <code>read</code> and <code>create</code> scopes.</p>
    <h4 class="heading settled" data-level="9.1.1" id="service-deployment"><span class="secno">9.1.1. </span><span class="content">Deploying a Service</span><a class="self-link" href="#service-deployment"></a></h4>
-   <p>The Service Collection Endpoint <strong>MUST</strong> allow <code>POST</code> requests to deploy a new service. The <code>POST</code> request to deploy a
-new service <strong>MUST</strong> be authorized with the <code>create</code> scope on the Service Collection Endpoint.</p>
+   <p>The Service Collection Endpoint <strong>MUST</strong> allow <code>POST</code> requests to deploy a new service.</p>
    <p>The request body <strong>MUST</strong> be a JSON-LD payload using at least the predefined JSON-LD context
 <code>https://w3id.org/aggregator/contexts/aggregator.jsonld</code>, representing an <code>aggr:ServiceRequest</code>.
 The <code>aggr:ServiceRequest</code>:</p>
@@ -4090,7 +4094,7 @@ to the data model in <a href="#data-model-service">§ 4.3 Service</a>.</p>
      <p>Register the Service Description Endpoint as a UMA resource at the Authorization Server, advertising at least the
 <code>read</code>, <code>update</code>, and <code>delete</code> scopes.</p>
     <li data-md>
-     <p>Register each distinct Service output endpoint URL as a UMA resource, advertising at least the <code>read</code> scope.</p>
+     <p>Register each distinct Service output endpoint URL as an UMA resource.</p>
     <li data-md>
      <p>Respond with <code>201 Created</code>, including the Service description (as defined in <a href="#data-model-service">§ 4.3 Service</a>) in the
 response body and a <code>Location</code> header identifying the Service Description Endpoint.</p>
@@ -4252,8 +4256,7 @@ The endpoint <strong>SHOULD</strong> support HTTP content negotiation to allow c
     <dt data-md><code>HEAD</code>
     <dd data-md>
      <p>Enables clients to detect changes to the collection without retrieving the full representation.
-This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection resource. The server <strong>MUST</strong> respond 
-with:</p>
+The server <strong>MUST</strong> respond with:</p>
      <ul>
       <li data-md>
        <p><code>200 OK</code></p>
@@ -4263,8 +4266,7 @@ with:</p>
     <dt data-md><code>GET</code>
     <dd data-md>
      <p>Returns the service collection RDF Document.
-This request <strong>MUST</strong> be authorized with a <code>read</code> scope on the Service Collection endpoint. The server <strong>MUST</strong> 
-respond with:</p>
+The server <strong>MUST</strong> respond with:</p>
      <ul>
       <li data-md>
        <p><code>200 OK</code></p>
@@ -4283,16 +4285,12 @@ service. This endpoint <strong>SHOULD</strong> support HTTP content negotiation 
      <p>Retrieves the service description (as defined in <a href="#data-model-service">§ 4.3 Service</a>).</p>
      <ul>
       <li data-md>
-       <p>The request <strong>MUST</strong> be authorized with the read <code>scope</code> on the service description endpoint.</p>
-      <li data-md>
        <p>The server <strong>MUST</strong> respond with <code>200 OK</code>.</p>
      </ul>
     <dt data-md><code>DELETE</code>
     <dd data-md>
      <p>Deletes a running Aggregator Service.</p>
      <ul>
-      <li data-md>
-       <p>The request <strong>MUST</strong> be authorized with the <code>delete</code> scope on the service resources.</p>
       <li data-md>
        <p>Upon successful processing, the Aggregator <strong>MUST</strong>:</p>
        <ol>
@@ -4320,8 +4318,6 @@ service. This endpoint <strong>SHOULD</strong> support HTTP content negotiation 
       <li data-md>
        <p>If the service does not exist, the Aggregator <strong>SHOULD</strong> respond with <code>404 Not Found</code>.</p>
       <li data-md>
-       <p>The request <strong>MUST</strong> be authorized with the <code>update</code> scope on the service description endpoint.</p>
-      <li data-md>
        <p>If the server supports <code>PATCH</code>, it <strong>MUST</strong> advertise the supported patch document formats using the HTTP
 <code>Accept-Patch</code> header.</p>
       <li data-md>
@@ -4336,8 +4332,6 @@ service. This endpoint <strong>SHOULD</strong> support HTTP content negotiation 
     <dd data-md>
      <p>Replaces the service description (as defined in <a href="#data-model-service">§ 4.3 Service</a>).</p>
      <ul>
-      <li data-md>
-       <p>The request <strong>MUST</strong> be authorized with the <code>update</code> scope on the service description endpoint.</p>
       <li data-md>
        <p>The server <strong>MUST</strong> respond with <code>200 OK</code> and include the updated service description in the response body.</p>
       <li data-md>
