@@ -16,21 +16,35 @@ This specification defines HTTP resources at three levels:
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
     [[#service-discovery]] and service resource and provenance).
 
+To facilitate discovery, all resources **MUST** expose a hierarchy of HTTP `Link` headers ([[!Web-Linking]]),
+referencing the base URL of each level they belong to:
+ 
+- **Aggregator Server resources MUST** reference the base URL of the Aggregator Server using `aggr:fromServer`.
+- **Aggregator Instance resources MUST** reference:
+    - the base URL of the Aggregator, using `aggr:fromAggregator`; and
+    - the base URL of the Aggregator Server, using `aggr:fromServer`.
+- **Aggregator Service resources MUST** reference:
+    - the base URL of the Aggregator Service, using `aggr:fromService`;
+    - the base URL of the Aggregator, using `aggr:fromAggregator`; and
+    - the base URL of the Aggregator Server, using `aggr:fromServer`.
+ 
+Each level therefore includes all `Link` relations required of the levels above it, in addition to its own.
+
 Addressing and URL Discovery {#base-urls-and-addressing}
--------------------------------------------------------
+--------------------------------------------------------
 
 An implementation MAY use either of the following instance addressing patterns:
 
 - **Host-based instances:** `https://{instance-id}.aggregator.example/`
 - **Path-based instances:** `https://aggregator.example/{instance-id}/`
 
-Clients SHOULD treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and SHOULD NOT
+Clients **SHOULD** treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and **SHOULD NOT**
 construct resource URLs by string concatenation unless this specification explicitly fixes the path. Unless a path is
 explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use different
 locations as long as the relevant metadata resources advertise the authoritative links.
 
 Security Boundaries {#security-boundaries}
------------------------------------------
+------------------------------------------
 
 All security requirements are defined in [[#aggregator-security-model]]. At a high level:
 

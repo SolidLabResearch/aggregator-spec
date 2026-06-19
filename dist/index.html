@@ -2352,6 +2352,31 @@ specification. It connects the terminology in <a href="#definitions">§ 2 Defi
      <p><strong>Aggregator Service resources:</strong> a service collection and individual services managed under the instance (see
 <a href="#service-discovery">§ 9.1.3 Service Discovery</a> and service resource and provenance).</p>
    </ul>
+   <p>To facilitate discovery, all resources <strong>MUST</strong> expose a hierarchy of HTTP <code>Link</code> headers (<a data-link-type="biblio" href="#biblio-web-linking" title="Web Linking">[Web-Linking]</a>),
+referencing the base URL of each level they belong to:</p>
+   <ul>
+    <li data-md>
+     <p><strong>Aggregator Server resources MUST</strong> reference the base URL of the Aggregator Server using <code>aggr:fromServer</code>.</p>
+    <li data-md>
+     <p><strong>Aggregator Instance resources MUST</strong> reference:</p>
+     <ul>
+      <li data-md>
+       <p>the base URL of the Aggregator, using <code>aggr:fromAggregator</code>; and</p>
+      <li data-md>
+       <p>the base URL of the Aggregator Server, using <code>aggr:fromServer</code>.</p>
+     </ul>
+    <li data-md>
+     <p><strong>Aggregator Service resources MUST</strong> reference:</p>
+     <ul>
+      <li data-md>
+       <p>the base URL of the Aggregator Service, using <code>aggr:fromService</code>;</p>
+      <li data-md>
+       <p>the base URL of the Aggregator, using <code>aggr:fromAggregator</code>; and</p>
+      <li data-md>
+       <p>the base URL of the Aggregator Server, using <code>aggr:fromServer</code>.</p>
+     </ul>
+   </ul>
+   <p>Each level therefore includes all <code>Link</code> relations required of the levels above it, in addition to its own.</p>
    <h3 class="heading settled" data-level="3.2" id="base-urls-and-addressing"><span class="secno">3.2. </span><span class="content">Addressing and URL Discovery</span><a class="self-link" href="#base-urls-and-addressing"></a></h3>
    <p>An implementation MAY use either of the following instance addressing patterns:</p>
    <ul>
@@ -2360,7 +2385,7 @@ specification. It connects the terminology in <a href="#definitions">§ 2 Defi
     <li data-md>
      <p><strong>Path-based instances:</strong> <code>https://aggregator.example/{instance-id}/</code></p>
    </ul>
-   <p>Clients SHOULD treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and SHOULD NOT
+   <p>Clients <strong>SHOULD</strong> treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and <strong>SHOULD NOT</strong>
 construct resource URLs by string concatenation unless this specification explicitly fixes the path. Unless a path is
 explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use different
 locations as long as the relevant metadata resources advertise the authoritative links.</p>
@@ -2855,8 +2880,8 @@ retains version history.</p>
    </div>
    <h2 class="heading settled" data-level="5" id="aggregator-server-metadata"><span class="secno">5. </span><span class="content">Aggregator Server Metadata</span><a class="self-link" href="#aggregator-server-metadata"></a></h2>
    <p>This section describes the endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except
-for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at 
-deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can 
+for the Aggregator Server Description at the server base URL, implementations <strong>MUST</strong> expose the remaining endpoints at 
+deployment-specific URLs; the server description document <strong>MUST</strong> include absolute URLs for each resource so that clients can 
 discover them.</p>
    <h3 class="heading settled" data-level="5.1" id="server-description"><span class="secno">5.1. </span><span class="content">Aggregator Server Description</span><a class="self-link" href="#server-description"></a></h3>
    <p>The Aggregator Server Description allows clients to discover the Aggregator Server’s endpoints and capabilities. This
@@ -4332,20 +4357,7 @@ the Aggregator itself. This includes at least the service identifier, the RDF ty
    <p>Each Service Output Endpoint <strong>MUST</strong> be hosted at the same URL as the one referenced via <code>dcat:accessURL</code> in a
 corresponding service <code>dcat:Distribution</code>. Each Service Output Endpoint is the access interface for that distribution. 
 It is distinct from the <code>dcat:Dataset</code> resource identified in the service description and <strong>MUST NOT</strong> itself be 
-interpreted as the dataset. When a client requests a Service Output Endpoint, the server <strong>MUST</strong> include an HTTP 
-<code>Link</code> header (<a data-link-type="biblio" href="#biblio-web-linking" title="Web Linking">[Web-Linking]</a>) pointing to the Service Description Endpoint using <code>aggr:fromService</code>.</p>
-   <div class="example" id="example-68ae1ecd">
-    <a class="self-link" href="#example-68ae1ecd"></a>
-
-<pre class="highlight language-http">Link: &lt;https://aggregator.example/agg1/services/service1/>; rel="https://w3id.org/aggregator#fromService"
-</pre>
-   </div>
-   <p>This requirement establishes an explicit and machine-readable relationship between a service output and its corresponding
-service description. One example of how this relationship <strong>MAY</strong> be used is in provenance tracking across Aggregator 
-Services. When an Aggregator Service dereferences a Service Output Endpoint and encounters the required <code>Link</code> header, 
-it <strong>MAY</strong> use this information to establish a provenance relationship between datasets. More specifically, the Aggregator 
-Service <strong>MAY</strong> link the consumed service output dataset to the newly generated output dataset using <code>prov:wasDerivedFrom</code>.
-This enables explicit provenance chains to be constructed across multiple Aggregator Services.</p>
+interpreted as the dataset.</p>
    <h3 class="heading settled" data-level="9.3" id="service-provenance"><span class="secno">9.3. </span><span class="content">Service Provenance</span><a class="self-link" href="#service-provenance"></a></h3>
    <p>This section describes how an Aggregator <strong>SHOULD</strong> store, expose, and maintain provenance metadata of service outputs.
 An Aggregator is not required to manage provenance data. However, if it does, it <strong>MUST</strong> conform to this specification. 

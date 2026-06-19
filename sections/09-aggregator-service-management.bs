@@ -276,21 +276,7 @@ the Aggregator itself. This includes at least the service identifier, the RDF ty
 Each Service Output Endpoint **MUST** be hosted at the same URL as the one referenced via `dcat:accessURL` in a 
 corresponding service `dcat:Distribution`. Each Service Output Endpoint is the access interface for that distribution. 
 It is distinct from the `dcat:Dataset` resource identified in the service description and **MUST NOT** itself be 
-interpreted as the dataset. When a client requests a Service Output Endpoint, the server **MUST** include an HTTP 
-`Link` header ([[!Web-Linking]]) pointing to the Service Description Endpoint using `aggr:fromService`.
-
-<div class="example">
-```http
-Link: <https://aggregator.example/agg1/services/service1/>; rel="https://w3id.org/aggregator#fromService"
-```
-</div>
-
-This requirement establishes an explicit and machine-readable relationship between a service output and its corresponding 
-service description. One example of how this relationship **MAY** be used is in provenance tracking across Aggregator 
-Services. When an Aggregator Service dereferences a Service Output Endpoint and encounters the required `Link` header, 
-it **MAY** use this information to establish a provenance relationship between datasets. More specifically, the Aggregator 
-Service **MAY** link the consumed service output dataset to the newly generated output dataset using `prov:wasDerivedFrom`.
-This enables explicit provenance chains to be constructed across multiple Aggregator Services.
+interpreted as the dataset.
 
 Service Provenance {#service-provenance}
 ----------------------------------------

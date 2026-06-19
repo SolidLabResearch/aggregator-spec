@@ -198,21 +198,35 @@ This specification defines HTTP resources at three levels:
 - **Aggregator Service resources:** a service collection and individual services managed under the instance (see
     [[#service-discovery]] and service resource and provenance).
 
+To facilitate discovery, all resources **MUST** expose a hierarchy of HTTP `Link` headers ([[!Web-Linking]]),
+referencing the base URL of each level they belong to:
+ 
+- **Aggregator Server resources MUST** reference the base URL of the Aggregator Server using `aggr:fromServer`.
+- **Aggregator Instance resources MUST** reference:
+    - the base URL of the Aggregator, using `aggr:fromAggregator`; and
+    - the base URL of the Aggregator Server, using `aggr:fromServer`.
+- **Aggregator Service resources MUST** reference:
+    - the base URL of the Aggregator Service, using `aggr:fromService`;
+    - the base URL of the Aggregator, using `aggr:fromAggregator`; and
+    - the base URL of the Aggregator Server, using `aggr:fromServer`.
+ 
+Each level therefore includes all `Link` relations required of the levels above it, in addition to its own.
+
 Addressing and URL Discovery {#base-urls-and-addressing}
--------------------------------------------------------
+--------------------------------------------------------
 
 An implementation MAY use either of the following instance addressing patterns:
 
 - **Host-based instances:** `https://{instance-id}.aggregator.example/`
 - **Path-based instances:** `https://aggregator.example/{instance-id}/`
 
-Clients SHOULD treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and SHOULD NOT
+Clients **SHOULD** treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and **SHOULD NOT**
 construct resource URLs by string concatenation unless this specification explicitly fixes the path. Unless a path is
 explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use different
 locations as long as the relevant metadata resources advertise the authoritative links.
 
 Security Boundaries {#security-boundaries}
------------------------------------------
+------------------------------------------
 
 All security requirements are defined in [[#aggregator-security-model]]. At a high level:
 
@@ -660,8 +674,8 @@ Aggregator Server Metadata {#aggregator-server-metadata}
 ===============================================================
 
 This section describes the endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except 
-for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at 
-deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can 
+for the Aggregator Server Description at the server base URL, implementations **MUST** expose the remaining endpoints at 
+deployment-specific URLs; the server description document **MUST** include absolute URLs for each resource so that clients can 
 discover them.
 
 Aggregator Server Description {#server-description}
@@ -2130,21 +2144,7 @@ the Aggregator itself. This includes at least the service identifier, the RDF ty
 Each Service Output Endpoint **MUST** be hosted at the same URL as the one referenced via `dcat:accessURL` in a 
 corresponding service `dcat:Distribution`. Each Service Output Endpoint is the access interface for that distribution. 
 It is distinct from the `dcat:Dataset` resource identified in the service description and **MUST NOT** itself be 
-interpreted as the dataset. When a client requests a Service Output Endpoint, the server **MUST** include an HTTP 
-`Link` header ([[!Web-Linking]]) pointing to the Service Description Endpoint using `aggr:fromService`.
-
-<div class="example">
-```http
-Link: <https://aggregator.example/agg1/services/service1/>; rel="https://w3id.org/aggregator#fromService"
-```
-</div>
-
-This requirement establishes an explicit and machine-readable relationship between a service output and its corresponding 
-service description. One example of how this relationship **MAY** be used is in provenance tracking across Aggregator 
-Services. When an Aggregator Service dereferences a Service Output Endpoint and encounters the required `Link` header, 
-it **MAY** use this information to establish a provenance relationship between datasets. More specifically, the Aggregator 
-Service **MAY** link the consumed service output dataset to the newly generated output dataset using `prov:wasDerivedFrom`.
-This enables explicit provenance chains to be constructed across multiple Aggregator Services.
+interpreted as the dataset.
 
 Service Provenance {#service-provenance}
 ----------------------------------------

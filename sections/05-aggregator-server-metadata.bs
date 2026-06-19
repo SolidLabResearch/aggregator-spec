@@ -2,8 +2,8 @@ Aggregator Server Metadata {#aggregator-server-metadata}
 ===============================================================
 
 This section describes the endpoints exposed by the Aggregator Server for discovery and metadata retrieval. Except 
-for the Aggregator Server Description at the server base URL, implementations MAY expose the remaining endpoints at 
-deployment-specific URLs; the server description document MUST include absolute URLs for each resource so that clients can 
+for the Aggregator Server Description at the server base URL, implementations **MUST** expose the remaining endpoints at 
+deployment-specific URLs; the server description document **MUST** include absolute URLs for each resource so that clients can 
 discover them.
 
 Aggregator Server Description {#server-description}
