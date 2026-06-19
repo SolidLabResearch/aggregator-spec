@@ -10,14 +10,14 @@ Aggregator Server Description {#server-description}
 ---------------------------------------------------
 
 The Aggregator Server Description allows clients to discover the Aggregator Server’s endpoints and capabilities. This 
-document MUST be available at the server base URL (i.e., `{aggregator-server-url}/`), MAY be accessible without 
-authentication or MAY require an OpenID Connect (OIDC) ID Token depending on deployment policy, and MUST provide at least 
+document **MUST** be available at the server base URL (i.e., `{aggregator-server-url}/`), **MAY** be accessible without 
+authentication or **MAY** require an OpenID Connect (OIDC) ID Token depending on deployment policy, and **MUST** provide at least 
 the following information. Each JSON member is paired with an RDF predicate from [[#vocabulary]] so the document can also 
 be served as JSON-LD or other RDF formats using content negotiation based on [[RFC9110]]:
 
-In semantically annotated representations, the Aggregator Server Description MUST state that the described resource has RDF 
+In semantically annotated representations, the Aggregator Server Description **MUST** state that the described resource has RDF 
 type `aggr:AggregatorServer` ([[#AggregatorServer]]) (e.g., via `@type` in JSON-LD or `a aggr:AggregatorServer` 
-in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
+in Turtle). Clients **MAY** rely on this type statement when consuming semantic representations.
 
 : **management_endpoint** (REQUIRED):
 :: The value is a string containing the absolute URL of the Aggregator Management Endpoint ([[#aggregator-management-endpoint]]); 
@@ -27,16 +27,16 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 :: The value is a JSON array of strings identifying the supported management flow tokens at `management_endpoint`; in 
     the RDF representations, each entry maps to an `aggr:supportedManagementFlow` triple 
     ([[#supportedManagementFlow]]) whose object is the corresponding flow class IRI.
-:: Each member MUST be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
+:: Each member **MUST** be one of the management flow tokens defined in [[#aggregator-management-endpoint]]:
     - `"none"` (RDF class `aggr:NoAuthFlow` ([[#NoAuthFlow]]))
     - `"provision"` (RDF class `aggr:ProvisionFlow` ([[#ProvisionFlow]]))
     - `"authorization_code"` (RDF class `aggr:AuthorizationCodeFlow` ([[#AuthorizationCodeFlow]]))
     - `"device_code"` (RDF class `aggr:DeviceCodeFlow` ([[#DeviceCodeFlow]]))
 : **supported_management_request_formats** (REQUIRED):
 :: The value is a JSON array of strings identifying the supported request formats for the
-    `management_endpoint`. Each entry MUST be a media type; in RDF representations, each entry maps to
+    `management_endpoint`. Each entry **MUST** be a media type; in RDF representations, each entry maps to
     an `aggr:managementRequestFormatSupported` triple ([[#managementRequestFormatSupported]]).
-    Servers MUST include either `application/json` or `application/x-www-form-urlencoded` or both.
+    Servers **MUST** include either `application/json` or `application/x-www-form-urlencoded` or both.
 : **version** (REQUIRED):
 :: The value is a string containing the semantic version ([[!SEMVER]]) of the Aggregator specification that the server 
     adheres to; in the RDF representations, this member maps to the predicate `aggr:specVersion` 
@@ -76,12 +76,12 @@ in Turtle). Clients MAY rely on this type statement when consuming semantic repr
 Client ID Document {#client-id-document}
 --------------------------------------------------------
 
-Endpoint that exposes the Client ID Document of the aggregator used for authorization. Servers MAY host this document at any 
-URL; the `client_identifier` property in the Aggregator Server Description MUST contain the authoritative absolute URL. The 
-Client ID Document MUST conform to the OAuth Client ID Metadata Document specification [[!Client-ID]]. In the case for the 
-aggregator, the `redirect_uris` property is OPTIONAL instead of REQUIRED, as multiple clients MAY create an Aggregator on 
+Endpoint that exposes the Client ID Document of the aggregator used for authorization. Servers **MAY** host this document at any 
+URL; the `client_identifier` property in the Aggregator Server Description **MUST** contain the authoritative absolute URL. The 
+Client ID Document **MUST** conform to the OAuth Client ID Metadata Document specification [[!Client-ID]]. In the case for the 
+aggregator, the `redirect_uris` property is **OPTIONAL** instead of **REQUIRED**, as multiple clients **MAY** create an Aggregator on 
 the same Aggregator Server (depending on the implementation). Adding this property allows an Aggregator Server 
-implementation to restrict which clients may create aggregators on the server.
+implementation to restrict which clients **MAY** create aggregators on the server.
 
 Server-level Transformation Catalog {#server-level-transformation-catalog}
 --------------------------------------------------------------------------

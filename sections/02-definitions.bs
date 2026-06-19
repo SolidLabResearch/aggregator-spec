@@ -57,7 +57,7 @@ Identity, Authorization, and Tokens {#definitions-security}
 Namespaces {#aggregator-server-namespaces}
 -----------------------------------------
 
-The following namespace prefixes are used throughout this specification and SHOULD appear in RDF serializations
+The following namespace prefixes are used throughout this specification and **SHOULD** appear in RDF serializations
 (e.g., Turtle, JSON-LD contexts):
 
 - `aggr:` → `https://w3id.org/aggregator#`

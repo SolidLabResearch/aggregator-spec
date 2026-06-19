@@ -280,7 +280,7 @@ Identifier for the UMA `claim_type` used to request or provide a transformation 
 
 **type:** [rdfs:Resource](https://www.w3.org/TR/rdf-schema/#ch_resource)
 
-Claim tokens of this type MUST be RDF descriptions of the intended transformation (for example an `fno:Execution` or a 
+Claim tokens of this type **MUST** be RDF descriptions of the intended transformation (for example an `fno:Execution` or a 
 reference to a transformation catalog entry). Acceptable `claim_token_format` values are URIs identifying RDF 
 serializations (such as `http://www.w3.org/ns/formats/Turtle` and `http://www.w3.org/ns/formats/JSON-LD`).
 
@@ -289,5 +289,5 @@ Identifier for the UMA `claim_type` used to request or provide upstream access t
 
 **type:** [rdfs:Resource](https://www.w3.org/TR/rdf-schema/#ch_resource)
 
-Claim tokens of this type MUST be access tokens issued by the upstream Authorization Server for the
+Claim tokens of this type **MUST** be access tokens issued by the upstream Authorization Server for the
 `derivation_resource_id` referenced in the claim request.

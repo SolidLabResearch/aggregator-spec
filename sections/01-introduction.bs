@@ -17,6 +17,6 @@ Management operations are authenticated and authorized unless a specific managem
 requests. This protocol integrates with OpenID Connect [[!OIDC-Core]] for identity and uses UMA-style authorization [[!UMA]] 
 for protected resources, scopes, and tickets as described in [[#aggregator-security-model]].
 
-Servers MUST support JSON (`application/json`) where specified and MAY additionally provide semantically annotated RDF 
+Servers **MUST** support JSON (`application/json`) where specified and **MAY** additionally provide semantically annotated RDF 
 representations (e.g., JSON-LD or Turtle) via HTTP content negotiation. The Aggregator vocabulary ([[#vocabulary]]) provides 
 stable IRIs for classes and predicates used throughout the specification.

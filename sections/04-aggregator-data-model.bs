@@ -20,7 +20,7 @@ Transformation {#data-model-transformation}
 An aggregator transformation defines a well-described functional interface using the Function Ontology [[!FNO]].
 Each transformation **MUST** be described as an `fno:Function` that **SHOULD** use `dct:description` to provide a 
 human-readable description of the transformation. Each transformation **MAY** use a `fno:name` to provide a short name for 
-the transformation, but clients SHOULD NOT rely on this property for unique identification. The transformation **MAY** 
+the transformation, but clients **SHOULD** NOT rely on this property for unique identification. The transformation **MAY** 
 describe zero or more `fno:Parameters` and `fno:Outputs` using the `fno:expects` and `fno:returns` properties respectively. 
 Each parameter and output:
   - **MUST** be a `fno:Parameter` or `fno:Output` respectively.

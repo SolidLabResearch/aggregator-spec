@@ -287,7 +287,7 @@ as individual RDF documents.
 If the Provenance Log keeps a history log of multiple executions, it **SHOULD** be subject to a retention policy 
 defining how long execution records remain included in the log. This prevents unbounded growth of the log over time 
 and ensures manageable storage and query performance. If the Provenance Log only retains the most recent execution, versioning
-may be omitted and the execution can directly reference the dataset from the Service Description.
+**MAY** be omitted and the execution can directly reference the dataset from the Service Description.
 
 <div class="example">
 This example shows a Service Description for a service that updates its dataset on a daily basis.

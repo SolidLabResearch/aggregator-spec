@@ -7,7 +7,7 @@ This section describes how the Aggregator handles authentication and authorizati
 - incoming requests from Clients to the Aggregator's derived resources.
 
 The Aggregator relies on the Authorization for Data Spaces (A4DS) specification [[!A4DS]] to authenticate participants
-and authorize access to resources. For streaming or non-HTTP interfaces, the Aggregator MAY additionally use the Service
+and authorize access to resources. For streaming or non-HTTP interfaces, the Aggregator **MAY** additionally use the Service
 Authorization for Data Spaces (SA4DS) specification [[!SA4DS]]. All Aggregator instance endpoints are protected using
 User-Managed Access (UMA) [[!UMA]].
 
@@ -90,18 +90,18 @@ A --> C: 3.3 Derived resource
 Advanced Features {#advanced-features}
 ---------------------------------------
 
-The features in this section extend the baseline flows above. They MAY be implemented by conforming Aggregator Services
+The features in this section extend the baseline flows above. They **MAY** be implemented by conforming Aggregator Services
 and their associated Authorization Servers.
 
 ### Transformation Claims ### {#transformation-claims}
 
 When the UAS requires details about the intended data transformation before granting access, the Aggregator
 **MAY** include a transformation description as a claim token in the UMA grant request. The `claim_type` for a
-transformation description MUST be `https://w3id.org/aggregator#transformation-description`. The `claim_token_format`
-MUST identify the RDF serialization of the description as a URI (e.g., `http://www.w3.org/ns/formats/Turtle`). If the
-UAS requires this claim and the Aggregator has not provided one, the UAS MUST respond with a UMA `need_info` error and
+transformation description **MUST** be `https://w3id.org/aggregator#transformation-description`. The `claim_token_format`
+**MUST** identify the RDF serialization of the description as a URI (e.g., `http://www.w3.org/ns/formats/Turtle`). If the
+UAS requires this claim and the Aggregator has not provided one, the UAS **MUST** respond with a UMA `need_info` error and
 a `required_claims` entry as defined in [[!A4DS]]. If the transformation description or its associated catalog entry is
-dereferenceable by the UAS, the Aggregator MAY provide a URI reference rather than embedding the description inline.
+dereferenceable by the UAS, the Aggregator **MAY** provide a URI reference rather than embedding the description inline.
 
 This extends the upstream access flow between steps 2 and 3:
 
@@ -162,49 +162,49 @@ Content-Type: application/json
 
 ### Access Delegation via Derivation Resource Identifiers ### {#access-delegation}
 
-Access delegation allows upstream data owners to retain policy control over who may access derived resources after
+Access delegation allows upstream data owners to retain policy control over who **MAY** access derived resources after
 those resources have been transformed and republished by an Aggregator Service. It operates through a
 `derivation_resource_id` issued by the UAS that binds the upstream resource, the intended transformation, and the
-resulting derived resource. Clients wishing to access a derived resource must demonstrate to the AAS that they also
+resulting derived resource. Clients wishing to access a derived resource **MUST** demonstrate to the AAS that they also
 hold access to the upstream resources it was derived from.
 
 #### Upstream: Requesting Derivation Creation Access #### {#derivation-upstream}
 
-When the Aggregator intends to create a derived resource, it MUST include the scope
+When the Aggregator intends to create a derived resource, it **MUST** include the scope
 `urn:knows:uma:scopes:derivation-creation` in the UMA token request to the UAS. If the URS is itself an Aggregator
-Service, the same scope MUST be included in that nested request as well.
+Service, the same scope **MUST** be included in that nested request as well.
 
-If the UAS grants access for derivation creation, it MUST include a `derivation_resource_id` and a
+If the UAS grants access for derivation creation, it **MUST** include a `derivation_resource_id` and a
 `management_access_token` as top-level members in the token response alongside the standard OAuth 2.0 parameters. The
 `derivation_resource_id` is a stable identifier string that binds the upstream resource and transformation to the
-derived resource the Aggregator will create. If the Aggregator does not receive a `derivation_resource_id`, it MUST
+derived resource the Aggregator will create. If the Aggregator does not receive a `derivation_resource_id`, it **MUST**
 NOT use the upstream resource to create derived resources.
 
 If the Aggregator previously obtained a `derivation_resource_id` for the same upstream resource and
-transformation, it SHOULD include it as a hint in the token request. The UAS SHOULD reuse it if the hint is still
-valid and bound to the authenticated Aggregator and resource; otherwise it SHOULD ignore the hint and issue a new
+transformation, it **SHOULD** include it as a hint in the token request. The UAS **SHOULD** reuse it if the hint is still
+valid and bound to the authenticated Aggregator and resource; otherwise it **SHOULD** ignore the hint and issue a new
 identifier.
 
 The `management_access_token` is an object with `access_token` and `token_type` fields that allows the Aggregator
 Service to manage the lifecycle of the `derivation_resource_id` at the UAS through the resource registration endpoint
-defined in [[!A4DS]]. Authorization Servers MUST only permit a `management_access_token` to be used for inspecting or
-modifying the `derivation_resource_id` resource linked to it, and MUST NOT permit it to create new resources. If the
-`management_access_token` is no longer valid, the Aggregator MAY obtain a new one by repeating the token request
+defined in [[!A4DS]]. Authorization Servers **MUST** only permit a `management_access_token` to be used for inspecting or
+modifying the `derivation_resource_id` resource linked to it, and **MUST** NOT permit it to create new resources. If the
+`management_access_token` is no longer valid, the Aggregator **MAY** obtain a new one by repeating the token request
 including the same `derivation_resource_id`.
 
-After obtaining the `derivation_resource_id`, the Aggregator SHOULD update the corresponding resource entry on the UAS
-to include at minimum the `resource_scopes` of the derived resource, and SHOULD also include its `name`,
+After obtaining the `derivation_resource_id`, the Aggregator **SHOULD** update the corresponding resource entry on the UAS
+to include at minimum the `resource_scopes` of the derived resource, and **SHOULD** also include its `name`,
 `description`, and `icon_uri`. This allows the UAS to validate scope requests from Clients and apply policies
 accordingly.
 
-The Aggregator MUST update the resource registration of the derived resource at the AAS to include a
-`derived_from` entry containing the `issuer` (the UAS) and `derivation_resource_id`. The AAS MUST expire any
-previously issued access tokens for that derived resource upon this update. The Aggregator SHOULD only begin
+The Aggregator **MUST** update the resource registration of the derived resource at the AAS to include a
+`derived_from` entry containing the `issuer` (the UAS) and `derivation_resource_id`. The AAS **MUST** expire any
+previously issued access tokens for that derived resource upon this update. The Aggregator **SHOULD** only begin
 serving the derived resource after this AAS registration update has succeeded.
 
-If access to the upstream resource is revoked for the Aggregator, the UAS MUST also revoke all associated
+If access to the upstream resource is revoked for the Aggregator, the UAS **MUST** also revoke all associated
 `derivation_resource_id` identifiers and their related tokens. When a derived resource is no longer in use, the
-Aggregator SHOULD remove the `derived_from` entry at the AAS, MAY expire previous access tokens, and SHOULD
+Aggregator **SHOULD** remove the `derived_from` entry at the AAS, **MAY** expire previous access tokens, and **SHOULD**
 delete the `derivation_resource_id` at the UAS using the `management_access_token`.
 
 This extends the upstream access flow after step 2:
@@ -284,23 +284,23 @@ Content-Type: application/json
 
 #### Client Access to Delegated Derived Resources #### {#derivation-client}
 
-When a derived resource has a `derived_from` entry in its AAS registration, the AAS MUST enforce that Clients
+When a derived resource has a `derived_from` entry in its AAS registration, the AAS **MUST** enforce that Clients
 demonstrate access to each listed upstream resource before issuing an RPT.
 
-If the Client presents a ticket for such a resource without the required upstream claim tokens, the AAS MUST respond
-with a `need_info` error. The `required_claims` array MUST contain one entry per upstream dependency, each with:
+If the Client presents a ticket for such a resource without the required upstream claim tokens, the AAS **MUST** respond
+with a `need_info` error. The `required_claims` array **MUST** contain one entry per upstream dependency, each with:
 
-- `claim_type`: MUST equal `https://w3id.org/aggregator#derivation-access`.
-- `claim_token_format`: MUST equal `urn:ietf:params:oauth:token-type:access_token`.
-- `issuer`: The UAS from which the Client must obtain an upstream access token.
-- `derivation_resource_id`: The resource identifier the Client must request access to at the UAS.
-- `resource_scopes`: The scopes the Client must request on that resource.
+- `claim_type`: **MUST** equal `https://w3id.org/aggregator#derivation-access`.
+- `claim_token_format`: **MUST** equal `urn:ietf:params:oauth:token-type:access_token`.
+- `issuer`: The UAS from which the Client **MUST** obtain an upstream access token.
+- `derivation_resource_id`: The resource identifier the Client **MUST** request access to at the UAS.
+- `resource_scopes`: The scopes the Client **MUST** request on that resource.
 
-The Client MUST request an access token from each `issuer` listed in `required_claims`, using a UMA permissions
-request with `resource_id` set to `derivation_resource_id` and `resource_scopes` as specified. The Client MUST then
+The Client **MUST** request an access token from each `issuer` listed in `required_claims`, using a UMA permissions
+request with `resource_id` set to `derivation_resource_id` and `resource_scopes` as specified. The Client **MUST** then
 present each obtained upstream access token as a claim token to the AAS with `claim_token_format`
-`urn:ietf:params:oauth:token-type:access_token`. The AAS MUST validate each presented upstream access token with its
-corresponding UAS before issuing an RPT. The Aggregator SHOULD verify that the `derivation_resource_id`
+`urn:ietf:params:oauth:token-type:access_token`. The AAS **MUST** validate each presented upstream access token with its
+corresponding UAS before issuing an RPT. The Aggregator **SHOULD** verify that the `derivation_resource_id`
 associated with the derived resource remains valid at the UAS before serving it, using the `management_access_token`
 on the resource registration endpoint defined in [[!A4DS]].
 

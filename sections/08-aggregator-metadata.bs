@@ -1,52 +1,52 @@
 Aggregator Metadata {#aggregator-metadata}
 =================================================================
 
-This endpoint provides metadata about the Aggregator Instance. Deployments MAY choose arbitrary paths for instance-level 
-endpoints. The Aggregator Metadata representation MUST include absolute URLs for those resources (e.g., the
+This endpoint provides metadata about the Aggregator Instance. Deployments **MAY** choose arbitrary paths for instance-level 
+endpoints. The Aggregator Metadata representation **MUST** include absolute URLs for those resources (e.g., the
 `transformation_catalog` and `service_collection_endpoint` fields) so clients can discover the deployment-specific layout.
 
 Aggregator Description {#aggregator-description}
 ----------------------------------------------------------
 
 The Aggregator Metadata resource (`aggregator-url`) allows clients to retrieve the current status of their aggregator.
-This endpoint MUST be guarded by the authentication and authorization mechanisms described in the 
-[[#aggregator-security-model]]. It MUST be accessible as JSON using `application/json` and MAY additionally expose 
+This endpoint **MUST** be guarded by the authentication and authorization mechanisms described in the 
+[[#aggregator-security-model]]. It **MUST** be accessible as JSON using `application/json` and **MAY** additionally expose 
 semantically annotated RDF representations (for example JSON-LD or Turtle) using HTTP content negotiation based on 
 [[RFC9110]].
 
-The endpoint MUST return at least the following information about the aggregator, but additional fields MAY be
-included as needed. Each field SHOULD be expressed using the RDF properties defined in [[#vocabulary]] so the document MAY 
-be served as JSON-LD or other RDF formats. In semantically annotated representations, the Aggregator Description MUST state 
+The endpoint **MUST** return at least the following information about the aggregator, but additional fields **MAY** be
+included as needed. Each field **SHOULD** be expressed using the RDF properties defined in [[#vocabulary]] so the document **MAY** 
+be served as JSON-LD or other RDF formats. In semantically annotated representations, the Aggregator Description **MUST** state 
 that the described resource has RDF type `aggr:Aggregator` ([[#Aggregator]]) (e.g., via `@type` in JSON-LD or 
-`a aggr:Aggregator` in Turtle). Clients MAY rely on this type statement when consuming semantic representations.
+`a aggr:Aggregator` in Turtle). Clients **MAY** rely on this type statement when consuming semantic representations.
 
-: **id** (OPTIONAL):
+: **id** (**OPTIONAL**):
 :: The value is a string containing the absolute URL that identifies the Aggregator Instance (typically the
     instance base URL itself); in the RDF representations, this is the RDF subject (i.e., `@id`) of the
     `aggr:Aggregator` resource ([[#Aggregator]]).
-: **created_at** (REQUIRED):
+: **created_at** (**REQUIRED**):
 :: The value is a string timestamp (recommended: `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in
     the RDF representations, this member maps to the predicate `aggr:createdAt`
     ([[#createdAt]]).
-: **login_status** (REQUIRED):
+: **login_status** (**REQUIRED**):
 :: The value is a boolean that indicates whether the stored token set for the aggregator is currently valid;
     in the RDF representations, this member maps to the predicate `aggr:loginStatus`
     ([[#loginStatus]]).
-: **token_expiry** (OPTIONAL):
+: **token_expiry** (**OPTIONAL**):
 :: The value is a string timestamp indicating when the aggregator's access token will expire (recommended:
     `xsd:dateTime` lexical form, e.g., RFC 3339 [[RFC3339]]); in the RDF representations, this member maps to
     the predicate `aggr:tokenExpiry` ([[#tokenExpiry]]).
-: **transformation_catalog** (REQUIRED):
+: **transformation_catalog** (**REQUIRED**):
 :: The value is a string containing the absolute URL of the instance’s Transformations Endpoint
     ([[#instance-level-transformation-catalog]]); in the RDF representations, this member maps to the predicate
     `aggr:transformationCatalog` ([[#transformationCatalog]]).
-: **service_collection_endpoint** (REQUIRED):
+: **service_collection_endpoint** (**REQUIRED**):
 :: The value is a string containing the absolute URL of the instance’s Service Collection to create and fetch the Aggregator 
     Services ([[#service-collection-endpoint]]); in the RDF representations, this member maps to the predicate
     `aggr:serviceCollectionEndpoint` ([[#serviceCollectionEndpoint]]).
  
-This document MAY be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 
-that case this document MUST be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
+This document **MAY** be the WebID of the Aggregator Instance when the `provision` flow [[#creation-provision]] was used. In 
+that case this document **MUST** be an RDF document that conforms to the WebID Profile specification [[!WEBID-PROFILE]].
 
 <div class="example">
 ```json

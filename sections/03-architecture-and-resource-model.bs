@@ -33,14 +33,14 @@ Each level therefore includes all `Link` relations required of the levels above 
 Addressing and URL Discovery {#base-urls-and-addressing}
 --------------------------------------------------------
 
-An implementation MAY use either of the following instance addressing patterns:
+An implementation **MAY** use either of the following instance addressing patterns:
 
 - **Host-based instances:** `https://{instance-id}.aggregator.example/`
 - **Path-based instances:** `https://aggregator.example/{instance-id}/`
 
 Clients **SHOULD** treat URLs advertised by Aggregator Server and Aggregator Instance metadata as authoritative and **SHOULD NOT**
 construct resource URLs by string concatenation unless this specification explicitly fixes the path. Unless a path is
-explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments MAY use different
+explicitly fixed, the concrete URLs shown in this document serve as illustrative defaults; deployments **MAY** use different
 locations as long as the relevant metadata resources advertise the authoritative links.
 
 Security Boundaries {#security-boundaries}
@@ -48,22 +48,22 @@ Security Boundaries {#security-boundaries}
 
 All security requirements are defined in [[#aggregator-security-model]]. At a high level:
 
-- **Server-level discovery resources:** deployments MAY expose the server description (see [[#server-description]]) and
-    the server-level transformation catalog (see [[#server-level-transformation-catalog]]) without authentication, or MAY
+- **Server-level discovery resources:** deployments **MAY** expose the server description (see [[#server-description]]) and
+    the server-level transformation catalog (see [[#server-level-transformation-catalog]]) without authentication, or **MAY**
     protect them using an OpenID Connect (OIDC) ID Token. The Client ID Document (see [[#client-id-document]]) is
     typically accessible without authentication.
-- **Management endpoint:** deployments MAY protect the management endpoint (see [[#aggregator-management]]) using OIDC.
-    Some management flows explicitly allow unauthenticated requests; in those cases, the endpoint MAY accept requests
+- **Management endpoint:** deployments **MAY** protect the management endpoint (see [[#aggregator-management]]) using OIDC.
+    Some management flows explicitly allow unauthenticated requests; in those cases, the endpoint **MAY** accept requests
     without authentication as defined in [[#aggregator-management]].
 - **Instance-level resources:** the Aggregator Description (see [[#aggregator-metadata]]) and all resources under the
     service management API (see [[#aggregator-service-management]]) are protected resources governed by the
     authentication and authorization mechanisms defined in [[#aggregator-security-model]].
 
-The aggregator and its clients SHOULD use secure transport (HTTPS) for all communication, and SHOULD use DPoP wherever 
-possible to sender-constrain access tokens to the client. Aggregator endpoints intended for browser-based clients MUST 
-support CORS. Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server MUST 
+The aggregator and its clients **SHOULD** use secure transport (HTTPS) for all communication, and **SHOULD** use DPoP wherever 
+possible to sender-constrain access tokens to the client. Aggregator endpoints intended for browser-based clients **MUST** 
+support CORS. Unless the client and Aggregator are tightly coupled and deployed under the same origin, the server **MUST** 
 answer `OPTIONS` preflight requests and include appropriate `Access-Control-Allow-*` headers for the methods and headers 
-used by this specification. Implementations MAY restrict allowed origins to trusted client origins.
+used by this specification. Implementations **MAY** restrict allowed origins to trusted client origins.
 
 Example URL Layout (Non-normative) {#example-url-layout}
 -------------------------------------------------------
