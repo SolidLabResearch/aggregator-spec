@@ -23,8 +23,8 @@
     "Aggregator": "aggr:Aggregator",
     "AggregatorServer": "aggr:AggregatorServer",
     "Service": "aggr:Service",
+    "ServiceRequest": "aggr:ServiceRequest",
     "ServiceCollection": "aggr:ServiceCollection",
-    "ServiceImplementation": "aggr:ServiceImplementation",
     "TransformationCatalog": "aggr:TransformationCatalog",
     "ProvenanceLog": "aggr:ProvenanceLog",
 
@@ -46,6 +46,7 @@
     "statusDetail": "aggr:statusDetail",
     "createdAt": { "@id": "aggr:createdAt", "@type": "xsd:dateTime" },
 
+    "Function": "fno:Function",
     "expects": { "@id": "fno:expects", "@type": "@id", "@container": "@list" },
     "returns": { "@id": "fno:returns", "@type": "@id", "@container": "@list" },
     "predicate": { "@id": "fno:predicate", "@type": "@id" },
@@ -59,6 +60,12 @@
     "boundParameter": { "@id": "fnoc:boundParameter", "@type": "@id" },
     "boundToTerm": "fnoc:boundToTerm",
     "composition": { "@id": "fnoc:composition", "@type": "@id" },
+    "mapFrom": "fnoc:mapFrom",
+    "mapTo": "fnoc:mapTo",
+    "constituentFunction": { "@id": "fnoc:constituentFunction", "@type": "@id" },
+    "functionParameter": { "@id": "fnoc:functionParameter", "@type": "@id" },
+    "functionOutput": { "@id": "fnoc:functionOutput", "@type": "@id" },
+    "composedOf": "fnoc:composedOf",
 
     "title": "dct:title",
     "description": "dct:description",

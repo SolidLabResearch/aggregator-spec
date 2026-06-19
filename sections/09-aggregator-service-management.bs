@@ -27,84 +27,211 @@ at least the `read` and `create` scopes.
 
 ### Deploying a Service ### {#service-deployment}
 
-The Service Collection Endpoint **MAY** allow `POST` requests to deploy new services. The supported content types **MUST** be
-advertised via the `Accept-Post` header defined in [[!LDP]]. The `POST` request to deploy a new services **MUST** be 
-authorized with the `create` scope on the Service Collection Endpoint.
+The Service Collection Endpoint **MUST** allow `POST` requests to deploy a new service. The `POST` request to deploy a
+new service **MUST** be authorized with the `create` scope on the Service Collection Endpoint.
 
-The request body **MUST** be an RDF document that describes exactly one requested `aggr:Service`. The requested
-service resource:
-- **MUST** be the only `aggr:Service` described in the request body.
-- **MUST** identify a new service resource using either a unique URI or a blank node.
-- **MAY** specify an implementation to use with `aggr:implements`.
-- **MUST** declare a Transformation using one of the following:
-    - An Applied Transformation via `aggr:applies`, which:
-        - **MUST** reference a Transformation from a Transformation Catalog using `fnoc:applies`.
-        - **MUST** bind a value to each required parameter of that Transformation.
-    - A Transformation via `aggr:performs`, if the Transformation requires no input values.
+The request body **MUST** be a JSON-LD payload using at least the predefined JSON-LD context
+`https://w3id.org/aggregator/contexts/aggregator.jsonld`, representing an `aggr:ServiceRequest`.
+The `aggr:ServiceRequest`:
+- **MUST** be the only `aggr:ServiceRequest` described in the request body.
+- **MUST** be identified using either a unique URI or a blank node.
+- **MUST** declare a Transformation using `performs`.
+- **MUST** provide inputs for at least all required parameters, using the parameter predicates defined
+    using `fno:predicate` in the function description.
+- **MAY** specify an implementation to use with `implements`.
 
-The requested Service **MAY** be identified by a blank node or a URI indicating the desired Service endpoint location. 
-The Aggregator **MAY** ignore the requested URI and assign its own. If the requested URI is syntactically invalid 
-or not permitted, the server **MUST** respond with `400 Bad Request`. If the requested URI is valid but already in use, 
+The Service Request **MAY** be identified by a blank node or a URI indicating the desired Service endpoint location.
+The Aggregator **MAY** ignore the requested URI and assign its own. If the requested URI is syntactically invalid
+or not permitted, the server **MUST** respond with `400 Bad Request`. If the requested URI is valid but already in use,
 the server **MUST** respond with `409 Conflict`.
 
 Upon successful processing, the Aggregator **MUST**:
-1. Deploy the new Service and expose its Service Description Endpoint [[#service-endpoint]] according to the data model 
-    in [[#data-model-service]]. If the request included an Applied Transformation, the Service description MUST reference 
-    the Applied Transformation (as identified by `fnoc:applies`) using `aggr:performs`.
-2. Update the Service Collection and its associated ETag.
-3. Register the Service Description Endpoint as a UMA resource at the Authorization Server, advertising at least the `read` 
-    and `delete` scopes.
-4. Register each Service output endpoint as a UMA resource, advertising at least the `read` scope.
-5. Respond with `201 Created`, including the Service description (as defined in [[#data-model-service]]) in the response body 
-    and a `Location` header identifying the Service Description Endpoint.
 
-If the request is syntactically malformed or semantically invalid (e.g., missing required parameter bindings or 
-referencing an unknown transformation), the server **MUST** respond with `400 Bad Request`. If the request is valid but 
-the service fails to deploy the service, the server **MUST** respond with `500 Internal Server Error`.
+1. Deploy a new Service that performs the transformation indicated by `performs` (and, if present, the implementation
+    indicated by `implements`), and expose a Service Description Endpoint [[#service-endpoint]] describing it according
+    to the data model in [[#data-model-service]].
+2. Update the Service Collection and its associated ETag.
+3. Register the Service Description Endpoint as a UMA resource at the Authorization Server, advertising at least the
+    `read`, `update`, and `delete` scopes.
+4. Register each distinct Service output endpoint URL as a UMA resource, advertising at least the `read` scope.
+5. Respond with `201 Created`, including the Service description (as defined in [[#data-model-service]]) in the
+    response body and a `Location` header identifying the Service Description Endpoint.
+
+Error Responses:
+- **MUST** respond with `400 Bad Request` if the requested URI is syntactically invalid or not permitted.
+- **MUST** respond with `409 Conflict` if the requested URI is valid but already in use.
+- **MUST** respond with `400 Bad Request` if the request body is syntactically malformed or semantically invalid
+    (e.g., missing required parameter bindings or referencing an unknown transformation).
+- **MUST** respond with `500 Internal Server Error` if the request is valid but the Aggregator fails to deploy the
+    Service.
+
+The following example defines the `QueryView` transformation, followed by a request that deploys a service performing it.
 
 <div class="example">
-The following example requests a service that performs the `QueryView` transformation using the `QueryViewMapping`.
-```http
-POST https://aggregator.example/agg1/services HTTP/1.1
-Host: aggregator.example
-Content-Type: text/turtle
-
-@prefix aggr: <https://w3id.org/aggregator#> .
+```turtle
+@base <http://aggregator.example.org/transformations#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix fnoc: <https://w3id.org/function/vocabulary/composition#> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 
-<https://aggregator.example/agg1/services/service1/>
-  a aggr:Service ;
-  aggr:performs <https://aggregator.example/transformations#QueryView> ;
-  aggr:applies [
-    a fno:AppliedFunction ;
-    fnoc:applies <https://aggregator.example/transformations#QueryView> ;
-    fnoc:parameterBindings (
-      [
-        fnoc:boundParameter
-          <https://aggregator.example/transformations#Query> ;
-        fnoc:boundToTerm "SELECT * WHERE { ?s ?p ?o }"
-      ]
-      [
-        fnoc:boundParameter
-          <https://aggregator.example/transformations#Sources> ;
-        fnoc:boundToTerm "http://example.org/source1"
-      ]
-    )
-  ] ;
-  aggr:implements <https://aggregator.example/transformations#QueryViewImplementation> .
+<QueryView>
+  a                   fno:Function ;
+  fno:name            "The SPARQL QueryView function"^^xsd:string ;
+  dct:description     "Performs a query on a source and materializes view as a SPARQL endpoint"^^xsd:string ;
+  fno:expects         ( <QuerySource> <QueryString> ) ;
+  fno:returns         ( <ViewOutput> ) .
+
+<QuerySource>
+  a                   fno:Parameter ;
+  fno:predicate       <source> ;
+  fno:type            xsd:anyURI ;
+  fno:required        "true"^^xsd:boolean .
+
+<QueryString>
+  a               fno:Parameter ;
+  fno:predicate   <query> ;
+  fno:type        xsd:string ;
+  dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
+  fno:required    "true"^^xsd:boolean .
+
+<ViewOutput>
+  a               fno:Output ;
+  fno:type        dcat:Dataset ;
+  fno:predicate   <view> .
 ```
 </div>
 
-### Deploying a Composite Service ### {#composite-service-deployment}
+<div class="example">
+```http
+POST https://aggregator.example/agg1/services HTTP/1.1
+Host: aggregator.example
+Content-Type: application/ld+json
 
-Deploying a service that performs a composite transformation **MUST** use the same request format as any other 
-transformation service. The implementation should not expose a [[#service-endpoint]] for all transformations in the 
-composition. If the output of such a transformation is mapped to the output of the composite transformation, the 
-corresponding [[#service-output]] **MUST** be exposed. Lastly, the aggregator **MUST** expose a [[#service-endpoint]] 
-for the composite service. This [[#service-endpoint]] **MUST** use the [[#service-output]] of the corresponding internal 
-services.
+{
+    "@context": [
+        "https://w3id.org/aggregator/contexts/aggregator.jsonld",
+        {
+            "query": "https://aggregator.example/transformations#query",
+            "source": "https://aggregator.example/transformations#source"
+        }
+    ],
+    "@id": "https://aggregator.example/agg1/services/query-view-service/",
+    "@type": "ServiceRequest",
+    "performs": "https://aggregator.example/transformations#QueryView",
+    "implements": "https://aggregator.example/transformations#QueryViewImplementation",
+    "query": "SELECT * WHERE { ?s ?p ?o }",
+    "source": "http://example.org/source"
+}
+```
+</div>
+
+### Deploying Pipelines ### {#pipeline-deployment}
+
+Deploying a service that performs a composite transformation **MUST** use the same request format as any other
+transformation service. Only a single Service Description Endpoint, for the top-level (composite) transformation,
+**MUST** be exposed; its Service Output Endpoints serve the datasets produced by the composite transformation's
+declared outputs, which are in turn populated from the mapped outputs of the internally deployed constituent
+services. A composite transformation **MAY** either be predefined in a Transformation Catalog, or defined by the
+client as a pipeline inline in the request.
+ 
+When a client defines a pipeline inline in the request:
+  - Constituent functions **MUST** be reused from a Transformation Catalog
+  - Any of the parameters or outputs, **MAY** be reused from a Transformation Catalog,
+    using their existing identifiers and predicates.
+  - All newly introduced identifiers, namely the composite function itself and any parameters, outputs, or predicates
+    that cannot be reused from a Transformation Catalog, **MUST** be scoped to the Instance-Level Transformation
+    Catalog.
+  - The Aggregator **MUST** add the composite transformation, together with any newly introduced parameters and
+    outputs, to the Instance-Level Transformation Catalog, so that it can subsequently be referenced using
+    `aggr:performs` in the resulting Service description.
+  - If a client-proposed identifier is already in use in the Instance-Level Transformation Catalog, the Aggregator
+    **MUST** respond with `409 Conflict`.
+
+<div class="example">
+```http
+POST https://aggregator.example/agg1/services HTTP/1.1
+Host: aggregator.example
+Content-Type: application/ld+json
+
+{
+    "@context": [
+        "https://w3id.org/aggregator/contexts/aggregator.jsonld",
+        {
+            "server-catalog": "https://aggregator.example/transformations#",
+            "inst-catalog": "https://aggregator.example/agg1/transformations#",
+            "query": "server-catalog:query",
+            "mapping": "server-catalog:mapping"
+        }
+    ],
+    "@graph": [
+        {
+            "@id": "https://aggregator.example/agg1/services/pipeline-service/",
+            "@type": "ServiceRequest",
+            "performs": "inst-catalog:RMLQueryPipeline",
+            "mapping": "...",
+            "query": "SELECT * WHERE { ?s ?p ?o }"
+        },
+        {
+            "@id": "inst-catalog:RMLQueryPipeline",
+            "@type": "Function",
+            "expects": [
+                { "@id": "server-catalog:RMLMapping" },
+                { "@id": "server-catalog:QueryString" }
+            ],
+            "returns": [
+                { "@id": "server-catalog:ViewOutput" }
+            ],
+            "composition": {
+                "composedOf": [
+                    {
+                        "mapFrom": {
+                            "constituentFunction": "inst-catalog:RMLQueryPipeline",
+                            "functionParameter": "server-catalog:RMLMapping"
+                        },
+                        "mapTo": {
+                            "constituentFunction": "server-catalog:RMLMapper",
+                            "functionParameter": "server-catalog:RMLMapping"
+                        }
+                    },
+                    {
+                        "mapFrom": {
+                            "constituentFunction": "inst-catalog:RMLQueryPipeline",
+                            "functionParameter": "server-catalog:QueryString"
+                        },
+                        "mapTo": {
+                            "constituentFunction": "server-catalog:QueryView",
+                            "functionParameter": "server-catalog:QueryString"
+                        }
+                    },
+                    {
+                        "mapFrom": {
+                            "constituentFunction": "server-catalog:RMLMapper",
+                            "functionOutput": "server-catalog:KGOutput"
+                        },
+                        "mapTo": {
+                            "constituentFunction": "server-catalog:QueryView",
+                            "functionParameter": "server-catalog:QuerySource",
+                        }
+                    },
+                    {
+                        "mapFrom": {
+                            "constituentFunction": "server-catalog:QueryView",
+                            "functionOutput": "server-catalog:ViewOutput"
+                        },
+                        "mapTo": {
+                            "constituentFunction": "inst-catalog:RMLQueryPipeline",
+                            "functionParameter": "server-catalog:ViewOutput"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+</div>
 
 ### Service Discovery ### {#service-discovery}
 

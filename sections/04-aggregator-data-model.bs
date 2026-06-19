@@ -40,7 +40,7 @@ algorithm it implements using `fno:Algorithm` as specified by [[!FNO]].
 
 <div class="example">
 ```turtle
-@prefix ex: <http://example.org/> .
+@base <http://aggregator.example.org/transformations#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
@@ -49,78 +49,78 @@ algorithm it implements using `fno:Algorithm` as specified by [[!FNO]].
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
-ex:sparql-query-view
+<QueryView>
   a                   fno:Function ;
   fno:name            "The SPARQL QueryView function"^^xsd:string ;
   dct:description     "Performs a query on a source and materializes view as a SPARQL endpoint"^^xsd:string ;
-  fno:expects         ( ex:query-source ex:sparql-query-string ) ;
-  fno:returns         ( ex:view-output ) .
+  fno:expects         ( <QuerySource> <QueryString> ) ;
+  fno:returns         ( <ViewOutput> ) .
 
-ex:query-source
+<QuerySource>
   a                   fno:Parameter ;
-  fno:predicate       ex:source ;
+  fno:predicate       <source> ;
   fno:type            xsd:anyURI ;
   fno:required        "true"^^xsd:boolean .
 
-ex:sparql-query-string
+<QueryString>
   a               fno:Parameter ;
-  fno:predicate   ex:query ;
+  fno:predicate   <query> ;
   fno:type        xsd:string ;
   dct:conformsTo  <https://www.w3.org/TR/2013/REC-sparql11-query-20130321/> ;
   fno:required    "true"^^xsd:boolean .
 
-ex:view-output
+<ViewOutput>
   a               fno:Output ;
   fno:type        dcat:Dataset ;
   dct:conformsTo  ex:SPARQLResultDatasetShape .
-  fno:predicate   ex:view .
+  fno:predicate   <view> .
 
-ex:SPARQLResultDatasetShape
+<SPARQLResultDatasetShape>
   a sh:NodeShape ;
   sh:targetClass dcat:Dataset ;
   sh:property [
     sh:path dcat:distribution ;
     sh:minCount 1 ;
-    sh:node ex:SPARQLXMLDistributionShape
+    sh:node <SPARQLXMLDistributionShape>
   ] ;
   sh:property [
     sh:path dcat:distribution ;
     sh:minCount 1 ;
-    sh:node ex:SPARQLJSONDistributionShape
+    sh:node <SPARQLJSONDistributionShape>
   ] .
 
-ex:SPARQLXMLDistributionShape
+<SPARQLXMLDistributionShape>
   a sh:NodeShape ;
   sh:property [
     sh:path dcat:mediaType ;
     sh:hasValue <http://www.iana.org/assignments/media-types/application/sparql-results+xml>
   ] .
 
-ex:SPARQLJSONDistributionShape
+<SPARQLJSONDistributionShape>
   a sh:NodeShape ;
   sh:property [
     sh:path dcat:mediaType ;
     sh:hasValue <http://www.iana.org/assignments/media-types/application/sparql-results+json>
   ] .
 
-ex:rml-mapper
+<RMLMapper>
   a fno:Function ;
   fno:name "The RML Mapper Function"^^xsd:string ;
   dct:description "Performs RML mappings on a source and materializes results as a SPARQL endpoint"^^xsd:string ;
-  fno:expects ( ex:rml-mapping ) ;
-  fno:returns ( ex:rml-output ) .
+  fno:expects ( <RMLMapping> ) ;
+  fno:returns ( <KGOutput> ) .
 
-ex:rml-mapping 
+<RMLMapping> 
   a                   fno:Parameter ;
   fno:type            rr:TriplesMap ;
   dct:format          <http://www.w3.org/ns/formats/Turtle> ;
-  fno:predicate       ex:mapping ;
+  fno:predicate       <mapping> ;
   fno:required        "true"^^xsd:boolean .
 
-ex:rml-output
+<KGOutput>
   a               fno:Output ;
   fno:type        dcat:Dataset ;
-  fno:predicate   ex:table .
+  fno:predicate   <kg> .
 ```
 </div>
 
@@ -129,22 +129,22 @@ represented using an `fno:AppliedFunction` from [[!FNO]].
 
 <div class="example">
 ```turtle
-@prefix ex: <http://example.org/> .
+@base <http://aggregator.example.org/transformations#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix fnoc: <https://fno.io/vocabulary/composition/0.1.0/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:sparql-query-view-applied-function
+<GivenNameView>
   a fno:AppliedFunction ;
-  fnoc:applies ex:sparql-query-view ;
+  fnoc:applies <QueryView> ;
   fnoc:parameterBindings (
     [
-      fnoc:boundParameter ex:query-source ;
-      fnoc:boundToTerm "http://example.org/source1"
+      fnoc:boundParameter <QuerySource> ;
+      fnoc:boundToTerm "http://example.org/source"
     ]
     [
-      fnoc:boundParameter ex:sparql-query-string ;
-      fnoc:boundToTerm "SELECT * WHERE { ?s ?p ?o }"^^xsd:string
+      fnoc:boundParameter <QueryString> ;
+      fnoc:boundToTerm "SELECT * WHERE { ?person foaf:givenName ?name }"^^xsd:string
     ]
   ) .
 ```
@@ -178,9 +178,9 @@ The Transformation Catalog:
 
 <> a aggr:TransformationCatalog ;
     aggr:hasTransformation 
-      <sparql-query-view> , 
-      <sparql-query-view-applied-function> ,
-      <rml-mapper> ,
+      <QueryView> , 
+      <GivenNameView> ,
+      <RMLMapper> ,
       <http://example.org/external/ExternalFunction> ;
     rdfs:seeAlso <http://example.org/external/ExternalFunction> .
 ```
@@ -239,14 +239,14 @@ or describe the service API using the Hydra Core Ontology ([[!Hydra]]).
     a prov:SoftwareAgent ;
     aggr:status "running" ;
     aggr:createdAt "2024-01-01T12:00:00Z"^^xsd:dateTime ;
-    aggr:performs server-trans:sparql-query-view ;
-    aggr:applies inst-trans:sparql-query-view-applied-function ;
+    aggr:performs server-trans:QueryView ;
+    aggr:applies inst-trans:QueryViewApplied ;
     dct:conformsTo <https://w3id.org/aggregator#> ;
     dcat:servesDataset <#dataset> .
 
 <#dataset>
     a dcat:Dataset ;
-    aggr:forOutput server-trans:view-output ;
+    aggr:forOutput server-trans:ViewOutput ;
     dcat:distribution <#distribution-xml> ,
      <#distribution-json> .
 

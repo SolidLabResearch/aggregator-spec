@@ -15,12 +15,6 @@ Describes an Aggregator Instance (its base URL is the Aggregator Description res
 **subClassOf:** [schema:Service](https://schema.org/Service)<br>
 **subClassOf:** [foaf:Agent](https://xmlns.com/foaf/0.1/Agent)
 
-### aggr:ServiceImplementation ### {#ServiceImplementation}
-Represents an implementation that can run inside an aggregator
-
-**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
-**subClassOf:** [fno:Implementation](https://w3id.org/function/spec/#Implementation)
-
 ### aggr:Service ### {#Service}
 Represents a configured Aggregator pipeline that can be created, inspected, and removed via the Service
 Management API (e.g., `/services/{service_id}`).
@@ -57,6 +51,11 @@ Describes the provenance of generated entities and performed executions of a run
 **subClassOf:** [schema:Collection](https://schema.org/Collection),
 [hydra:Collection](https://www.hydra-cg.com/spec/latest/core/#collections)
 
+### aggr:ServiceRequest ### {#ServiceRequest}
+Describes a request to deploy an Aggregator Service on an Aggregator
+
+**type:** [rdfs:Class](https://www.w3.org/TR/rdf-schema/#ch_class)<br>
+
 ### aggr:ManagementFlow ### {#ManagementFlow}
 Describes a management flow supported by an Aggregator Server.
 This specification models each flow as an RDF class so that `aggr:supportedManagementFlow` can be
@@ -92,7 +91,7 @@ Management flow based on OAuth 2.0 Device Authorization Grant [[RFC8628]].
 **subClassOf:** [aggr:ManagementFlow](https://w3id.org/aggregator#ManagementFlow)
 
 Properties {#vocabulary-properties}
----------------------------
+-----------------------------------
 
 ### aggr:createdAt ### {#createdAt}
 Timestamp when an `aggr:Aggregator` or `aggr:Service` was created.
@@ -183,7 +182,8 @@ Provides a human-readable explanation of the current `aggr:Service` status (for 
 Provides the transformation an `aggr:Service` performs.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service),
+  [aggr:ServiceRequest](https://w3id.org/aggregator#ServiceRequest)<br>
 **range:** [fno:Function](https://w3id.org/function/spec/#Function)
 
 ### aggr:applies ### {#applies}
@@ -197,7 +197,8 @@ Links an `aggr:Service` to the `fno:AppliedFunction` that captures the configure
 Provides the implementation used by an `aggr:Service` to perform its transformation.
 
 **type:** [rdf:Property](https://www.w3.org/TR/rdf-schema/#ch_property)<br>
-**domain:** [aggr:Service](https://w3id.org/aggregator#Service)<br>
+**domain:** [aggr:Service](https://w3id.org/aggregator#Service),
+  [aggr:ServiceRequest](https://w3id.org/aggregator#Service)<br>
 **range:** [fno:Implementation](https://w3id.org/function/spec/#Implementation)
 
 ### aggr:forOutput ### {#forOutput}

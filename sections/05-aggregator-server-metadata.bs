@@ -122,45 +122,44 @@ The following example describes a pipeline that:
     
 <RMLQueryPipeline>
   a fno:Function ;
-  fno:expects ( <Mapping> <Query> ) ;
-  fno:returns ( <Result> ) ;
+  fno:expects ( <RMLMapping> <QueryString> ) ;
+  fno:returns ( <ViewOutput> ) ;
   fno:composition [
     fnoc:composedOf [
       fnoc:mapFrom [
         fnoc:constituentFunction <RMLQueryPipeline> ;
-        fnoc:functionParameter <Mapping> .
+        fnoc:functionParameter <RMLMapping> .
       ] ;
       fnoc:mapTo [
         fnoc:constituentFunction <RMLMapper> ;
-        fnoc:functionParameter <Mapping> .
+        fnoc:functionParameter <RMLMapping> .
       ] .
     ],[
       fnoc:mapFrom [
         fnoc:constituentFunction <RMLQueryPipeline> ;
-        fnoc:functionParameter <Query> .
+        fnoc:functionParameter <QueryString> .
       ] ;
       fnoc:mapTo [
         fnoc:constituentFunction <QueryView> ;
-        fnoc:functionParameter <Query> .
+        fnoc:functionParameter <QueryString> .
       ] .
     ],[
       fnoc:mapFrom [
         fnoc:constituentFunction <RMLMapper> ;
-        fnoc:functionParameter <Result> .
+        fnoc:functionParameter <KGOutput> .
       ] ;
       fnoc:mapTo [
         fnoc:constituentFunction <QueryView> ;
-        fnoc:functionParameter <Sources> ;
-        fnoc:mappingStrategy fnoc:append .
+        fnoc:functionParameter <QuerySource> ;
       ] .
     ],[
       fnoc:mapFrom [
         fnoc:constituentFunction <QueryView> ;
-        fnoc:functionOutput <Result> .
+        fnoc:functionOutput <ViewOutput> .
       ] ;
       fnoc:mapTo [
         fnoc:constituentFunction <RMLQueryPipeline> ;
-        fnoc:functionParameter <Result> .
+        fnoc:functionParameter <ViewOutput> .
       ] .
     ] .
   ] .
